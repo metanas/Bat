@@ -1,0 +1,27 @@
+import 'reflect-metadata';
+import {createConnection} from 'typeorm';
+import {UserResolver} from "./Resolvers/UserResolver";
+import {ApolloServer} from 'apollo-server-express';
+import {buildSchema} from 'type-graphql';
+import cors from "cors";
+import Express from 'express';
+
+const main = async () => {
+  await createConnection();
+
+  const schema = await buildSchema({resolvers: [UserResolver]});
+
+  const apolloServer = new ApolloServer({schema});
+
+  const app = Express();
+
+  app.use(cors());
+
+  apolloServer.applyMiddleware({app});
+
+  app.listen(4000, () => {
+    console.log(`server started on http://www.localhost:4000/graphql`);
+  });
+};
+
+main();
