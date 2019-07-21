@@ -13,6 +13,8 @@ module.exports = {
         "sourceType": "module"
     },
     "rules": {
-        "new-cap": ["off"]
+        "new-cap": ["off"],
+        "quotes": ["error", "double"],
+        "indent": ["error", 2]
     }
 };
