@@ -5,21 +5,41 @@ import {ApolloServer} from "apollo-server-express";
 import {buildSchema} from "type-graphql";
 import cors from "cors";
 import Express from "express";
+import session from "express-session";
+import {redis} from "./redis";
+import connectRedis = require("connect-redis");
 
-const main = async () => {
+const main = async (): Promise<void> => {
   await createConnection();
 
   const schema = await buildSchema({resolvers: [UserResolver]});
 
-  const apolloServer = new ApolloServer({schema});
+  const apolloServer = new ApolloServer({schema, context: ({req, res}) => ({req, res})});
 
   const app = Express();
 
   app.use(cors());
 
+  const RedisStore = connectRedis(session);
+
+  app.use(session({
+    store: new RedisStore({
+      client: redis as any
+    }),
+    name: "token",
+    secret: "dev",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7 * 365 // 7 years
+    }
+  }));
+
   apolloServer.applyMiddleware({app});
 
-  app.listen(4000, () => {
+  app.listen(4000, (): void => {
     console.log("server started on http://www.localhost:4000/graphql");
   });
 };
