@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from 'typeorm';
 import { ObjectType, Field, ID } from 'type-graphql';
+import {ProductPicture} from "./ProductPicture";
 
 @ObjectType()
 @Entity()
@@ -16,4 +17,8 @@ export class Product extends BaseEntity {
   @Column()
   public quantity: number;
 
+  @OneToMany(() => ProductPicture, (productPicture: ProductPicture) => productPicture.author)
+  public productPictures: ProductPicture[];
+
 }
+
