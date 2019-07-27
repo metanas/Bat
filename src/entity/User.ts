@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn,OneToMany, Column, BaseEntity } from 'typeorm';
 import { ObjectType, Field, ID } from 'type-graphql';
+import {Address} from './Address';
 
 
 @ObjectType()
@@ -28,4 +29,7 @@ export class User extends BaseEntity {
     @Field()
     @Column()
     avatar: string;
+
+   @OneToMany(() => Address, (address: Address) => address.user)
+   public addresses: Address[];
 }
