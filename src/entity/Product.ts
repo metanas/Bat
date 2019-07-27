@@ -10,10 +10,10 @@ export class Product extends BaseEntity {
 
   @Field()
   @Column()
-  public priceuni: number;
+  public priceUnit: number;
 
   @Field()
   @Column()
-  public quantite: number;
+  public quantity: number;
 
 }
