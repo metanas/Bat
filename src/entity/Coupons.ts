@@ -18,7 +18,7 @@ export class Coupons extends BaseEntity {
 
   @Field()
   @Column()
-  public discountPerson: string;
+  public discountPercent: number;
 
   @Field()
   @Column()

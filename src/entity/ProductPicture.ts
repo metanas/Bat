@@ -13,7 +13,7 @@ export class ProductPicture extends BaseEntity {
   @Column()
   public avatar: object;
 
-  @ManyToOne(() => Product, (author: Product) => author.productPictures)
-  public author: Product;
+  @ManyToOne(() => Product, (product: Product) => product.productPictures)
+  public product: Product[];
 
 }

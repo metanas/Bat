@@ -17,7 +17,7 @@ export class Product extends BaseEntity {
   @Column()
   public quantity: number;
 
-  @OneToMany(() => ProductPicture, (productPicture: ProductPicture) => productPicture.author)
+  @OneToMany(() => ProductPicture, (productPicture: ProductPicture) => productPicture.product)
   public productPictures: ProductPicture[];
 
 }

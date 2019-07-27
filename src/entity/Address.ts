@@ -22,8 +22,8 @@ export class Address extends BaseEntity {
   @Column()
   public lang: number;
 
-  @ManyToOne(() => User, (author: User) => author.addresses)
-  public author: User;
+  @ManyToOne(() => User, (user: User) => user.addresses)
+  public user: User;
 
 
 }

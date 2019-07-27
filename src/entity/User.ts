@@ -30,6 +30,6 @@ export class User extends BaseEntity {
     @Column()
     avatar: string;
 
-   @OneToMany(() => Address, (address: Address) => address.author)
+   @OneToMany(() => Address, (address: Address) => address.user)
    public addresses: Address[];
 }
