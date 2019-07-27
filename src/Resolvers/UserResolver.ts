@@ -1,5 +1,5 @@
 import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
-import {User} from "../Entity/User";
+import {User} from "../entity/User";
 import {UserInput} from "../Modules/inputs/UserInput";
 import {Auth} from "../Middleware/Auth";
 import {ApiContext} from "../types/ApiContext";
