@@ -1,5 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from 'typeorm';
-import { ObjectType, Field, ID } from 'type-graphql';
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typeorm";
+import { ObjectType, Field, ID } from "type-graphql";
 import {ProductPicture} from "./ProductPicture";
 
 @ObjectType()
