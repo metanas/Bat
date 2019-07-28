@@ -13,27 +13,30 @@ export class Coupons extends BaseEntity {
   public name: string;
 
   @Field()
-  @Column()
+  @Column({ name: "discount_type" })
   public discountType: string;
 
   @Field()
-  @Column()
+  @Column({ name: "discount_percent" })
   public discountPercent: number;
 
   @Field()
-  @Column()
+  @Column({ name: "discount_amount" })
   public discountAmount: number;
 
   @Field()
-  @Column()
+  @Column({ name: "date_begin" })
   public dateBegin: number;
 
   @Field()
-  @Column()
+  @Column({ name: "date_end", nullable: true })
   public dateEnd: number;
 
   @Field()
   @Column()
   public couponUse: number;
 
+  @Field()
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  public date_added: string;
 }

@@ -17,8 +17,13 @@ export class Product extends BaseEntity {
   @Column()
   public quantity: number;
 
+  @Field()
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  public date_added: string;
+
   @OneToMany(() => ProductPicture, (productPicture: ProductPicture) => productPicture.product)
   public productPictures: ProductPicture[];
+
 
 }
 
