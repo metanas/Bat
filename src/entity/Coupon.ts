@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 
 @ObjectType()
@@ -39,5 +39,9 @@ export class Coupon extends BaseEntity {
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public date_added: string;
+
+  @ManyToMany(() => Coupon)
+  @JoinTable()
+  public coupons: Coupon[];
 
 }
