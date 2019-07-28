@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { Address } from "./Address";
+import {UserCoupons} from "./UserCoupons";
 
 @ObjectType()
 @Entity()
@@ -35,4 +36,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Address, (address: Address) => address.user)
   public addresses: Address[];
+
+  @OneToMany(() => UserCoupons, (userCoupons: UserCoupons) => userCoupons.user)
+  public userCoupons: UserCoupons[];
 }
