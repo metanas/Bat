@@ -27,7 +27,7 @@ export class Product extends BaseEntity {
 
   @ManyToMany(() => Category)
   @JoinTable()
-  categories: Category[];
+  public categories: Category[];
 
 }
 
