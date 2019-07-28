@@ -1,10 +1,9 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
-import {UserCoupons} from "./UserCoupons";
 
 @ObjectType()
 @Entity()
-export class Coupons extends BaseEntity {
+export class Coupon extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn()
   public id: number;

@@ -15,11 +15,11 @@ export class Address extends BaseEntity {
 
   @Field()
   @Column()
-  public lamp: number;
+  public longitude: number;
 
   @Field()
   @Column()
-  public lang: number;
+  public latitude: number;
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
