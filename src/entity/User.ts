@@ -3,6 +3,7 @@ import { ObjectType, Field, ID } from "type-graphql";
 import { Address } from "./Address";
 import {Coupon} from "./Coupon";
 import {Favourite} from "./Favourite";
+import {Cart} from "./Cart";
 
 @ObjectType()
 @Entity()
@@ -45,5 +46,9 @@ export class User extends BaseEntity {
   @OneToOne(() => Favourite)
   @JoinColumn()
   public favourite: Favourite;
+
+  @OneToOne(() => Cart)
+  @JoinColumn()
+  public cart: Cart;
 
 }
