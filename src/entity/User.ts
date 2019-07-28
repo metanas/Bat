@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany,ManyToMany, JoinTable } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne,JoinColumn,OneToMany,ManyToMany, JoinTable } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { Address } from "./Address";
 import {Coupon} from "./Coupon";
+import {Favourite} from "./Favourite";
 
 @ObjectType()
 @Entity()
@@ -40,5 +41,9 @@ export class User extends BaseEntity {
   @ManyToMany(() => Coupon)
   @JoinTable()
   coupons: Coupon[];
+
+  @OneToOne(() => Favourite)
+  @JoinColumn()
+  public favourite: Favourite;
 
 }
