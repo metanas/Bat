@@ -4,6 +4,7 @@ import { Address } from "./Address";
 import {Coupon} from "./Coupon";
 import {Favourite} from "./Favourite";
 import {Cart} from "./Cart";
+import {Order} from "./Order";
 
 @ObjectType()
 @Entity()
@@ -50,5 +51,9 @@ export class User extends BaseEntity {
   @OneToOne(() => Cart)
   @JoinColumn()
   public cart: Cart;
+
+  @OneToOne(() => Order)
+  @JoinColumn()
+  public order: Order;
 
 }

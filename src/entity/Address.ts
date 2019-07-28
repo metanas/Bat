@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, BaseEntity } from "typeorm";
+import {Entity, PrimaryGeneratedColumn, ManyToOne, Column, BaseEntity, JoinColumn, OneToOne} from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { User } from "./User";
+import {Order} from "./Order";
 
 @ObjectType()
 @Entity()
@@ -27,4 +28,8 @@ export class Address extends BaseEntity {
 
   @ManyToOne(() => User, (user: User) => user.addresses)
   public user: User;
+
+  @OneToOne(() => Order)
+  @JoinColumn()
+  public order: Order;
 }
