@@ -39,6 +39,6 @@ export class User extends BaseEntity {
 
   @ManyToMany(() => Coupons)
   @JoinTable()
-  categories: Coupons[];
+  coupons: Coupons[];
 
 }
