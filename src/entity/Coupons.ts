@@ -41,6 +41,4 @@ export class Coupons extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public date_added: string;
 
-  @OneToMany(() => UserCoupons, (userCoupons: UserCoupons) => userCoupons.coupons)
-  public userCoupons: UserCoupons[];
 }
