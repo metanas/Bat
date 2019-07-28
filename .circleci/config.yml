@@ -1,0 +1,36 @@
+# Use the latest 2.1 version of CircleCI pipeline processing engine, see https://circleci.com/docs/2.0/configuration-reference/
+version: 2.1
+
+jobs:
+  build-job:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:11.14.0
+        environment:
+          - NODE_ENV: test
+          - PORT: 4000
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - Yarndependencies-{{ checksum "yarn.lock" }}
+            - Yarndependencies-
+      - run:
+          name: Install Dependencies
+          command: yarn install
+
+      - save_cache:
+          paths:
+            - /home/circleci/app/api/node_modules
+          key: Yarndependencies-{{ checksum "yarn.lock" }}
+
+      - run:
+          name: start lint
+          command: yarn lint
+
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - build-job
