@@ -51,6 +51,6 @@ export class Coupon extends BaseEntity {
   public carts: Cart[];
 
   @OneToMany(() => Order, (order: Order) => order.coupon)
-  public orders: Cart[];
+  public orders: Order[];
 
 }

@@ -25,6 +25,10 @@ export class Order extends BaseEntity {
   @Column()
   public Driver: string;
 
+  @Field()
+  @Column()
+  public Address: string;
+
   @ManyToOne(() => Coupon, (coupon: Coupon) => coupon.orders)
   public coupon: Coupon;
 
