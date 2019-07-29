@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, BaseEntity } from "typeorm";
+import {Entity, PrimaryGeneratedColumn, ManyToOne, Column, BaseEntity} from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { User } from "./User";
 
@@ -27,4 +27,5 @@ export class Address extends BaseEntity {
 
   @ManyToOne(() => User, (user: User) => user.addresses)
   public user: User;
+
 }

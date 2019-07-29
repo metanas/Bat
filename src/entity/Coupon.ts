@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany,ManyToMan
 import { ObjectType, Field, ID } from "type-graphql";
 import {Product} from "./Product";
 import {Cart} from "./Cart";
+import {Order} from "./Order";
 
 @ObjectType()
 @Entity()
@@ -48,5 +49,8 @@ export class Coupon extends BaseEntity {
 
   @OneToMany(() => Cart, (cart: Cart) => cart.coupon)
   public carts: Cart[];
+
+  @OneToMany(() => Order, (order: Order) => order.coupon)
+  public orders: Order[];
 
 }
