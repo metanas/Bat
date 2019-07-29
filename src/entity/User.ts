@@ -52,8 +52,7 @@ export class User extends BaseEntity {
   @JoinColumn()
   public cart: Cart;
 
-  @ManyToMany(() => Order)
-  @JoinTable()
-  order: Order[];
+  @OneToMany(() => Order, (order: Order) => order.user)
+  public orders: Order[];
 
 }
