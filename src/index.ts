@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import {createConnection} from "typeorm";
-import {UserResolver} from "./Resolvers/UserResolver";
 import {ApolloServer} from "apollo-server-express";
 import {buildSchema} from "type-graphql";
 import cors from "cors";
+import {join} from "path";
 import Express from "express";
 import session from "express-session";
 import {redis} from "./redis";
@@ -12,7 +12,7 @@ import connectRedis = require("connect-redis");
 const main = async (): Promise<void> => {
   await createConnection();
 
-  const schema = await buildSchema({resolvers: [UserResolver]});
+  const schema = await buildSchema({resolvers: [join(__dirname + "/Resolvers/*.ts")]});
 
   const apolloServer = new ApolloServer({schema, context: ({req, res}) => ({req, res})});
 
