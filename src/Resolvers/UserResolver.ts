@@ -24,7 +24,6 @@ export class UserResolver {
   @Mutation(() => User, { nullable: true })
   public async login(@Ctx() ctx: ApiContext, @Arg("telephone") telephone: string) {
     const user = await User.findOne({ where: {telephone} });
-    console.log(user);
 
     if(!user) {
       throw new Error("This telephone number isn't register!")
