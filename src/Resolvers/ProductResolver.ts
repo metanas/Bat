@@ -11,25 +11,17 @@ export class ProductResolver {
   @Query(() => Product, { nullable: true})
   public async getProduct(@Arg("id") id: number): Promise<Product | undefined> {
     return await Product.findOne({where: {id}})
-
   }
 
   @UseMiddleware(Auth)
   @Mutation(() => Product)
-  public async addProduct(@Ctx() ctx: ApiContext,@Arg("name") name: string,@Arg("priceUnit") priceUnit: number,@Arg("quantity") quantity: number){
-    const favourite = await Favourite.findOne({where :{id: ctx.req.session!.token}});
-    return await Product.create({
-      name,
-      priceUnit,
-      quantity,
-      favourite
-    }).save();
-  }
-
-  @UseMiddleware(Auth)
-  @Mutation(() => Product)
-  public async UpdateProduct(@Arg("id") id:number,@Arg("name") name: string,@Arg("priceUnit") priceUnit: number,@Arg("quantity") quantity: number){
-    return await getConnection().createQueryBuilder().update(Product).set({name,priceUnit,quantity}).where("id=:id",{id}).execute();
+  public async UpdateProduct(@Arg("id") id: number,@Arg("name") name: string,@Arg("priceUnit") priceUnit: number,@Arg("quantity") quantity: number){
+    return await getConnection()
+      .createQueryBuilder()
+      .update(Product)
+      .set({name,priceUnit,quantity})
+      .where("id=:id",{id})
+      .execute();
   }
 
   @UseMiddleware(Auth)
@@ -47,6 +39,4 @@ export class ProductResolver {
     const result = await Product.findAndCount({where: {favourite}, skip: page, take: limit});
     return result[0];
   }
-
-
 }
