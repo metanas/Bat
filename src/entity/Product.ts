@@ -21,6 +21,10 @@ export class Product extends BaseEntity {
 
   @Field()
   @Column()
+  public name: string;
+
+  @Field()
+  @Column()
   public priceUnit: number;
 
   @Field()
