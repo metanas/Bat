@@ -1,8 +1,16 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToMany,ManyToOne, JoinTable} from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+  ManyToMany,
+  JoinTable
+} from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import {ProductPicture} from "./ProductPicture";
 import {Category} from "./Category";
-import {Favourite} from "./Favourite";
+import { User } from "./User";
 
 @ObjectType()
 @Entity()
@@ -30,8 +38,8 @@ export class Product extends BaseEntity {
   @JoinTable()
   public categories: Category[];
 
-  @ManyToOne(() => Favourite, (favourite: Favourite) => favourite.products)
-  public favourite: Favourite;
-
+  @ManyToMany(() => User)
+  @JoinTable()
+  public users: User[];
 }
 

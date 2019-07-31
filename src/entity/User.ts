@@ -2,9 +2,9 @@ import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne,JoinColumn
 import { ObjectType, Field, ID } from "type-graphql";
 import { Address } from "./Address";
 import {Coupon} from "./Coupon";
-import {Favourite} from "./Favourite";
 import {Cart} from "./Cart";
 import {Order} from "./Order";
+import {Product} from "./Product";
 
 @ObjectType()
 @Entity()
@@ -42,14 +42,14 @@ export class User extends BaseEntity {
 
   @ManyToMany(() => Coupon)
   @JoinTable()
-  coupons: Coupon[];
+  public coupons: Coupon[];
 
-  @OneToOne(() => Favourite)
+  @ManyToMany(() => Product)
   @JoinColumn()
-  public favourite: Favourite;
+  public products: Product[];
 
   @OneToOne(() => Cart)
-  @JoinColumn()
+  @JoinTable()
   public cart: Cart;
 
   @OneToMany(() => Order, (order: Order) => order.user)

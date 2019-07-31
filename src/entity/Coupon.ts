@@ -45,7 +45,7 @@ export class Coupon extends BaseEntity {
 
   @ManyToMany(() => Product)
   @JoinTable()
-  public product: Product[];
+  public products: Product[];
 
   @OneToMany(() => Cart, (cart: Cart) => cart.coupon)
   public carts: Cart[];
