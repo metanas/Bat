@@ -12,7 +12,7 @@ export class Cart extends BaseEntity {
 
   @Field()
   @Column()
-  public Quantity: number;
+  public quantity: number;
 
   @ManyToMany(() => Product)
   @JoinTable()
