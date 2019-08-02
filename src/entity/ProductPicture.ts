@@ -11,13 +11,17 @@ export class ProductPicture extends BaseEntity {
 
   @Field()
   @Column()
-  public avatar: string;
+  public name: string;
+
+  @Field()
+  @Column()
+  public path: string;
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public date_added: string;
 
   @ManyToOne(() => Product, (product: Product) => product.productPictures)
-  public product: Product[];
+  public product: Product;
 
 }
