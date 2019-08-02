@@ -2,7 +2,6 @@ import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware,} from "type-graphql"
 import {Auth} from "../Middleware/Auth";
 import {Product} from "../entity/Product";
 import {ApiContext} from "../types/ApiContext";
-import {Favourite} from "../entity/Favourite";
 import {getConnection} from "typeorm";
 
 @Resolver()

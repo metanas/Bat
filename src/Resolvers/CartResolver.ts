@@ -11,7 +11,7 @@ import {getConnection} from "typeorm";
 export class CartResolver {
   @UseMiddleware(Auth)
   @Query(() => Cart, { nullable: true})
-  public async getAddress(@Arg("id") id: number): Promise<Cart | undefined> {
+  public async getCart(@Arg("id") id: number): Promise<Cart | undefined> {
     return await Cart.findOne({where: { id }})
   }
 
