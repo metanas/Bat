@@ -14,7 +14,7 @@ export class ProductPictureResolver {
     filename
   }: Upload){
     const product = await Product.findOne({where: {id}});
-    await uploadImage({ createReadStream, filename }, __dirname + "/../../images/");
+    await uploadImage({ createReadStream, filename }, (__dirname + "/../../images/"));
     const productPicture = ProductPicture.create({
       name: filename,
       path: "../../" + filename,
