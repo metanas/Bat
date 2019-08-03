@@ -1,10 +1,10 @@
 import {Resolver, Mutation, Arg} from "type-graphql";
 import { GraphQLUpload } from "graphql-upload";
 import {Upload} from "../types/Upload";
-import {createWriteStream} from "fs";
 import {ProductPicture} from "../entity/ProductPicture";
 import { Product } from "../entity/Product";
 import {getConnection} from "typeorm";
+import {uploadImage} from "../utils/uploadImage";
 
 @Resolver()
 export class ProductPictureResolver {
@@ -14,18 +14,13 @@ export class ProductPictureResolver {
     filename
   }: Upload){
     const product = await Product.findOne({where: {id}});
-    return new Promise( (resolve, reject) => {
-      createReadStream()
-        .pipe(createWriteStream(__dirname + `/../../${filename}`))
-        .on("finish", () => {
-          ProductPicture.create({
-            name: filename,
-            path: "../../" + filename,
-            product
-          }).save();
-          resolve(true) })
-        .on("error", () => { reject(false) })
-    });
+    await uploadImage({ createReadStream, filename }, __dirname + "/../../images/");
+    const productPicture = ProductPicture.create({
+      name: filename,
+      path: "../../" + filename,
+      product
+    }).save();
+    return !!productPicture;
   }
 
   @Mutation(() => Boolean)
