@@ -6,6 +6,7 @@ import {ApiContext} from "../types/ApiContext";
 import {User} from "../entity/User";
 import {Coupon} from "../entity/Coupon";
 import {getConnection} from "typeorm";
+import {CartProduct} from "../entity/CartProduct";
 
 @Resolver()
 export class CartResolver {
@@ -31,9 +32,13 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteCart(@Arg("id") id: number) {
+    getConnection().createQueryBuilder().delete().from(CartProduct)
+      .where("idCart=:id", {id}).execute();
     const cart = getConnection().createQueryBuilder().delete().from(Cart)
       .where("id=:id", {id}).execute();
     return !!cart
   }
+
+
 
 }
