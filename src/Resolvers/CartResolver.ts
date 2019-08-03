@@ -12,8 +12,8 @@ import {CartProduct} from "../entity/CartProduct";
 export class CartResolver {
   @UseMiddleware(Auth)
   @Query(() => Cart, { nullable: true})
-  public async getCart(@Arg("id") id: number): Promise<Cart | undefined> {
-    return await Cart.findOne({where: { id }})
+  public async getCart(@Ctx() ctx: ApiContext): Promise<Cart | undefined> {
+    return await Cart.findOne({where: {"idUser": ctx.req.session!.token}})
   }
 
   @UseMiddleware(Auth)
