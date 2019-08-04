@@ -1,7 +1,7 @@
 import {ClassType, Field, ObjectType} from "type-graphql";
 
 export default function PaginationResponse<T>(Items: ClassType<T>) {
-  @ObjectType({ isAbstract: true })
+  @ObjectType(  `Paginated${Items.name}Response` )
   abstract class PaginationResponseClass {
     @Field(() => [Items])
     public items: T[];

@@ -17,7 +17,7 @@ export class ProductPictureResolver {
     await uploadImage({ createReadStream, filename }, (__dirname + "/../../images/"));
     const productPicture = ProductPicture.create({
       name: filename,
-      path: "../../" + filename,
+      path: __dirname + `/../../images/${filename}`,
       product
     }).save();
     return !!productPicture;
