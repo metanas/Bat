@@ -31,7 +31,7 @@ export class Cart extends BaseEntity {
   @OneToMany(() => CartProduct, (cartProduct: CartProduct) => cartProduct.cart, { onDelete: "CASCADE" })
   public cartProducts?: CartProduct[];
 
-  @Field()
+  @Field(() => User)
   @OneToOne(() => User, (user: User) => user.cart)
   public user: User;
 }
