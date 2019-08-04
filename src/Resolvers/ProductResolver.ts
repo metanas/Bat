@@ -3,8 +3,9 @@ import { Auth } from "../Middleware/Auth";
 import { Product } from "../entity/Product";
 import {Category} from "../entity/Category";
 import PaginatedResponse from "../Modules/interfaces/PaginatedResponse";
-import { floor } from "lodash";
+import { ceil } from "lodash";
 import {getConnection} from "typeorm";
+import {PaginatedResponseInput} from "../Modules/inputs/PaginatedResponseInput";
 
 const PaginatedProductResponse = PaginatedResponse(Product);
 // @ts-ignore
@@ -52,12 +53,12 @@ export class ProductResolver {
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedProductResponse)
-  public async getProducts(@Arg("page") page: number, @Arg("limit") limit: number): Promise<PaginatedProductResponse> {
+  public async getProducts(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedProductResponse> {
     const result = await Product.findAndCount({ skip: page - 1, take: limit });
     console.log(result);
     return {
       items: result[0],
-      totalPages: floor(result[1] / limit),
+      totalPages: ceil(result[1] / limit),
       totalCount: result[1]
     };
   }
