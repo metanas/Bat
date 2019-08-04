@@ -5,7 +5,8 @@ import {User} from "../entity/User";
 import {Auth} from "../Middleware/Auth";
 import {getConnection} from "typeorm";
 import PaginatedResponse from "../Modules/interfaces/PaginatedResponse";
-import { floor } from "lodash";
+import { ceil } from "lodash";
+import {PaginatedResponseInput} from "../Modules/inputs/PaginatedResponseInput";
 
 const PaginatedAddressResponse = PaginatedResponse(Address);
 // @ts-ignore
@@ -52,12 +53,12 @@ export class AddressResolver {
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedAddressResponse)
-  public async getAddresses(@Ctx() ctx: ApiContext, @Arg("page") page: number, @Arg("limit") limit: number): Promise<PaginatedAddressResponse> {
+  public async getAddresses(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedAddressResponse> {
     const user = await User.findOne({ where: { id: ctx.req.session!.token }});
-    const result = await Address.findAndCount({where: {user}, skip: page, take: limit});
+    const result = await Address.findAndCount({where: {user}, skip: page - 1, take: limit});
     return {
       items: result[0],
-      totalPages: floor(result[1] / limit),
+      totalPages: ceil(result[1] / limit),
       totalCount: result[1]
     };
   }
