@@ -13,23 +13,23 @@ export class Order extends BaseEntity {
 
   @Field()
   @Column()
-  public OrderDate: number;
+  public orderDate: number;
 
   @Field()
   @Column()
-  public PaymentMethod: string;
+  public paymentMethod: string;
 
   @Field()
   @Column()
-  public Status: string;
+  public status: string;
 
   @Field()
   @Column()
-  public Driver: string;
+  public driver: string;
 
   @Field()
   @Column()
-  public Address: string;
+  public address: string;
 
   @ManyToOne(() => Coupon, (coupon: Coupon) => coupon.orders)
   public coupon: Coupon;
