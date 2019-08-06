@@ -12,7 +12,7 @@ import connectRedis = require("connect-redis");
 const main = async (): Promise<void> => {
   await createConnection();
 
-  const schema = await buildSchema({resolvers: [join(__dirname + "/Resolvers/*.ts")]});
+  const schema = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/*.ts") ]});
 
   const apolloServer = new ApolloServer({schema, context: ({req, res}) => ({req, res})});
 
