@@ -29,9 +29,9 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   public birthday: string;
 
-  @Field()
-  @Column({nullable: true})
-  public avatar: string;
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  public avatar?: string;
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
