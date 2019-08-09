@@ -21,8 +21,8 @@ export class UserResolver {
     }).save();
   }
 
-  @Mutation(() => User, { nullable: true })
-  public async login(@Ctx() ctx: ApiContext, @Arg("telephone") telephone: string) {
+  @Mutation(() => User)
+  public async login(@Ctx() ctx: ApiContext, @Arg("telephone") telephone: string): Promise<User> {
     const user = await User.findOne({ where: {telephone} });
 
     if(!user) {
@@ -31,6 +31,6 @@ export class UserResolver {
 
     ctx.req.session!.token = user.id;
 
-    return User
+    return user
   }
 }
