@@ -22,7 +22,7 @@ export class AddressResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Address)
-  public async addAddress(@Ctx() ctx: ApiContext, @Arg("address") address: string, @Arg("longitude") longitude: number, @Arg("latitude") latitude: number) {
+  public async addAddress(@Ctx() ctx: ApiContext, @Arg("address") address: string, @Arg("longitude") longitude: string, @Arg("latitude") latitude: string) {
     const user = await User.findOne({ where: { id: ctx.req.session!.token} });
     return await Address.create({
       address,
@@ -34,28 +34,30 @@ export class AddressResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Address)
-  public async UpdateAddress(@Arg("id") id: number, @Arg("address") address: string, @Arg("longitude") longitude: number, @Arg("latitude") latitude: number){
-    return await getConnection()
+  public async updateAddress(@Arg("id") id: number, @Arg("address") address: string, @Arg("longitude") longitude: string, @Arg("latitude") latitude: string){
+    await getConnection()
       .createQueryBuilder()
       .update(Address)
       .set({address, longitude, latitude})
       .where("id=:id", {id})
       .execute();
+
+    return await Address.findOne({where: {id}});
   }
 
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteAddress(@Arg("id") id: number) {
-    const address = getConnection().createQueryBuilder().delete().from(Address)
-      .where("id=:id", {id}).execute();
-    return !!address
+    const result = await getConnection().createQueryBuilder().delete().from(Address)
+      .where("id=:id", {id}).returning("id").execute();
+    return !!result.affected
   }
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedAddressResponse)
   public async getAddresses(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedAddressResponse> {
     const user = await User.findOne({ where: { id: ctx.req.session!.token }});
-    const result = await Address.findAndCount({where: {user}, skip: page - 1, take: limit});
+    const result = await Address.findAndCount({where: {user}, skip: (page - 1) * limit, take: limit});
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
