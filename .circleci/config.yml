@@ -10,12 +10,10 @@ jobs:
           - NODE_ENV: test
           - PORT: 4000
       - image: mdillon/postgis
-          ports:
-            - 5432:5432
-          environment:
-            POSTGRES_USER: project
-            POSTGRES_DB: project-api
-            POSTGRES_PASSWORD: root
+        environment:
+          POSTGRES_USER: project
+          POSTGRES_DB: project-api
+          POSTGRES_PASSWORD: root
 
     steps:
       - checkout
