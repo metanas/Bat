@@ -9,6 +9,11 @@ jobs:
         environment:
           - NODE_ENV: test
           - PORT: 4000
+      - image: mdillon/postgis
+        environment:
+          POSTGRES_USER: project
+          POSTGRES_DB: project-api
+          POSTGRES_PASSWORD: root
 
     steps:
       - checkout
@@ -28,6 +33,10 @@ jobs:
       - run:
           name: start lint
           command: yarn lint
+
+      - run:
+          name: unit Testing
+          command: yarn test
 
 workflows:
   version: 2.1
