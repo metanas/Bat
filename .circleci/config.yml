@@ -10,7 +10,6 @@ jobs:
           - NODE_ENV: test
           - PORT: 4000
       - image: mdillon/postgis
-          restart: on-failure
           ports:
             - 5432:5432
           environment:
