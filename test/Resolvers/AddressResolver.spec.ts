@@ -5,6 +5,9 @@ import faker = require("faker");
 import {graphqlCall} from "../test-utils/graphqlCall";
 import {Address} from "../../src/entity/Address";
 import { take, get, slice } from "lodash";
+import {createUserHelper} from "../helper/createUserHelper";
+import {truncate} from "../helper/truncateTables";
+import {createAddressHelper} from "../helper/createAddressHelper";
 
 let conn: Connection;
 let user: User;
@@ -17,24 +20,14 @@ afterAll(async () => {
   await conn.close();
 });
 
-async function createUser() {
-  user = await User.create({
-    name: faker.name.firstName() + " " + faker.name.lastName(),
-    telephone: faker.phone.phoneFormats(),
-    birthday: faker.date.past().toDateString()
-  }).save();
-}
+beforeEach(async () => {
+  await truncate(conn);
+  user = await createUserHelper();
+});
 
 describe("Test Address Resolver",  () => {
   it("Test Getting Address By ID", async () => {
-    await createUser();
-
-    const address = await Address.create({
-      address: faker.address.streetAddress(),
-      latitude: faker.address.latitude(),
-      longitude: faker.address.longitude(),
-      user: user
-    }).save();
+    const address = await createAddressHelper(user);
 
     const getAddressQuery = `{
       getAddress(id: ${address.id}) { 
@@ -59,11 +52,10 @@ describe("Test Address Resolver",  () => {
           latitude: address.latitude,
         }
       }
-    })
+    });
   });
 
   it("Test Add Address", async () => {
-    await createUser();
 
     const addAddressQuery = `mutation {
       addAddress(address: "test address", longitude: "1.23423423", latitude: "3.12319221") {
@@ -86,11 +78,10 @@ describe("Test Address Resolver",  () => {
           latitude: "3.12319221"
         }
       }
-    })
+    });
   });
 
   it("Test Get Addresses", async () => {
-    await createUser();
     let getAddressesQuery = `{
       getAddresses(data: { limit: 5, page: 1 }) {
         items {
@@ -103,13 +94,8 @@ describe("Test Address Resolver",  () => {
 
     const listAddress: { address: string }[] = [];
     for(let i=0; i < 12; i++) {
-      listAddress.push({address: faker.address.streetAddress()});
-      await Address.create({
-        address: listAddress[i].address,
-        latitude: faker.address.latitude(),
-        longitude: faker.address.longitude(),
-        user: user
-      }).save();
+      const address = await createAddressHelper(user);
+      listAddress.push({ address: address.address });
     }
 
     let response = await graphqlCall({
@@ -159,14 +145,7 @@ describe("Test Address Resolver",  () => {
   });
 
   it("Test Delete Address", async () => {
-    await createUser();
-
-    const address = await Address.create({
-      address: faker.address.streetName(),
-      latitude: faker.address.latitude(),
-      longitude: faker.address.longitude(),
-      user: user
-    }).save();
+    const address = await createAddressHelper(user);
 
     const deleteAddressQuery = `mutation { 
       deleteAddress(id: ${address.id}) 
@@ -182,10 +161,10 @@ describe("Test Address Resolver",  () => {
         deleteAddress: true
       }
     });
+    await truncate(conn);
   });
 
   it("Test Update Address", async () => {
-    await createUser();
 
     const address = await Address.create({
       address: faker.address.streetName(),

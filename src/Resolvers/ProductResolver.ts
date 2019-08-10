@@ -23,12 +23,13 @@ export class ProductResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Product)
   public async updateProduct(@Arg("id") id: number,@Arg("name") name: string,@Arg("priceUnit") priceUnit: number,@Arg("quantity") quantity: number){
-    return await getConnection()
+    await getConnection()
       .createQueryBuilder()
       .update(Product)
       .set({ name, priceUnit, quantity })
       .where("id=:id",{ id })
       .execute();
+    return await Product.findOne({ where: {id} });
   }
 
   @UseMiddleware(Auth)
@@ -46,16 +47,15 @@ export class ProductResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteProduct(@Arg("id") id: number) {
-    const product = getConnection().createQueryBuilder().delete().from(Product)
-      .where("id=:id", {id}).execute();
-    return !!product
+    const result = await getConnection().createQueryBuilder().delete().from(Product)
+      .where("id=:id", {id}).returning("id").execute();
+    return !!result.affected
   }
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedProductResponse)
   public async getProducts(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedProductResponse> {
-    const result = await Product.findAndCount({ skip: page - 1, take: limit });
-    console.log(result);
+    const result = await Product.findAndCount({ skip: (page - 1) * 10, take: limit });
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),

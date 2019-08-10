@@ -1,8 +1,8 @@
-import { connection } from "../test-utils/connection";
-import  { User } from "../../src/entity/User";
-import faker from "faker";
+import {connection} from "../test-utils/connection";
 import {graphqlCall} from "../test-utils/graphqlCall";
 import {Connection} from "typeorm";
+import {createUserHelper} from "../helper/createUserHelper";
+import {truncate} from "../helper/truncateTables";
 
 let conn: Connection;
 
@@ -14,7 +14,9 @@ afterAll(async () => {
   await conn.close();
 });
 
-
+beforeEach(async () => {
+  await truncate(conn);
+});
 
 describe("Me", () => {
   it("Test Get User Authenticated", async () => {
@@ -29,11 +31,7 @@ describe("Me", () => {
       }
     }`;
 
-    const user = await User.create({
-      name: faker.name.firstName() + " " + faker.name.lastName(),
-      telephone: faker.phone.phoneFormats(),
-      birthday: faker.date.past(1990).toDateString()
-    }).save();
+    const user = await createUserHelper();
 
     const response = await graphqlCall({
       source: meQuery,
@@ -51,7 +49,7 @@ describe("Me", () => {
           avatar: null
         }
       }
-    })
+    });
   });
 
   it("Test Register New User", async () => {
@@ -76,15 +74,11 @@ describe("Me", () => {
           birthday: "01/02/1900",
         }
       }
-    })
+    });
   });
 
   it("Test Login", async () => {
-    const user = await User.create({
-      name: faker.name.firstName() + " " + faker.name.lastName(),
-      telephone: faker.phone.phoneFormats(),
-      birthday: faker.date.past(1990).toDateString()
-    }).save();
+    const user = await createUserHelper();
 
     const registerQuery = `mutation { 
       login(telephone: "${user.telephone}") {
@@ -110,7 +104,7 @@ describe("Me", () => {
           birthday: user.birthday,
         }
       }
-    })
+    });
   });
 
   it("Test Login With No Register Phone Number", async () => {
