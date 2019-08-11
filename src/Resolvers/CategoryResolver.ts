@@ -23,7 +23,8 @@ export class CategoryResolver {
     }).save()
   }
 
-  @Mutation(() => String)
+
+  @Mutation(() => Category)
   public async updateCategory(@Arg("id") id: number, @Arg("name") name: string) {
     await getConnection()
       .createQueryBuilder()
@@ -31,21 +32,24 @@ export class CategoryResolver {
       .set({name})
       .where("id=:id", {id})
       .execute();
-    return
+
+    return await Category.findOne({where: {id}})
   }
 
   @Mutation(() => Boolean)
   public async deleteCategory(@Arg("id") id: number) {
-    return !await Category.delete(id)
+    const result = await getConnection().createQueryBuilder().delete().from(Category)
+      .where("id=:id", {id}).returning("id").execute();
+    return !!result.affected
   }
 
   @Query(() => PaginatedCategoryResponse)
-  public async getCategories(@Arg("data") { page, limit }: PaginatedResponseInput){
+  public async getCategories(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedCategoryResponse> {
     const result = await Category.findAndCount({ skip: page - 1, take: limit });
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
       totalCount: result[1]
-    }
+    };
   }
 }
