@@ -1,16 +1,12 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
   BaseEntity,
-  ManyToMany,
   JoinTable,
   OneToMany,
-  OneToOne
+  OneToOne, Column, JoinColumn
 } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
-import {Product} from "./Product";
-import {Coupon} from "./Coupon";
 import {CartProduct} from "./CartProduct";
 import {User} from "./User";
 
@@ -21,17 +17,16 @@ export class Cart extends BaseEntity {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @ManyToMany(() => Product)
-  @JoinTable()
-  public product: Product[];
-
-  @ManyToOne(() => Coupon, (coupon: Coupon) => coupon.carts)
-  public coupon?: Coupon;
-
   @OneToMany(() => CartProduct, (cartProduct: CartProduct) => cartProduct.cart, { onDelete: "CASCADE" })
+  @JoinTable()
   public cartProducts?: CartProduct[];
 
   @Field(() => User)
   @OneToOne(() => User, (user: User) => user.cart)
+  @JoinColumn()
   public user: User;
+
+  @Field()
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  public create_at: string;
 }

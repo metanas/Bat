@@ -3,7 +3,6 @@ import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Cart} from "../entity/Cart";
 import {ApiContext} from "../types/ApiContext";
 import {User} from "../entity/User";
-import {Coupon} from "../entity/Coupon";
 import {getConnection} from "typeorm";
 
 @Resolver()
@@ -11,17 +10,15 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Query(() => Cart, { nullable: true})
   public async getCart(@Ctx() ctx: ApiContext): Promise<Cart | undefined> {
-    return await Cart.findOne({where: {"idUser": ctx.req.session!.token}, relations: ["cart_product"] })
+    return await Cart.findOne({ where: { "userId": ctx.req.session!.token }, relations: ["user"] });
   }
 
   @UseMiddleware(Auth)
   @Mutation(() => Cart)
-  public async addCart (@Ctx() ctx: ApiContext, @Arg("idCoupon") idCoupon?: number){
-    const user = await User.findOne({ where: { id: ctx.req.session!.token} });
-    const coupon = await Coupon.findOne({ where: { id: idCoupon} });
+  public async addCart (@Ctx() ctx: ApiContext){
+    const user = await User.findOne({ where: { id: ctx.req.session!.token}, relations: ["user"] });
     return await Cart.create({
-      user,
-      coupon
+      user
     }).save();
   }
 

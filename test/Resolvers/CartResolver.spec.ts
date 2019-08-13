@@ -27,7 +27,7 @@ async function createUser() {
 }
 
 describe("Test Cart Resolver",  () => {
-  it("Test Getting Carte By UserID", async () => {
+  it("Test Getting Cart By UserID", async () => {
     await createUser();
 
     const cart = await Cart.create({
@@ -35,26 +35,22 @@ describe("Test Cart Resolver",  () => {
     }).save();
 
     const getCartQuery = `{
-    getCart(id: ${cart.id}){
-      id
-    }
+      getCart {
+        id
+      }
     }`;
 
     const response = await graphqlCall({
       source: getCartQuery,
       token: user.id
-
     });
 
     expect(response).toMatchObject({
       data:{
         getCart : {
-          id: `${cart.id}`,
+          id: `${cart.id}`
         }
       }
     });
   });
-
-
-
 });
