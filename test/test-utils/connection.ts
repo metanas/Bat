@@ -11,6 +11,11 @@ export const connection = (drop: boolean = false) => {
     password: "root",
     synchronize: drop,
     dropSchema: drop,
-    entities: [__dirname + "/../../src/entity/*.ts"]
+    logging: "all",
+    logger: "file",
+    entities: [__dirname + "/../../src/entity/*.ts"],
+    cli: {
+      entitiesDir: "/../../src/entity/*.ts"
+    }
   })
 };

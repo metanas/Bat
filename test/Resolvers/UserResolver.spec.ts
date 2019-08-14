@@ -1,20 +1,20 @@
-import { connection } from "../test-utils/connection";
-import  { User } from "../../src/entity/User";
-import faker from "faker";
 import {graphqlCall} from "../test-utils/graphqlCall";
+import {createUserHelper} from "../helper/createUserHelper";
+import {connection} from "../test-utils/connection";
 import {Connection} from "typeorm";
+import {User} from "../../src/entity/User";
 
+let user: User;
 let conn: Connection;
 
 beforeAll(async () => {
   conn = await connection();
+  user = await createUserHelper();
 });
 
 afterAll(async () => {
   await conn.close();
 });
-
-
 
 describe("Me", () => {
   it("Test Get User Authenticated", async () => {
@@ -28,12 +28,6 @@ describe("Me", () => {
         avatar
       }
     }`;
-
-    const user = await User.create({
-      name: faker.name.firstName() + " " + faker.name.lastName(),
-      telephone: faker.phone.phoneFormats(),
-      birthday: faker.date.past(1990).toDateString()
-    }).save();
 
     const response = await graphqlCall({
       source: meQuery,
@@ -51,8 +45,8 @@ describe("Me", () => {
           avatar: null
         }
       }
-    })
-  });
+    });
+  }, 30000);
 
   it("Test Register New User", async () => {
     const registerQuery = `mutation { 
@@ -76,16 +70,10 @@ describe("Me", () => {
           birthday: "01/02/1900",
         }
       }
-    })
-  });
+    });
+  }, 30000);
 
   it("Test Login", async () => {
-    const user = await User.create({
-      name: faker.name.firstName() + " " + faker.name.lastName(),
-      telephone: faker.phone.phoneFormats(),
-      birthday: faker.date.past(1990).toDateString()
-    }).save();
-
     const registerQuery = `mutation { 
       login(telephone: "${user.telephone}") {
         id
@@ -110,8 +98,8 @@ describe("Me", () => {
           birthday: user.birthday,
         }
       }
-    })
-  });
+    });
+  }, 30000);
 
   it("Test Login With No Register Phone Number", async () => {
     const registerQuery = `mutation { 
@@ -130,5 +118,5 @@ describe("Me", () => {
     });
 
     expect(response.data).toBeNull();
-  });
+  }, 30000);
 });
