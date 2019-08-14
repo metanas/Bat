@@ -9,30 +9,24 @@ import faker from "faker";
 import { toInteger } from "lodash";
 import {Category} from "../../src/entity/Category";
 import {createCategoryHelper} from "../helper/createCategoryHelper";
-import {truncate} from "../helper/truncateTables";
-
-
-let conn: Connection;
-beforeAll(async () => {
-  conn = await connection(true);
-});
-
-afterAll(async () => {
-  await conn.close();
-});
-
-beforeEach(async () => {
-  await truncate(conn);
-});
-
-let user: User;
-let product: Product;
-let category: Category;
 
 describe("Product Resolver Test", () => {
-  it("Test Get Product", async (done) => {
-    user = await createUserHelper();
+  let conn: Connection;
 
+  let user: User;
+  let product: Product;
+  let category: Category;
+
+  beforeAll(async () => {
+    conn = await connection();
+    user = await createUserHelper();
+  }, 100000);
+
+  afterAll(async () => {
+    await conn.close();
+  });
+
+  it("Test Get Product", async () => {
     product = await createProductHelper();
 
     const getProductQuery = `{
@@ -59,12 +53,10 @@ describe("Product Resolver Test", () => {
         }
       }
     });
-    done();
-  });
 
-  it("Test Update Product", async (done) => {
-    user = await createUserHelper();
+  },30000);
 
+  it("Test Update Product", async () => {
     product = await createProductHelper();
 
     const newProduct = {
@@ -97,12 +89,9 @@ describe("Product Resolver Test", () => {
         }
       }
     });
-    done();
-  });
+  },30000);
 
-  it("Test Add New Product", async (done) => {
-    user = await createUserHelper();
-
+  it("Test Add New Product", async () => {
     category = await createCategoryHelper();
 
     const newProduct = {
@@ -133,12 +122,9 @@ describe("Product Resolver Test", () => {
         }
       }
     });
-    done();
-  });
+  },30000);
 
-  it("Test Delete Product", async (done) => {
-    user = await createUserHelper();
-
+  it("Test Delete Product", async () => {
     product = await createProductHelper();
 
     const deleteProductQuery = `mutation {
@@ -153,8 +139,7 @@ describe("Product Resolver Test", () => {
     expect(response.data).toMatchObject({
       deleteProduct: true
     });
-    done();
-  });
+  },30000);
 
   // it.skip("Test Getting Products", async (done) => {
   //   user = await createUserHelper();

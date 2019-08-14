@@ -1,21 +1,19 @@
-import {connection} from "../test-utils/connection";
 import {graphqlCall} from "../test-utils/graphqlCall";
-import {Connection} from "typeorm";
 import {createUserHelper} from "../helper/createUserHelper";
-import {truncate} from "../helper/truncateTables";
+import {connection} from "../test-utils/connection";
+import {Connection} from "typeorm";
+import {User} from "../../src/entity/User";
 
+let user: User;
 let conn: Connection;
 
 beforeAll(async () => {
   conn = await connection();
+  user = await createUserHelper();
 });
 
 afterAll(async () => {
   await conn.close();
-});
-
-beforeEach(async () => {
-  await truncate(conn);
 });
 
 describe("Me", () => {
@@ -30,8 +28,6 @@ describe("Me", () => {
         avatar
       }
     }`;
-
-    const user = await createUserHelper();
 
     const response = await graphqlCall({
       source: meQuery,
@@ -50,7 +46,7 @@ describe("Me", () => {
         }
       }
     });
-  });
+  }, 30000);
 
   it("Test Register New User", async () => {
     const registerQuery = `mutation { 
@@ -75,11 +71,9 @@ describe("Me", () => {
         }
       }
     });
-  });
+  }, 30000);
 
   it("Test Login", async () => {
-    const user = await createUserHelper();
-
     const registerQuery = `mutation { 
       login(telephone: "${user.telephone}") {
         id
@@ -105,7 +99,7 @@ describe("Me", () => {
         }
       }
     });
-  });
+  }, 30000);
 
   it("Test Login With No Register Phone Number", async () => {
     const registerQuery = `mutation { 
@@ -124,5 +118,5 @@ describe("Me", () => {
     });
 
     expect(response.data).toBeNull();
-  });
+  }, 30000);
 });

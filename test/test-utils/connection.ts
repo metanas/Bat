@@ -10,8 +10,9 @@ export const connection = (drop: boolean = false) => {
     database: "project-api",
     password: "root",
     synchronize: drop,
-    logging: false,
     dropSchema: drop,
+    logging: "all",
+    logger: "file",
     entities: [__dirname + "/../../src/entity/*.ts"],
     cli: {
       entitiesDir: "/../../src/entity/*.ts"
