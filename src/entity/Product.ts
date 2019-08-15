@@ -32,7 +32,7 @@ export class Product extends BaseEntity {
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  public date_added: string;
+  public create_at: string;
 
   @Field(() => [ProductPicture])
   @OneToMany(() => ProductPicture, (productPicture: ProductPicture) => productPicture.product)

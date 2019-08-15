@@ -35,7 +35,7 @@ export class User extends BaseEntity {
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  public date_added: string;
+  public create_at: string;
 
   @OneToMany(() => Address, (address: Address) => address.user)
   public addresses: Address[];

@@ -41,7 +41,7 @@ export class Coupon extends BaseEntity {
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  public date_added: string;
+  public create_at: string;
 
   @ManyToMany(() => Product)
   @JoinTable()

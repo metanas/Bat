@@ -19,7 +19,7 @@ export class ProductPicture extends BaseEntity {
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  public date_added: string;
+  public create_at: string;
 
   @ManyToOne(() => Product, {onDelete: "CASCADE"})
   public product: Product;
