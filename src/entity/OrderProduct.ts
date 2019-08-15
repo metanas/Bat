@@ -1,6 +1,7 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToOne, JoinColumn} from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import {Order} from "./Order";
+import {Product} from "./Product";
 
 
 @ObjectType()
@@ -9,6 +10,11 @@ export class OrderProduct extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn()
   public id: number;
+
+  @Field(() => Product)
+  @OneToOne(() => Product)
+  @JoinColumn()
+  public products: Product;
 
   @Field()
   @Column()

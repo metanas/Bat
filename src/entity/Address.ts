@@ -22,7 +22,7 @@ export class Address extends BaseEntity {
   public latitude: string;
 
   @Field()
-  @Column({ name: "date_added" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public dateAdded: string;
 
   @ManyToOne(() => User, (user: User) => user.addresses)
