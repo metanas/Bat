@@ -4,7 +4,7 @@ import {User} from "../../src/entity/User";
 import faker from "faker";
 import {graphqlCall} from "../test-utils/graphqlCall";
 import {Address} from "../../src/entity/Address";
-import { get } from "lodash";
+import { get, slice, take } from "lodash";
 import {createUserHelper} from "../helper/createUserHelper";
 import {createAddressHelper} from "../helper/createAddressHelper";
 
@@ -76,68 +76,70 @@ describe("Test Address Resolver",  () => {
     });
   });
 
-  // it("Test Get Addresses", async () => {
-  //   let getAddressesQuery = `{
-  //     getAddresses(data: { limit: 5, page: 1 }) {
-  //       items {
-  //         address
-  //       }
-  //       total_pages
-  //       total_count
-  //     }
-  //   }`;
-  //
-  //   const listAddress: { address: string }[] = [];
-  //   for(let i=0; i < 12; i++) {
-  //     const address = await createAddressHelper(user);
-  //     listAddress.push({ address: address.address });
-  //   }
-  //
-  //   let response = await graphqlCall({
-  //     source: getAddressesQuery,
-  //     token: user.id
-  //   });
-  //
-  //   expect(get(response.data, "getAddresses.items")).toEqual(take(listAddress, 5));
-  //   expect(get(response.data, "getAddresses.total_pages")).toEqual(3);
-  //   expect(get(response.data, "getAddresses.total_count")).toEqual(12);
-  //
-  //   getAddressesQuery = `{
-  //     getAddresses(data: { limit: 5, page: 2 }) {
-  //       items {
-  //         address
-  //       }
-  //       total_pages
-  //       total_count
-  //     }
-  //   }`;
-  //
-  //   response = await graphqlCall({
-  //     source: getAddressesQuery,
-  //     token: user.id
-  //   });
-  //
-  //   expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 5, 10));
-  //   expect(get(response.data, "getAddresses.total_pages")).toEqual(3);
-  //   expect(get(response.data, "getAddresses.total_count")).toEqual(12);
-  //
-  //   getAddressesQuery = `{
-  //     getAddresses(data: { limit: 5, page: 3 }) {
-  //       items {
-  //         address
-  //       }
-  //       total_pages
-  //       total_count
-  //     }
-  //   }`;
-  //
-  //   response = await graphqlCall({
-  //     source: getAddressesQuery,
-  //     token: user.id
-  //   });
-  //
-  //   expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 10, 12));
-  // });
+  it("Test Get Addresses", async () => {
+    user = await createUserHelper();
+
+    let getAddressesQuery = `{
+      getAddresses(data: { limit: 5, page: 1 }) {
+        items {
+          address
+        }
+        total_pages
+        total_count
+      }
+    }`;
+
+    const listAddress: { address: string }[] = [];
+    for(let i=0; i < 12; i++) {
+      const address = await createAddressHelper(user);
+      listAddress.push({ address: address.address });
+    }
+
+    let response = await graphqlCall({
+      source: getAddressesQuery,
+      token: user.id
+    });
+
+    expect(get(response.data, "getAddresses.items")).toEqual(take(listAddress, 5));
+    expect(get(response.data, "getAddresses.total_pages")).toEqual(3);
+    expect(get(response.data, "getAddresses.total_count")).toEqual(12);
+
+    getAddressesQuery = `{
+      getAddresses(data: { limit: 5, page: 2 }) {
+        items {
+          address
+        }
+        total_pages
+        total_count
+      }
+    }`;
+
+    response = await graphqlCall({
+      source: getAddressesQuery,
+      token: user.id
+    });
+
+    expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 5, 10));
+    expect(get(response.data, "getAddresses.total_pages")).toEqual(3);
+    expect(get(response.data, "getAddresses.total_count")).toEqual(12);
+
+    getAddressesQuery = `{
+      getAddresses(data: { limit: 5, page: 3 }) {
+        items {
+          address
+        }
+        total_pages
+        total_count
+      }
+    }`;
+
+    response = await graphqlCall({
+      source: getAddressesQuery,
+      token: user.id
+    });
+
+    expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 10, 12));
+  });
 
   it("Test Delete Address", async () => {
     const address = await createAddressHelper(user);

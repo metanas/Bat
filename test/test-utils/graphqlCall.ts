@@ -8,7 +8,7 @@ interface Options {
   variableValues?: Maybe<{
     [key: string]: any;
   }>;
-  token?: number;
+  token?: string;
 }
 
 let schema: GraphQLSchema;

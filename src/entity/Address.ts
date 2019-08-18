@@ -23,7 +23,7 @@ export class Address extends BaseEntity {
 
   @Field()
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  public dateAdded: string;
+  public create_at: string;
 
   @ManyToOne(() => User, (user: User) => user.addresses)
   public user: User;

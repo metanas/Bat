@@ -6,9 +6,10 @@ import {Product} from "../../src/entity/Product";
 import {createProductHelper} from "../helper/createProductHelper";
 import {graphqlCall} from "../test-utils/graphqlCall";
 import faker from "faker";
-import { toInteger } from "lodash";
+import { toInteger, take } from "lodash";
 import {Category} from "../../src/entity/Category";
 import {createCategoryHelper} from "../helper/createCategoryHelper";
+import {truncate} from "../helper/truncateTables";
 
 describe("Product Resolver Test", () => {
   let conn: Connection;
@@ -20,7 +21,7 @@ describe("Product Resolver Test", () => {
   beforeAll(async () => {
     conn = await connection();
     user = await createUserHelper();
-  }, 100000);
+  });
 
   afterAll(async () => {
     await conn.close();
@@ -54,7 +55,7 @@ describe("Product Resolver Test", () => {
       }
     });
 
-  },30000);
+  });
 
   it("Test Update Product", async () => {
     product = await createProductHelper();
@@ -89,7 +90,7 @@ describe("Product Resolver Test", () => {
         }
       }
     });
-  },30000);
+  });
 
   it("Test Add New Product", async () => {
     category = await createCategoryHelper();
@@ -122,7 +123,7 @@ describe("Product Resolver Test", () => {
         }
       }
     });
-  },30000);
+  });
 
   it("Test Delete Product", async () => {
     product = await createProductHelper();
@@ -139,42 +140,41 @@ describe("Product Resolver Test", () => {
     expect(response.data).toMatchObject({
       deleteProduct: true
     });
-  },30000);
+  });
 
-  // it.skip("Test Getting Products", async (done) => {
-  //   user = await createUserHelper();
-  //
-  //   const productList: { id: number }[] = [];
-  //
-  //   for(let i = 0; i < 12; i++){
-  //     product = await createProductHelper();
-  //     productList.push({ id: product.id });
-  //   }
-  //
-  //   const getProductsQuery = `{
-  //     getProducts(data: {page: 1, limit: 5}) {
-  //       items {
-  //         id
-  //       }
-  //       total_count
-  //       total_pages
-  //     }
-  //   }`;
-  //
-  //   const response = await graphqlCall({
-  //     source: getProductsQuery,
-  //     token: user.id
-  //   });
-  //
-  //   expect(response).toMatchObject({
-  //     data: {
-  //       getProducts: {
-  //         items: productList,
-  //         "total_count": 12,
-  //         "total_pages": 3
-  //       }
-  //     }
-  //   });
-  //   done();
-  // });
+  it("Test Getting Products", async () => {
+    await truncate(conn, "product");
+
+    const productList: { id: string }[] = [];
+
+    for(let i = 0; i < 12; i++){
+      product = await createProductHelper();
+      productList.push({ id: `${product.id}` });
+    }
+
+    const getProductsQuery = `{
+      getProducts(data: {page: 1, limit: 5}) {
+        items {
+          id
+        }
+        total_count
+        total_pages
+      }
+    }`;
+
+    const response = await graphqlCall({
+      source: getProductsQuery,
+      token: user.id
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        getProducts: {
+          items: take(productList, 5),
+          "total_count": 12,
+          "total_pages": 3
+        }
+      }
+    });
+  });
 });
