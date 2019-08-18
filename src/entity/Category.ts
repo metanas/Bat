@@ -12,4 +12,6 @@ export class Category extends BaseEntity {
   @Column()
   public name: string;
 
+  @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  public create_at: string;
 }

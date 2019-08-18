@@ -4,7 +4,7 @@ import {
   ManyToOne,
   BaseEntity,
   OneToMany,
-  OneToOne, JoinColumn
+  OneToOne, JoinColumn, Column
 } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import {Coupon} from "./Coupon";
@@ -28,4 +28,7 @@ export class Cart extends BaseEntity {
   @OneToOne(() => User, (user: User) => user.cart)
   @JoinColumn()
   public user: User;
+
+  @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  public create_at: string;
 }

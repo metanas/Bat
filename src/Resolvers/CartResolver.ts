@@ -16,9 +16,9 @@ export class CartResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Cart)
-  public async addCart (@Ctx() ctx: ApiContext, @Arg("idCoupon") idCoupon?: number){
+  public async addCart (@Ctx() ctx: ApiContext, @Arg("idCoupon", { nullable: true }) idCoupon?: number){
     const user = await User.findOne({ where: { id: ctx.req.session!.token} });
-    const coupon = await Coupon.findOne({ where: { id: idCoupon} });
+    const coupon = (idCoupon) ? await Coupon.findOne({ where: { id: idCoupon} }) : undefined;
     return await Cart.create({
       user,
       coupon

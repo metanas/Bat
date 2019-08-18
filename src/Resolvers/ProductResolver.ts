@@ -55,7 +55,8 @@ export class ProductResolver {
   @UseMiddleware(Auth)
   @Query(() => PaginatedProductResponse)
   public async getProducts(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedProductResponse> {
-    const result = await Product.findAndCount({ skip: (page - 1) * 10, take: limit });
+    const result = await Product.findAndCount({ skip: (page - 1) * limit, take: limit });
+
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),

@@ -26,4 +26,7 @@ export class OrderProduct extends BaseEntity {
 
   @ManyToOne(() => Order, (order: Order) => order.orderProducts)
   public order: Order;
+
+  @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  public create_at: string;
 }

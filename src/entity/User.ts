@@ -11,7 +11,7 @@ import {Product} from "./Product";
 export class User extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn("uuid")
-  public id: number;
+  public id: string;
 
   @Field()
   @Column()
