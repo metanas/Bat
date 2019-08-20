@@ -5,7 +5,6 @@ import {Connection} from "typeorm";
 import {graphqlCall} from "../test-utils/graphqlCall";
 import {Cart} from "../../src/entity/Cart";
 
-
 describe("Test Cart Resolver",  () => {
   let conn: Connection;
   let user: User;
