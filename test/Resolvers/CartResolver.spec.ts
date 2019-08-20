@@ -17,15 +17,15 @@ describe("Test Cart Resolver",  () => {
   afterAll(async () => {
     await conn.close();
   });
-  it("Test Getting Cart By UserID", async () => {
 
+  it("Test Getting Cart By UserID", async () => {
     const cart = await Cart.create({
       user: user
     }).save();
 
     const getCartQuery = `{
       getCart {
-      id
+        id
       }
     }`;
 

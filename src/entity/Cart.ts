@@ -21,8 +21,9 @@ export class Cart extends BaseEntity {
   @ManyToOne(() => Coupon, (coupon: Coupon) => coupon.carts)
   public coupon?: Coupon;
 
+  @Field(() => [CartProduct])
   @OneToMany(() => CartProduct, (cartProduct: CartProduct) => cartProduct.cart, { onDelete: "CASCADE" })
-  public cartProducts?: CartProduct[];
+  public cartProducts: CartProduct[];
 
   @Field(() => User)
   @OneToOne(() => User, (user: User) => user.cart)

@@ -5,13 +5,18 @@ import {ApiContext} from "../types/ApiContext";
 import {User} from "../entity/User";
 import {Coupon} from "../entity/Coupon";
 import {getConnection} from "typeorm";
+import {CartProduct} from "../entity/CartProduct";
 
 @Resolver()
 export class CartResolver {
   @UseMiddleware(Auth)
   @Query(() => Cart, { nullable: true})
-  public async getCart(@Ctx() ctx: ApiContext): Promise<Cart | undefined> {
-    return await Cart.findOne({where: {"idUser": ctx.req.session!.token}, relations: ["cart_product"] })
+  public async getCart(@Ctx() ctx: ApiContext) {
+    const cart = await Cart.findOne({where: {"idUser": ctx.req.session!.token}, relations: ["user"] });
+    if(cart) {
+      cart.cartProducts = await CartProduct.find({where: {cart}});
+    }
+    return cart;
   }
 
   @UseMiddleware(Auth)
