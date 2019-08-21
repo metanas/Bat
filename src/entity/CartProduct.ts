@@ -14,7 +14,7 @@ export class CartProduct extends BaseEntity {
   @Field(() => Product)
   @OneToOne(() => Product)
   @JoinColumn()
-  public products: Product;
+  public product: Product;
 
   @Field()
   @Column()
