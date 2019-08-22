@@ -33,8 +33,8 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteCart(@Arg("id") id: number) {
-    const cart = getConnection().createQueryBuilder().delete().from(Cart)
-      .where("id=:id", {id}).execute();
-    return !!cart
+    const result = await getConnection().createQueryBuilder().delete().from(Cart)
+      .where("id=:id", {id}).returning("id").execute();
+    return !!result.affected
   }
 }
