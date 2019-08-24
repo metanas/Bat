@@ -1,5 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToOne, JoinColumn} from "typeorm";
-import { ObjectType, Field, ID } from "type-graphql";
+import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn} from "typeorm";
+import {Field, ObjectType} from "type-graphql";
 import {Order} from "./Order";
 import {Product} from "./Product";
 
@@ -7,14 +7,11 @@ import {Product} from "./Product";
 @ObjectType()
 @Entity()
 export class OrderProduct extends BaseEntity {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn()
-  public id: number;
+  @PrimaryColumn()
+  public orderId: number;
 
-  @Field(() => Product)
-  @OneToOne(() => Product)
-  @JoinColumn()
-  public products: Product;
+  @PrimaryColumn()
+  public productId: number;
 
   @Field()
   @Column()
@@ -24,9 +21,12 @@ export class OrderProduct extends BaseEntity {
   @Column()
   public quantity: number;
 
-  @ManyToOne(() => Order, (order: Order) => order.orderProducts)
-  public order: Order;
+  @Field(() => Product)
+  @ManyToOne(() => Product, (order: Order) => order.orderProducts, { primary: true })
+  @JoinColumn({name: "productId"})
+  public product: Product;
 
-  @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  public create_at: string;
+  @ManyToOne(() => Order, { primary: true })
+  @JoinColumn({ name: "orderId"})
+  public order: Order;
 }
