@@ -14,7 +14,9 @@ const main = async (): Promise<void> => {
 
   const schema = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/*.ts") ]});
 
-  const apolloServer = new ApolloServer({schema, context: ({req, res}) => ({req, res})});
+  const apolloServer = new ApolloServer({
+    schema, context: ({req, res}) => ({req, res})
+  });
 
   const app = Express();
 

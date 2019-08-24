@@ -1,5 +1,5 @@
-import {Field, ID, ObjectType} from "type-graphql";
-import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Field, ObjectType} from "type-graphql";
+import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn} from "typeorm";
 import {Cart} from "./Cart";
 import {Product} from "./Product";
 
@@ -7,14 +7,20 @@ import {Product} from "./Product";
 @ObjectType()
 @Entity()
 export class CartProduct extends BaseEntity {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn()
-  public id: number;
+  @PrimaryColumn()
+  public cartId: number;
+
+  @PrimaryColumn()
+  public productId: number;
 
   @Field(() => Product)
-  @OneToOne(() => Product)
-  @JoinColumn()
+  @ManyToOne(() => Product, (cart: Cart) => cart.cartProducts, { primary: true})
+  @JoinColumn({ name: "productId"})
   public product: Product;
+
+  @ManyToOne(() => Cart,{primary: true})
+  @JoinColumn({ name: "cartId" })
+  public cart: Cart;
 
   @Field()
   @Column()
@@ -23,8 +29,4 @@ export class CartProduct extends BaseEntity {
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
-
-  @ManyToOne(() => Cart, (cart: Cart) => cart.cartProducts)
-  public cart: Cart;
-
 }
