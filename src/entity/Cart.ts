@@ -9,12 +9,10 @@ import {
   OneToOne,
   PrimaryGeneratedColumn
 } from "typeorm";
-import {Ctx, Field, ID, ObjectType} from "type-graphql";
+import {Field, ID, ObjectType} from "type-graphql";
 import {Coupon} from "./Coupon";
 import {CartProduct} from "./CartProduct";
 import {User} from "./User";
-import {Product} from "./Product";
-import {ApiContext} from "../types/ApiContext";
 
 @ObjectType()
 @Entity()
@@ -38,9 +36,4 @@ export class Cart extends BaseEntity {
 
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
-
-  @Field(() => [Product])
-  public async products(@Ctx() { productsLoader }: ApiContext): Promise<Product[]> {
-    return productsLoader.load(this.id)
-  }
 }
