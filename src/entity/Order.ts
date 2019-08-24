@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToMany} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToMany, JoinTable} from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import {Coupon} from "./Coupon";
 import {User} from "./User";
@@ -12,11 +12,11 @@ export class Order extends BaseEntity {
   public id: number;
 
   @Field()
-  @Column()
-  public orderDate: number;
+  @Column({ nullable: true })
+  public orderDate?: number;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   public paymentMethod: string;
 
   @Field()
@@ -31,13 +31,15 @@ export class Order extends BaseEntity {
   @Column()
   public address: string;
 
-  @ManyToOne(() => Coupon, (coupon: Coupon) => coupon.orders)
-  public coupon: Coupon;
+  @ManyToOne(() => Coupon, (coupon: Coupon) => coupon.orders, { nullable : true})
+  public coupon?: Coupon;
 
   @ManyToOne(() => User, (user: User) => user.orders)
   public user: User;
 
+  @Field(() => [OrderProduct])
   @OneToMany(() => OrderProduct, (orderProduct: OrderProduct) => orderProduct.order)
+  @JoinTable()
   public orderProducts: OrderProduct[];
 
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })

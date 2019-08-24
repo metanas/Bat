@@ -6,6 +6,7 @@ import {Coupon} from "../entity/Coupon";
 import {getConnection} from "typeorm";
 import {CartProduct} from "../entity/CartProduct";
 import {User} from "../entity/User";
+import {Product} from "../entity/Product";
 
 @Resolver()
 export class CartResolver {
@@ -45,7 +46,12 @@ export class CartResolver {
   @Mutation(() => Cart)
   public async addProductToCart(@Ctx() ctx: ApiContext, @Arg("productId") productId: number, @Arg("quantity") quantity: number) {
     const cart = await Cart.findOne({ where: { userId: ctx.req.session!.token } });
-    // const product = await Product.findOne(productId);
+    const product = await Product.findOne(productId);
+    if(product) {
+      if (quantity > product!.quantity) {
+        throw new Error("Quantity Selected is Not Available");
+      }
+    }
     if(cart) {
       await CartProduct.create({
         cart,
@@ -71,6 +77,12 @@ export class CartResolver {
   @UseMiddleware(Auth)
   public async updateProductQuantity(@Ctx() ctx: ApiContext, @Arg("productId") productId: number, @Arg("quantity") quantity: number) {
     const cart = await Cart.findOne({ where: { userId: ctx.req.session!.token }});
+    const product = await Product.findOne(productId);
+
+    if(product && product.quantity < quantity) {
+      throw new Error("Quantity Selected is Not Available");
+    }
+
     if(cart) {
       await getConnection()
         .createQueryBuilder()
@@ -81,9 +93,9 @@ export class CartResolver {
         .where("cartId= :cartId", {cartId: cart.id})
         .andWhere("productId=:productId", { productId })
         .execute();
-      cart.cartProducts = await CartProduct.find({ where: { cartId: cart.id }})
     }
-    return cart
+
+    return await this.getCart(ctx)
   }
 
   @Mutation(() => Boolean)
