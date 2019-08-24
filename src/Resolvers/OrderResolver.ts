@@ -63,19 +63,20 @@ export class OrderResolver {
       driver,
       address: address!.address,
     }).save();
-
+    order.orderProducts = [];
     if(order && cart!.cartProducts) {
-      cart!.cartProducts.forEach(function (cartProduct: CartProduct) {
-        OrderProduct.create({
+      for(let i=0; i < cart!.cartProducts.length; i++){
+        const orderProduct = await OrderProduct.create({
           order,
-          product: cartProduct.product,
-          price: cartProduct.product.priceUnit,
-          quantity: cartProduct.quantity
+          product: cart!.cartProducts[i].product,
+          price: cart!.cartProducts[i].product.priceUnit,
+          quantity: cart!.cartProducts[i].quantity
         }).save();
-      });
+        order.orderProducts.push(orderProduct);
+      }
     }
 
-    return await this.getOrder(order.id);
+    return order;
   }
 
   @UseMiddleware(Auth)
