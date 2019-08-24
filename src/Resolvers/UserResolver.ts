@@ -3,6 +3,7 @@ import {User} from "../entity/User";
 import {UserInput} from "../Modules/inputs/UserInput";
 import {Auth} from "../Middleware/Auth";
 import {ApiContext} from "../types/ApiContext";
+import {Cart} from "../entity/Cart";
 
 @Resolver()
 export class UserResolver {
@@ -14,11 +15,15 @@ export class UserResolver {
 
   @Mutation(() => User)
   public async register(@Arg("data") {name, telephone, birthday}: UserInput): Promise<User> {
-    return await User.create({
+    const user = await User.create({
       name,
       telephone,
       birthday
     }).save();
+    await Cart.create({
+      user
+    }).save();
+    return user
   }
 
   @Mutation(() => User)

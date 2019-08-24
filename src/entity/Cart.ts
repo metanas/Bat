@@ -1,12 +1,15 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
   BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToOne,
   OneToMany,
-  OneToOne, JoinColumn, Column
+  OneToOne,
+  PrimaryGeneratedColumn
 } from "typeorm";
-import { ObjectType, Field, ID } from "type-graphql";
+import {Field, ID, ObjectType} from "type-graphql";
 import {Coupon} from "./Coupon";
 import {CartProduct} from "./CartProduct";
 import {User} from "./User";
@@ -21,7 +24,9 @@ export class Cart extends BaseEntity {
   @ManyToOne(() => Coupon, (coupon: Coupon) => coupon.carts)
   public coupon?: Coupon;
 
+  @Field(() => [CartProduct])
   @OneToMany(() => CartProduct, (cartProduct: CartProduct) => cartProduct.cart, { onDelete: "CASCADE" })
+  @JoinTable()
   public cartProducts?: CartProduct[];
 
   @Field(() => User)
