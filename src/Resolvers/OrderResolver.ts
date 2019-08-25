@@ -63,36 +63,39 @@ export class OrderResolver {
       driver,
       address: address!.address,
     }).save();
-
+    order.orderProducts = [];
     if(order && cart!.cartProducts) {
-      cart!.cartProducts.forEach(function (cartProduct: CartProduct) {
-        OrderProduct.create({
+      for(let i=0; i < cart!.cartProducts.length; i++){
+        const orderProduct = await OrderProduct.create({
           order,
-          product: cartProduct.product,
-          price: cartProduct.product.priceUnit,
-          quantity: cartProduct.quantity
+          product: cart!.cartProducts[i].product,
+          price: cart!.cartProducts[i].product.priceUnit,
+          quantity: cart!.cartProducts[i].quantity
         }).save();
-      });
+        order.orderProducts.push(orderProduct);
+      }
     }
 
-    return await this.getOrder(order.id);
+    return order;
   }
 
   @UseMiddleware(Auth)
   @Mutation(() => Order)
-  public async UpdateOrderStatus(@Arg("id") id: number, @Arg("status") status: string){
-    return await getConnection()
+  public async updateOrderStatus(@Arg("id") id: number, @Arg("status") status: string){
+    await getConnection()
       .createQueryBuilder()
       .update(Order)
       .set({status})
       .where("id=:id", {id})
       .execute();
+    return await this.getOrder(id)
   }
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedOrderResponse)
   public async getOrders(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedOrderResponse> {
-    const result = await Order.findAndCount({where: { userId: ctx.req.session!.token }, skip: (page - 1) * limit, take: limit});
+    const user = await User.findOne(ctx.req.session!.token);
+    const result = await Order.findAndCount({where: { user }, skip: (page - 1) * limit, take: limit});
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
