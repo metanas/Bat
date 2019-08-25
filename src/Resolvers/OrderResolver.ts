@@ -81,19 +81,22 @@ export class OrderResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Order)
-  public async UpdateOrderStatus(@Arg("id") id: number, @Arg("status") status: string){
-    return await getConnection()
+  public async updateOrderStatus(@Arg("id") id: number, @Arg("status") status: string){
+    await getConnection()
       .createQueryBuilder()
       .update(Order)
       .set({status})
       .where("id=:id", {id})
       .execute();
+    return await this.getOrder(id)
   }
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedOrderResponse)
   public async getOrders(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedOrderResponse> {
-    const result = await Order.findAndCount({where: { userId: ctx.req.session!.token }, skip: (page - 1) * limit, take: limit});
+    const user = await User.findOne(ctx.req.session!.token);
+    const result = await Order.findAndCount({where: { user }, skip: (page - 1) * limit, take: limit});
+    console.log(result[1]);
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
