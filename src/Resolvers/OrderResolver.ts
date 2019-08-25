@@ -96,7 +96,6 @@ export class OrderResolver {
   public async getOrders(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedOrderResponse> {
     const user = await User.findOne(ctx.req.session!.token);
     const result = await Order.findAndCount({where: { user }, skip: (page - 1) * limit, take: limit});
-    console.log(result[1]);
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
