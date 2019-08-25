@@ -9,7 +9,7 @@ import {createCartHelper} from "../helper/createCartHelper";
 import {createCartProductHelper} from "../helper/createCartProductHelper";
 import {CartProduct} from "../../src/entity/CartProduct";
 import {createProductHelper} from "../helper/createProductHelper";
-import {Order} from "../../src/entity/Order";
+import {get, slice, take} from "lodash";
 
 let conn: Connection;
 let user: User;
@@ -182,17 +182,18 @@ describe("Test Order Resolver", () => {
   it("Test Get Orders Pagination", async () => {
     user = await createUserHelper();
 
-    const orders: Order[] = [];
+    const orders: {id: string}[] = [];
+
     for (let i=0; i < 17; i++) {
       const address = await createAddressHelper(user);
 
       const order = await createOrderHelper(address, user, 3);
 
-      orders.push(order);
+      orders.push({ id: order.id.toString() });
     }
 
-    const getOrdersQuery = `{
-      getOrders(data: { page: 1, limit: 7}) {
+    let getOrdersQuery = `{
+      getOrders(data: { page: 1, limit: 7 }) {
         items {
           id
         }
@@ -201,41 +202,37 @@ describe("Test Order Resolver", () => {
       }
     }`;
 
-    const response = await graphqlCall({
+
+    let response = await graphqlCall({
       source: getOrdersQuery,
       token: user.id
     });
 
-    expect(response).toMatchObject({
-      data: {
-        getOrders: {
-          items: [
-            {
-              id: orders[0].id.toString()
-            },
-            {
-              id: orders[1].id.toString()
-            },
-            {
-              id: orders[2].id.toString()
-            },
-            {
-              id: orders[3].id.toString()
-            },
-            {
-              id: orders[4].id.toString()
-            },
-            {
-              id: orders[5].id.toString()
-            },
-            {
-              id: orders[6].id.toString()
-            }
-          ],
-          "total_pages": 3,
-          "total_count": 17
+    expect(get(response.data, "getOrders.items")).toEqual(
+      take(orders, 7)
+    );
+    expect(get(response.data, "getOrders.total_pages")).toEqual(3);
+    expect(get(response.data, "getOrders.total_count")).toEqual(17);
+
+    getOrdersQuery = `{
+      getOrders(data: { page: 2, limit: 7 }) {
+        items {
+          id
         }
+        total_pages
+        total_count
       }
+    }`;
+
+    response = await graphqlCall({
+      source: getOrdersQuery,
+      token: user.id
     });
+
+    expect(get(response.data, "getOrders.items")).toEqual(
+      slice(orders, 7, 14)
+    );
+    expect(get(response.data, "getOrders.total_pages")).toEqual(3);
+    expect(get(response.data, "getOrders.total_count")).toEqual(17);
   });
 });
