@@ -6,7 +6,7 @@ import {Product} from "../../src/entity/Product";
 import {createProductHelper} from "../helper/createProductHelper";
 import {graphqlCall} from "../test-utils/graphqlCall";
 import faker from "faker";
-import { toInteger, take } from "lodash";
+import { toInteger, take, slice } from "lodash";
 import {Category} from "../../src/entity/Category";
 import {createCategoryHelper} from "../helper/createCategoryHelper";
 import {truncate} from "../helper/truncateTables";
@@ -152,7 +152,7 @@ describe("Product Resolver Test", () => {
       productList.push({ id: `${product.id}` });
     }
 
-    const getProductsQuery = `{
+    let getProductsQuery = `{
       getProducts(data: {page: 1, limit: 5}) {
         items {
           id
@@ -162,7 +162,7 @@ describe("Product Resolver Test", () => {
       }
     }`;
 
-    const response = await graphqlCall({
+    let response = await graphqlCall({
       source: getProductsQuery,
       token: user.id
     });
@@ -171,6 +171,31 @@ describe("Product Resolver Test", () => {
       data: {
         getProducts: {
           items: take(productList, 5),
+          "total_count": 12,
+          "total_pages": 3
+        }
+      }
+    });
+
+    getProductsQuery = `{
+      getProducts(data: {page: 2, limit: 5}) {
+        items {
+          id
+        }
+        total_count
+        total_pages
+      }
+    }`;
+
+    response = await graphqlCall({
+      source: getProductsQuery,
+      token: user.id
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        getProducts: {
+          items: slice(productList, 5, 10),
           "total_count": 12,
           "total_pages": 3
         }
