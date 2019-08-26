@@ -12,10 +12,17 @@ import connectRedis = require("connect-redis");
 const main = async (): Promise<void> => {
   await createConnection();
 
-  const schema = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/*.ts") ]});
+  const schema = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/server/*.ts") ]});
+
+  const schemaAdmin = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/admin/*.ts") ]});
 
   const apolloServer = new ApolloServer({
     schema, context: ({req, res}) => ({req, res})
+  });
+
+  const apolloServerAdmin = new ApolloServer({
+    schema: schemaAdmin,
+    context: ({req, res}) => ({req, res})
   });
 
   const app = Express();
@@ -39,10 +46,19 @@ const main = async (): Promise<void> => {
     }
   }));
 
-  apolloServer.applyMiddleware({app});
+  apolloServer.applyMiddleware({
+    app,
+    path: "/api/graphql"
+  });
+
+  apolloServerAdmin.applyMiddleware({
+    app,
+    path: "/api/admin/graphql"
+  });
 
   app.listen(4000, (): void => {
-    console.log("server started on http://www.localhost:4000/graphql");
+    console.log(`server started on http://www.localhost:4000${apolloServer.graphqlPath}`);
+    console.log(`server admin started on http://www.localhost:4000${apolloServerAdmin.graphqlPath}`);
   });
 };
 

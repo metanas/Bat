@@ -1,16 +1,16 @@
-import {Auth} from "../Middleware/Auth";
+import {Auth} from "../../Middleware/Auth";
 import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
-import {ApiContext} from "../types/ApiContext";
-import {Order} from "../entity/Order";
-import {User} from "../entity/User";
+import {ApiContext} from "../../types/ApiContext";
+import {Order} from "../../entity/Order";
+import {User} from "../../entity/User";
 import {getConnection} from "typeorm";
-import {PaginatedResponseInput} from "../Modules/inputs/PaginatedResponseInput";
-import PaginatedResponse from "../Modules/interfaces/PaginatedResponse";
+import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
+import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil} from "lodash";
-import {OrderProduct} from "../entity/OrderProduct";
-import {Cart} from "../entity/Cart";
-import {Address} from "../entity/Address";
-import {CartProduct} from "../entity/CartProduct";
+import {OrderProduct} from "../../entity/OrderProduct";
+import {Cart} from "../../entity/Cart";
+import {Address} from "../../entity/Address";
+import {CartProduct} from "../../entity/CartProduct";
 
 const PaginatedOrderResponse = PaginatedResponse(Order);
 // @ts-ignore

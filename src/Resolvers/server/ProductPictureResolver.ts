@@ -1,10 +1,10 @@
 import {Resolver, Mutation, Arg} from "type-graphql";
 import { GraphQLUpload } from "graphql-upload";
-import {Upload} from "../types/Upload";
-import {ProductPicture} from "../entity/ProductPicture";
-import { Product } from "../entity/Product";
+import {Upload} from "../../types/Upload";
+import {ProductPicture} from "../../entity/ProductPicture";
+import { Product } from "../../entity/Product";
 import {getConnection} from "typeorm";
-import {uploadImage} from "../utils/uploadImage";
+import {uploadImage} from "../../utils/uploadImage";
 
 @Resolver()
 export class ProductPictureResolver {

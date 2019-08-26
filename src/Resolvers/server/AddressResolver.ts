@@ -1,12 +1,12 @@
 import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware,} from "type-graphql";
-import {Address} from "../entity/Address";
-import {ApiContext} from "../types/ApiContext";
-import {User} from "../entity/User";
-import {Auth} from "../Middleware/Auth";
+import {Address} from "../../entity/Address";
+import {ApiContext} from "../../types/ApiContext";
+import {User} from "../../entity/User";
+import {Auth} from "../../Middleware/Auth";
 import {getConnection} from "typeorm";
-import PaginatedResponse from "../Modules/interfaces/PaginatedResponse";
+import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import { ceil } from "lodash";
-import {PaginatedResponseInput} from "../Modules/inputs/PaginatedResponseInput";
+import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 
 const PaginatedAddressResponse = PaginatedResponse(Address);
 // @ts-ignore

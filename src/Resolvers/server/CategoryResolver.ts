@@ -1,8 +1,8 @@
 import {Query, Resolver, Arg, Mutation } from "type-graphql";
-import {Category} from "../entity/Category";
+import {Category} from "../../entity/Category";
 import {getConnection} from "typeorm";
-import PaginatedResponse from "../Modules/interfaces/PaginatedResponse";
-import { PaginatedResponseInput } from "../Modules/inputs/PaginatedResponseInput"
+import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
+import { PaginatedResponseInput } from "../../Modules/inputs/PaginatedResponseInput"
 import { ceil } from "lodash";
 
 const PaginatedCategoryResponse = PaginatedResponse(Category);

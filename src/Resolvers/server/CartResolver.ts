@@ -1,12 +1,12 @@
-import {Auth} from "../Middleware/Auth";
+import {Auth} from "../../Middleware/Auth";
 import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
-import {Cart} from "../entity/Cart";
-import {ApiContext} from "../types/ApiContext";
-import {Coupon} from "../entity/Coupon";
+import {Cart} from "../../entity/Cart";
+import {ApiContext} from "../../types/ApiContext";
+import {Coupon} from "../../entity/Coupon";
 import {getConnection} from "typeorm";
-import {CartProduct} from "../entity/CartProduct";
-import {User} from "../entity/User";
-import {Product} from "../entity/Product";
+import {CartProduct} from "../../entity/CartProduct";
+import {User} from "../../entity/User";
+import {Product} from "../../entity/Product";
 
 @Resolver()
 export class CartResolver {

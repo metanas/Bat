@@ -1,11 +1,11 @@
 import {Arg, Query, Resolver, UseMiddleware, Mutation} from "type-graphql";
-import { Auth } from "../Middleware/Auth";
-import { Product } from "../entity/Product";
-import {Category} from "../entity/Category";
-import PaginatedResponse from "../Modules/interfaces/PaginatedResponse";
+import { Auth } from "../../Middleware/Auth";
+import { Product } from "../../entity/Product";
+import {Category} from "../../entity/Category";
+import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import { ceil } from "lodash";
 import {getConnection} from "typeorm";
-import {PaginatedResponseInput} from "../Modules/inputs/PaginatedResponseInput";
+import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 
 const PaginatedProductResponse = PaginatedResponse(Product);
 // @ts-ignore
