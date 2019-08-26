@@ -152,32 +152,32 @@ describe("Test Order Resolver", () => {
 
   });
 
-  it("Test Update Order Status", async () => {
-    const address = await createAddressHelper(user);
-
-    const order = await createOrderHelper(address, user, 3);
-
-    const updateOrderStatusQuery = `mutation {
-      updateOrderStatus(id: ${order.id}, status: "Done") {
-        id
-        status
-      }
-    }`;
-
-    const response = await graphqlCall({
-      source: updateOrderStatusQuery,
-      token: user.id
-    });
-
-    expect(response).toMatchObject({
-      data: {
-        updateOrderStatus: {
-          id: order.id.toString(),
-          status: "Done"
-        }
-      }
-    });
-  });
+  // it("Test Update Order Status", async () => {
+  //   const address = await createAddressHelper(user);
+  //
+  //   const order = await createOrderHelper(address, user, 3);
+  //
+  //   const updateOrderStatusQuery = `mutation {
+  //     updateOrderStatus(id: ${order.id}, status: "Done") {
+  //       id
+  //       status
+  //     }
+  //   }`;
+  //
+  //   const response = await graphqlCall({
+  //     source: updateOrderStatusQuery,
+  //     token: user.id
+  //   });
+  //
+  //   expect(response).toMatchObject({
+  //     data: {
+  //       updateOrderStatus: {
+  //         id: order.id.toString(),
+  //         status: "Done"
+  //       }
+  //     }
+  //   });
+  // });
 
   it("Test Get Orders Pagination", async () => {
     user = await createUserHelper();

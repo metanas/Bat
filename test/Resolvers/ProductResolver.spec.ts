@@ -5,10 +5,7 @@ import {createUserHelper} from "../helper/createUserHelper";
 import {Product} from "../../src/entity/Product";
 import {createProductHelper} from "../helper/createProductHelper";
 import {graphqlCall} from "../test-utils/graphqlCall";
-import faker from "faker";
-import { toInteger, take, slice } from "lodash";
-import {Category} from "../../src/entity/Category";
-import {createCategoryHelper} from "../helper/createCategoryHelper";
+import {slice, take} from "lodash";
 import {truncate} from "../helper/truncateTables";
 
 describe("Product Resolver Test", () => {
@@ -16,7 +13,7 @@ describe("Product Resolver Test", () => {
 
   let user: User;
   let product: Product;
-  let category: Category;
+  // let category: Category;
 
   beforeAll(async () => {
     conn = await connection();
