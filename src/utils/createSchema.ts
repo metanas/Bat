@@ -3,6 +3,6 @@ import {join} from "path";
 
 export const createSchema = () => {
   return buildSchema({
-    resolvers: [ join(__dirname + "/../../src/Resolvers/server/*.ts") ]
+    resolvers: [ join(__dirname + "/../../src/Resolvers/shared/*.ts") ]
   });
 };
