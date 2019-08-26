@@ -12,7 +12,7 @@ import connectRedis = require("connect-redis");
 const main = async (): Promise<void> => {
   await createConnection();
 
-  const schema = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/server/*.ts") ]});
+  const schema = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/shared/*.ts") ]});
 
   const schemaAdmin = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/admin/*.ts") ]});
 

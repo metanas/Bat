@@ -3,7 +3,6 @@ import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {ApiContext} from "../../types/ApiContext";
 import {Order} from "../../entity/Order";
 import {User} from "../../entity/User";
-import {getConnection} from "typeorm";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil} from "lodash";
@@ -77,18 +76,6 @@ export class OrderResolver {
     }
 
     return order;
-  }
-
-  @UseMiddleware(Auth)
-  @Mutation(() => Order)
-  public async updateOrderStatus(@Arg("id") id: number, @Arg("status") status: string){
-    await getConnection()
-      .createQueryBuilder()
-      .update(Order)
-      .set({status})
-      .where("id=:id", {id})
-      .execute();
-    return await this.getOrder(id)
   }
 
   @UseMiddleware(Auth)
