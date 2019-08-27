@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany,ManyToMany, JoinTable } from "typeorm";
-import { ObjectType, Field, ID } from "type-graphql";
-import {Product} from "./Product";
+import {BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Field, ID, ObjectType} from "type-graphql";
 import {Cart} from "./Cart";
 import {Order} from "./Order";
+import {CouponProduct} from "./CouponProduct";
 
 @ObjectType()
 @Entity()
@@ -20,6 +20,10 @@ export class Coupon extends BaseEntity {
   public discountType: string;
 
   @Field()
+  @Column({ unique: true })
+  public key: string;
+
+  @Field()
   @Column({ name: "discount_percent" })
   public discountPercent: number;
 
@@ -28,12 +32,12 @@ export class Coupon extends BaseEntity {
   public discountAmount: number;
 
   @Field()
-  @Column({ name: "date_begin" })
-  public dateBegin: number;
+  @Column({ type: "timestamp", name: "date_begin" })
+  public dateBegin: string;
 
   @Field()
-  @Column({ name: "date_end", nullable: true })
-  public dateEnd: number;
+  @Column({ type: "timestamp", name: "date_end", nullable: true })
+  public dateEnd: string;
 
   @Field()
   @Column()
@@ -43,14 +47,20 @@ export class Coupon extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @ManyToMany(() => Product)
+  @OneToMany(() => CouponProduct, (couponProduct: CouponProduct) => couponProduct.coupon)
   @JoinTable()
-  public products: Product[];
+  public couponProducts: CouponProduct[];
 
   @OneToMany(() => Cart, (cart: Cart) => cart.coupon)
   public carts: Cart[];
 
+  @Field(() => [Order])
   @OneToMany(() => Order, (order: Order) => order.coupon)
+  @JoinTable()
   public orders: Order[];
 
+  @Field(() => Boolean)
+  public isValid() {
+    return this.orders.length > this.couponUse
+  }
 }
