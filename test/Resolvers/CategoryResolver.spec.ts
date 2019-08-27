@@ -3,20 +3,31 @@ import {Connection} from "typeorm";
 import {Category} from "../../src/entity/Category";
 import {graphqlCall} from "../test-utils/graphqlCall";
 import faker = require("faker");
+import {User} from "../../src/entity/User";
+import {createCategoryHelper} from "../helper/createCategoryHelper";
+import {  slice, take } from "lodash";
+import {truncate} from "../helper/truncateTables";
+import {createUserHelper} from "../helper/createUserHelper";
 
 
-let conn: Connection;
 
-beforeAll(async () => {
-  conn = await connection();
-});
 
-afterAll(async () => {
-  await conn.close();
-});
 
 
 describe("Test Category Resolver",  () => {
+  let category: Category;
+  let user: User;
+  let conn: Connection;
+
+  beforeAll(async () => {
+    conn = await connection();
+    user = await createUserHelper();
+  });
+
+  afterAll(async () => {
+    await conn.close();
+  });
+
   it("Test Getting Category By ID", async () => {
 
     const category = await Category.create({
@@ -98,6 +109,67 @@ describe("Test Category Resolver",  () => {
   //   expect(get(response.data,"updateCategory.name")).not.toEqual(category.name);
   //
   // });
+  it("Test Get Categories", async () => {
+    await truncate(conn, "category");
+
+    const categoryList: { id: string }[] = [];
+
+    for(let i = 0; i < 12; i++){
+      category = await createCategoryHelper();
+      categoryList.push({ id: `${category.id}` });
+    }
+    let getCategoriesQuery = `{
+      getCategories(data: {page: 1, limit: 5}) {
+        items {
+          id
+        }
+        total_count
+        total_pages
+      }
+    }`;
+
+    let response = await graphqlCall({
+      source: getCategoriesQuery,
+      token: user.id
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        getCategories: {
+          items: take(categoryList, 5),
+          "total_count": 12,
+          "total_pages": 3
+        }
+      }
+    });
+    getCategoriesQuery = `{
+      getCategories(data: {page: 2, limit: 5}) {
+        items {
+          id
+        }
+        total_count
+        total_pages
+      }
+    }`;
+
+    response = await graphqlCall({
+      source: getCategoriesQuery,
+      token: user.id
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        getCategories: {
+          items: slice(categoryList, 5, 10),
+          "total_count": 12,
+          "total_pages": 3
+        }
+      }
+    });
+
+
+
+  });
 
 
 

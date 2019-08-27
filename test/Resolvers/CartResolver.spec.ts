@@ -3,7 +3,7 @@ import {createUserHelper} from "../helper/createUserHelper";
 import {connection} from "../test-utils/connection";
 import {Connection} from "typeorm";
 import {graphqlCall} from "../test-utils/graphqlCall";
-import {Cart} from "../../src/entity/Cart";
+import {createCartHelper} from "../helper/createCartHelper";
 
 
 describe("Test Cart Resolver",  () => {
@@ -18,15 +18,13 @@ describe("Test Cart Resolver",  () => {
   afterAll(async () => {
     await conn.close();
   });
-  it("Test Getting Cart By UserID", async () => {
 
-    const cart = await Cart.create({
-      user: user
-    }).save();
+  it("Test Getting Cart By UserID", async () => {
+    const cart = await createCartHelper(user);
 
     const getCartQuery = `{
       getCart {
-      id
+        id
       }
     }`;
 
@@ -34,6 +32,8 @@ describe("Test Cart Resolver",  () => {
       source: getCartQuery,
       token: user.id
     });
+
+
 
     expect(response).toMatchObject({
       data:{
@@ -43,4 +43,40 @@ describe("Test Cart Resolver",  () => {
       }
     });
   });
+  it("Test Delete Cart", async () => {
+
+    const cart = await createCartHelper(user);
+    const deleteCartQuery = `mutation { 
+      deleteCart(id: ${cart.id}) 
+    }`;
+
+    const response = await graphqlCall({
+      source: deleteCartQuery,
+      token: user.id
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        deleteCart: true
+      }
+    });
+  });
+  it("Test Add Cart", async () => {
+    const addCartQuery = `mutation {
+      addCart(){
+      id}
+    }`;
+
+    const response = await graphqlCall({
+      source: addCartQuery,
+      token: user.id
+    });
+    expect(response).toMatchObject({
+
+
+  });
+
+  });
+  
 });
+

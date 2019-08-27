@@ -1,8 +1,9 @@
-import {Arg, Query, Resolver} from "type-graphql";
+import {Arg, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Category} from "../../entity/Category";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput"
 import {ceil} from "lodash";
+import {Auth} from "../../Middleware/Auth";
 
 const PaginatedCategoryResponse = PaginatedResponse(Category);
 // @ts-ignore
@@ -15,9 +16,11 @@ export class CategoryResolver {
     return await Category.findOne({ where: [{ id }, { name }] });
   }
 
+  @UseMiddleware(Auth)
   @Query(() => PaginatedCategoryResponse)
   public async getCategories(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedCategoryResponse> {
-    const result = await Category.findAndCount({ skip: page - 1, take: limit });
+    const result = await Category.findAndCount({ skip: (page - 1) * limit, take: limit });
+
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
