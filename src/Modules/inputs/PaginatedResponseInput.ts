@@ -1,5 +1,5 @@
 import {Field, InputType} from "type-graphql";
-import { IsInt, Max, Min } from "class-validator";
+import {IsInt, Max, Min} from "class-validator";
 
 @InputType()
 export class PaginatedResponseInput {
