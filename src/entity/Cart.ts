@@ -12,7 +12,7 @@ import {
 import {Field, ID, ObjectType} from "type-graphql";
 import {Coupon} from "./Coupon";
 import {CartProduct} from "./CartProduct";
-import {User} from "./User";
+import {Costumer} from "./Costumer";
 
 @ObjectType()
 @Entity()
@@ -29,10 +29,10 @@ export class Cart extends BaseEntity {
   @JoinTable()
   public cartProducts?: CartProduct[];
 
-  @Field(() => User)
-  @OneToOne(() => User, (user: User) => user.cart)
+  @Field(() => Costumer)
+  @OneToOne(() => Costumer, (costumer: Costumer) => costumer.cart)
   @JoinColumn()
-  public user: User;
+  public costumer: Costumer;
 
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;

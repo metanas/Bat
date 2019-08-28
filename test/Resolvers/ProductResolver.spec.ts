@@ -1,7 +1,7 @@
 import {Connection} from "typeorm";
 import {connection} from "../test-utils/connection";
-import {User} from "../../src/entity/User";
-import {createUserHelper} from "../helper/createUserHelper";
+import {Costumer} from "../../src/entity/Costumer";
+import {createCostumerHelper} from "../helper/createCostumerHelper";
 import {Product} from "../../src/entity/Product";
 import {createProductHelper} from "../helper/createProductHelper";
 import {graphqlCall} from "../test-utils/graphqlCall";
@@ -11,13 +11,13 @@ import {truncate} from "../helper/truncateTables";
 describe("Product Resolver Test", () => {
   let conn: Connection;
 
-  let user: User;
+  let costumer: Costumer;
   let product: Product;
   // let category: Category;
 
   beforeAll(async () => {
     conn = await connection();
-    user = await createUserHelper();
+    costumer = await createCostumerHelper();
   });
 
   afterAll(async () => {
@@ -38,7 +38,7 @@ describe("Product Resolver Test", () => {
 
     const response = await graphqlCall({
       source: getProductQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({
@@ -74,7 +74,7 @@ describe("Product Resolver Test", () => {
   //
   //   const response = await graphqlCall({
   //     source: updateProductQuery,
-  //     token: user.id
+  //     token: costumer.id
   //   });
   //
   //   expect(response).toMatchObject({
@@ -108,7 +108,7 @@ describe("Product Resolver Test", () => {
   //
   //   const response = await graphqlCall({
   //     source: addProductQuery,
-  //     token: user.id
+  //     token: costumer.id
   //   });
   //
   //   expect(response).toMatchObject({
@@ -131,7 +131,7 @@ describe("Product Resolver Test", () => {
   //
   //   const response = await graphqlCall({
   //     source: deleteProductQuery,
-  //     token: user.id
+  //     token: costumer.id
   //   });
   //
   //   expect(response.data).toMatchObject({
@@ -161,7 +161,7 @@ describe("Product Resolver Test", () => {
 
     let response = await graphqlCall({
       source: getProductsQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({
@@ -186,7 +186,7 @@ describe("Product Resolver Test", () => {
 
     response = await graphqlCall({
       source: getProductsQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({

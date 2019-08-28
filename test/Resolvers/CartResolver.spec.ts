@@ -1,5 +1,5 @@
-import {User} from "../../src/entity/User";
-import {createUserHelper} from "../helper/createUserHelper";
+import {Costumer} from "../../src/entity/Costumer";
+import {createCostumerHelper} from "../helper/createCostumerHelper";
 import {connection} from "../test-utils/connection";
 import {Connection} from "typeorm";
 import {graphqlCall} from "../test-utils/graphqlCall";
@@ -8,20 +8,20 @@ import {Cart} from "../../src/entity/Cart";
 
 describe("Test Cart Resolver",  () => {
   let conn: Connection;
-  let user: User;
+  let costumer: Costumer;
 
   beforeAll(async () => {
     conn = await connection();
-    user = await createUserHelper();
+    costumer = await createCostumerHelper();
   });
 
   afterAll(async () => {
     await conn.close();
   });
-  it("Test Getting Cart By UserID", async () => {
+  it("Test Getting Cart By CostumerID", async () => {
 
     const cart = await Cart.create({
-      user: user
+      costumer: costumer
     }).save();
 
     const getCartQuery = `{
@@ -32,7 +32,7 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: getCartQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({

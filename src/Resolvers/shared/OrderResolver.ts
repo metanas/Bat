@@ -2,7 +2,7 @@ import {Auth} from "../../Middleware/Auth";
 import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {ApiContext} from "../../types/ApiContext";
 import {Order} from "../../entity/Order";
-import {User} from "../../entity/User";
+import {Costumer} from "../../entity/Costumer";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil} from "lodash";
@@ -40,8 +40,8 @@ export class OrderResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Order)
   public async addOrder (@Ctx() ctx: ApiContext, @Arg("status") status: string,@Arg("driver") driver: string, @Arg("addressId") addressId: number){
-    const user = await User.findOne({ where: { id: ctx.req.session!.token} });
-    const cart = await Cart.findOne({ where: { user } });
+    const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token} });
+    const cart = await Cart.findOne({ where: { costumer } });
     if(cart) {
       cart.cartProducts = await CartProduct.find({
         join: {
@@ -57,7 +57,7 @@ export class OrderResolver {
     }
     const address = await Address.findOne(addressId);
     const order = await Order.create({
-      user,
+      costumer,
       status,
       driver,
       address: address!.address,
@@ -81,8 +81,8 @@ export class OrderResolver {
   @UseMiddleware(Auth)
   @Query(() => PaginatedOrderResponse)
   public async getOrders(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedOrderResponse> {
-    const user = await User.findOne(ctx.req.session!.token);
-    const result = await Order.findAndCount({where: { user }, skip: (page - 1) * limit, take: limit});
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const result = await Order.findAndCount({where: { costumer }, skip: (page - 1) * limit, take: limit});
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),

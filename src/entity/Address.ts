@@ -1,6 +1,6 @@
 import {Entity, PrimaryGeneratedColumn, ManyToOne, Column, BaseEntity} from "typeorm";
 import {ObjectType, Field, ID } from "type-graphql";
-import { User } from "./User";
+import { Costumer } from "./Costumer";
 
 @ObjectType()
 @Entity()
@@ -25,7 +25,7 @@ export class Address extends BaseEntity {
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @ManyToOne(() => User, (user: User) => user.addresses)
-  public user: User;
+  @ManyToOne(() => Costumer, (costumer: Costumer) => costumer.addresses)
+  public costumer: Costumer;
 
 }

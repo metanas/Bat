@@ -1,15 +1,15 @@
 import {graphqlCall} from "../test-utils/graphqlCall";
-import {createUserHelper} from "../helper/createUserHelper";
+import {createCostumerHelper} from "../helper/createCostumerHelper";
 import {connection} from "../test-utils/connection";
 import {Connection} from "typeorm";
-import {User} from "../../src/entity/User";
+import {Costumer} from "../../src/entity/Costumer";
 
-let user: User;
+let costumer: Costumer;
 let conn: Connection;
 
 beforeAll(async () => {
   conn = await connection();
-  user = await createUserHelper();
+  costumer = await createCostumerHelper();
 });
 
 afterAll(async () => {
@@ -17,7 +17,7 @@ afterAll(async () => {
 });
 
 describe("Me", () => {
-  it("Test Get User Authenticated", async () => {
+  it("Test Get Costumer Authenticated", async () => {
     const meQuery = `{
       me {
         id
@@ -31,24 +31,24 @@ describe("Me", () => {
 
     const response = await graphqlCall({
       source: meQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({
       data: {
         me: {
-          id: `${user.id}`,
-          name: user.name,
-          telephone: user.telephone,
+          id: `${costumer.id}`,
+          name: costumer.name,
+          telephone: costumer.telephone,
           status: false,
-          birthday: user.birthday,
+          birthday: costumer.birthday,
           avatar: null
         }
       }
     });
   }, 30000);
 
-  it("Test Register New User", async () => {
+  it("Test Register New Costumer", async () => {
     const registerQuery = `mutation { 
       register(data: {name: "test", telephone: "012-141-412", birthday: "01/02/1900" }) {
         name
@@ -75,7 +75,7 @@ describe("Me", () => {
 
   it("Test Login", async () => {
     const registerQuery = `mutation { 
-      login(telephone: "${user.telephone}") {
+      login(telephone: "${costumer.telephone}") {
         id
         name
         telephone
@@ -92,10 +92,10 @@ describe("Me", () => {
     expect(response).toMatchObject({
       data: {
         login: {
-          id: user.id.toString(),
-          name: user.name,
-          telephone: user.telephone,
-          birthday: user.birthday,
+          id: costumer.id.toString(),
+          name: costumer.name,
+          telephone: costumer.telephone,
+          birthday: costumer.birthday,
         }
       }
     });

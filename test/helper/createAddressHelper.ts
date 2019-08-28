@@ -1,13 +1,13 @@
 import {Address} from "../../src/entity/Address";
 import faker = require("faker");
-import {User} from "../../src/entity/User";
+import {Costumer} from "../../src/entity/Costumer";
 
-export async function createAddressHelper(user: User) {
+export async function createAddressHelper(costumer: Costumer) {
   return await Address.create({
     address: faker.address.streetAddress(),
     latitude: faker.address.latitude(),
     longitude: faker.address.longitude(),
-    user: user
+    costumer: costumer
   }).save();
 
 }

@@ -1,20 +1,20 @@
 import {Connection} from "typeorm";
 import {connection} from "../test-utils/connection";
-import {User} from "../../src/entity/User";
+import {Costumer} from "../../src/entity/Costumer";
 import faker from "faker";
 import {graphqlCall} from "../test-utils/graphqlCall";
 import {Address} from "../../src/entity/Address";
 import { get, slice, take } from "lodash";
-import {createUserHelper} from "../helper/createUserHelper";
+import {createCostumerHelper} from "../helper/createCostumerHelper";
 import {createAddressHelper} from "../helper/createAddressHelper";
 
 describe("Test Address Resolver",  () => {
   let conn: Connection;
-  let user: User;
+  let costumer: Costumer;
 
   beforeAll(async () => {
     conn = await connection();
-    user = await createUserHelper();
+    costumer = await createCostumerHelper();
   });
 
   afterAll(async () => {
@@ -22,7 +22,7 @@ describe("Test Address Resolver",  () => {
   });
 
   it("Test Getting Address By ID", async () => {
-    const address = await createAddressHelper(user);
+    const address = await createAddressHelper(costumer);
 
     const getAddressQuery = `{
       getAddress(id: ${address.id}) { 
@@ -35,7 +35,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: getAddressQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({
@@ -62,7 +62,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: addAddressQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({
@@ -77,7 +77,7 @@ describe("Test Address Resolver",  () => {
   });
 
   it("Test Get Addresses", async () => {
-    user = await createUserHelper();
+    costumer = await createCostumerHelper();
 
     let getAddressesQuery = `{
       getAddresses(data: { limit: 5, page: 1 }) {
@@ -91,13 +91,13 @@ describe("Test Address Resolver",  () => {
 
     const listAddress: { address: string }[] = [];
     for(let i=0; i < 12; i++) {
-      const address = await createAddressHelper(user);
+      const address = await createAddressHelper(costumer);
       listAddress.push({ address: address.address });
     }
 
     let response = await graphqlCall({
       source: getAddressesQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(get(response.data, "getAddresses.items")).toEqual(take(listAddress, 5));
@@ -116,7 +116,7 @@ describe("Test Address Resolver",  () => {
 
     response = await graphqlCall({
       source: getAddressesQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 5, 10));
@@ -135,14 +135,14 @@ describe("Test Address Resolver",  () => {
 
     response = await graphqlCall({
       source: getAddressesQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 10, 12));
   });
 
   it("Test Delete Address", async () => {
-    const address = await createAddressHelper(user);
+    const address = await createAddressHelper(costumer);
 
     const deleteAddressQuery = `mutation { 
       deleteAddress(id: ${address.id}) 
@@ -150,7 +150,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: deleteAddressQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({
@@ -166,7 +166,7 @@ describe("Test Address Resolver",  () => {
       address: faker.address.streetName(),
       latitude: faker.address.latitude(),
       longitude: faker.address.longitude(),
-      user: user
+      costumer: costumer
     }).save();
 
     const updateAddressQuery = `mutation { 
@@ -180,7 +180,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: updateAddressQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(get(response.data,"updateAddress.id")).toEqual(`${address.id}`);

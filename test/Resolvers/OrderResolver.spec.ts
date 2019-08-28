@@ -1,7 +1,7 @@
 import {Connection} from "typeorm";
 import {connection} from "../test-utils/connection";
-import {User} from "../../src/entity/User";
-import {createUserHelper} from "../helper/createUserHelper";
+import {Costumer} from "../../src/entity/Costumer";
+import {createCostumerHelper} from "../helper/createCostumerHelper";
 import {createAddressHelper} from "../helper/createAddressHelper";
 import {graphqlCall} from "../test-utils/graphqlCall";
 import {createOrderHelper} from "../helper/createOrderHelper";
@@ -12,11 +12,11 @@ import {createProductHelper} from "../helper/createProductHelper";
 import {get, slice, take} from "lodash";
 
 let conn: Connection;
-let user: User;
+let costumer: Costumer;
 
 beforeAll(async () => {
   conn = await connection();
-  user = await createUserHelper();
+  costumer = await createCostumerHelper();
 });
 
 afterAll(async () => {
@@ -25,9 +25,9 @@ afterAll(async () => {
 
 describe("Test Order Resolver", () => {
   it("Test Get Order By ID", async () => {
-    const address = await createAddressHelper(user);
+    const address = await createAddressHelper(costumer);
 
-    const order = await createOrderHelper(address, user, 3);
+    const order = await createOrderHelper(address, costumer, 3);
 
     const getOrderQuery = `{
       getOrder(id: ${order.id}) {
@@ -45,7 +45,7 @@ describe("Test Order Resolver", () => {
 
     const response = await graphqlCall({
       source: getOrderQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({
@@ -82,9 +82,9 @@ describe("Test Order Resolver", () => {
   });
 
   it("Test Add Order", async () => {
-    const address = await createAddressHelper(user);
+    const address = await createAddressHelper(costumer);
 
-    const cart = await createCartHelper(user);
+    const cart = await createCartHelper(costumer);
 
     const cartProduct: CartProduct[] = [];
 
@@ -111,7 +111,7 @@ describe("Test Order Resolver", () => {
 
     const response = await graphqlCall({
       source: addOrderQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(response).toMatchObject({
@@ -153,9 +153,9 @@ describe("Test Order Resolver", () => {
   });
 
   // it("Test Update Order Status", async () => {
-  //   const address = await createAddressHelper(user);
+  //   const address = await createAddressHelper(costumer);
   //
-  //   const order = await createOrderHelper(address, user, 3);
+  //   const order = await createOrderHelper(address, costumer, 3);
   //
   //   const updateOrderStatusQuery = `mutation {
   //     updateOrderStatus(id: ${order.id}, status: "Done") {
@@ -166,7 +166,7 @@ describe("Test Order Resolver", () => {
   //
   //   const response = await graphqlCall({
   //     source: updateOrderStatusQuery,
-  //     token: user.id
+  //     token: costumer.id
   //   });
   //
   //   expect(response).toMatchObject({
@@ -180,14 +180,14 @@ describe("Test Order Resolver", () => {
   // });
 
   it("Test Get Orders Pagination", async () => {
-    user = await createUserHelper();
+    costumer = await createCostumerHelper();
 
     const orders: {id: string}[] = [];
 
     for (let i=0; i < 17; i++) {
-      const address = await createAddressHelper(user);
+      const address = await createAddressHelper(costumer);
 
-      const order = await createOrderHelper(address, user, 3);
+      const order = await createOrderHelper(address, costumer, 3);
 
       orders.push({ id: order.id.toString() });
     }
@@ -205,7 +205,7 @@ describe("Test Order Resolver", () => {
 
     let response = await graphqlCall({
       source: getOrdersQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(get(response.data, "getOrders.items")).toEqual(
@@ -226,7 +226,7 @@ describe("Test Order Resolver", () => {
 
     response = await graphqlCall({
       source: getOrdersQuery,
-      token: user.id
+      token: costumer.id
     });
 
     expect(get(response.data, "getOrders.items")).toEqual(

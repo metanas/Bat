@@ -8,7 +8,7 @@ import {Product} from "./Product";
 
 @ObjectType()
 @Entity()
-export class User extends BaseEntity {
+export class Costumer extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn("uuid")
   public id: string;
@@ -37,7 +37,7 @@ export class User extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @OneToMany(() => Address, (address: Address) => address.user)
+  @OneToMany(() => Address, (address: Address) => address.costumer)
   public addresses: Address[];
 
   @ManyToMany(() => Coupon)
@@ -52,7 +52,7 @@ export class User extends BaseEntity {
   @JoinTable()
   public cart: Cart;
 
-  @OneToMany(() => Order, (order: Order) => order.user)
+  @OneToMany(() => Order, (order: Order) => order.costumer)
   public orders: Order[];
 
 }
