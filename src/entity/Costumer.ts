@@ -4,7 +4,7 @@ import {Address} from "./Address";
 import {Coupon} from "./Coupon";
 import {Cart} from "./Cart";
 import {Order} from "./Order";
-import {UserCoupon} from "./UserCoupon";
+import {CostumerCoupon} from "./CostumerCoupon";
 
 @ObjectType()
 @Entity()
@@ -40,7 +40,7 @@ export class Costumer extends BaseEntity {
   @OneToMany(() => Address, (address: Address) => address.costumer)
   public addresses: Address[];
 
-  @OneToMany(() => Coupon, (userCoupon: UserCoupon) => userCoupon.user)
+  @OneToMany(() => Coupon, (costumerCoupon: CostumerCoupon) => costumerCoupon.costumer)
   @JoinTable()
   public coupons: Coupon[];
 
