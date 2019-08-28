@@ -1,7 +1,7 @@
 import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware,} from "type-graphql";
 import {Address} from "../../entity/Address";
 import {ApiContext} from "../../types/ApiContext";
-import {User} from "../../entity/User";
+import {Costumer} from "../../entity/Costumer";
 import {Auth} from "../../Middleware/Auth";
 import {getConnection} from "typeorm";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
@@ -23,12 +23,12 @@ export class AddressResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Address)
   public async addAddress(@Ctx() ctx: ApiContext, @Arg("address") address: string, @Arg("longitude") longitude: string, @Arg("latitude") latitude: string) {
-    const user = await User.findOne({ where: { id: ctx.req.session!.token} });
+    const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token} });
     return await Address.create({
       address,
       longitude,
       latitude,
-      user
+      costumer
     }).save();
   }
 
@@ -56,8 +56,8 @@ export class AddressResolver {
   @UseMiddleware(Auth)
   @Query(() => PaginatedAddressResponse)
   public async getAddresses(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedAddressResponse> {
-    const user = await User.findOne({ where: { id: ctx.req.session!.token }});
-    const result = await Address.findAndCount({where: {user}, skip: (page - 1) * limit, take: limit});
+    const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token }});
+    const result = await Address.findAndCount({where: {costumer}, skip: (page - 1) * limit, take: limit});
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),

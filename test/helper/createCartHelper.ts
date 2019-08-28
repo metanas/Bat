@@ -1,8 +1,8 @@
 import {Cart} from "../../src/entity/Cart";
-import {User} from "../../src/entity/User";
+import {Costumer} from "../../src/entity/Costumer";
 
-export async function createCartHelper(user: User) {
+export async function createCartHelper(costumer: Costumer) {
   return await Cart.create({
-    user
+    costumer
   }).save();
 }

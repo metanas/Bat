@@ -5,7 +5,7 @@ import {ApiContext} from "../../types/ApiContext";
 import {Coupon} from "../../entity/Coupon";
 import {getConnection} from "typeorm";
 import {CartProduct} from "../../entity/CartProduct";
-import {User} from "../../entity/User";
+import {Costumer} from "../../entity/Costumer";
 import {Product} from "../../entity/Product";
 
 @Resolver()
@@ -13,7 +13,7 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Query(() => Cart, { nullable: true})
   public async getCart(@Ctx() ctx: ApiContext): Promise<Cart | undefined> {
-    const cart = await Cart.findOne({where: { userId: ctx.req.session!.token }});
+    const cart = await Cart.findOne({where: { costumerId: ctx.req.session!.token }});
     if(cart) {
       cart.cartProducts = await CartProduct.find({
         join: {
@@ -34,18 +34,18 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Cart)
   public async setCouponToCart (@Ctx() ctx: ApiContext, @Arg("idCoupon", { nullable: true }) idCoupon?: number){
-    const user = await User.findOne({ where: { id: ctx.req.session!.token} });
+    const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token} });
     const coupon = (idCoupon) ? await Coupon.findOne({ where: { id: idCoupon} }) : undefined;
     if(!coupon) {
       throw new Error("Invalid Coupon !!")
     }
-    await Cart.update({user}, {coupon});
+    await Cart.update({costumer}, {coupon});
   }
 
   @UseMiddleware(Auth)
   @Mutation(() => Cart)
   public async addProductToCart(@Ctx() ctx: ApiContext, @Arg("productId") productId: number, @Arg("quantity") quantity: number) {
-    const cart = await Cart.findOne({ where: { userId: ctx.req.session!.token } });
+    const cart = await Cart.findOne({ where: { costumerId: ctx.req.session!.token } });
     const product = await Product.findOne(productId);
     if(product) {
       if (quantity > product!.quantity) {
@@ -65,7 +65,7 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteAllFromCart(@Ctx() ctx: ApiContext) {
-    const cart = await Cart.findOne({ where: { userId: ctx.req.session!.token }});
+    const cart = await Cart.findOne({ where: { costumerId: ctx.req.session!.token }});
     const result = await getConnection().createQueryBuilder().delete().from(CartProduct)
       .where("cartId=:id", {cartId: cart!.id})
       .returning("id")
@@ -76,7 +76,7 @@ export class CartResolver {
   @Mutation(() => Cart)
   @UseMiddleware(Auth)
   public async updateProductQuantity(@Ctx() ctx: ApiContext, @Arg("productId") productId: number, @Arg("quantity") quantity: number) {
-    const cart = await Cart.findOne({ where: { userId: ctx.req.session!.token }});
+    const cart = await Cart.findOne({ where: { costumerId: ctx.req.session!.token }});
     const product = await Product.findOne(productId);
 
     if(product && product.quantity < quantity) {
@@ -101,7 +101,7 @@ export class CartResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(Auth)
   public async removeProductFromCart(@Ctx() ctx: ApiContext, @Arg("productId") productId: number) {
-    const cart = await Cart.findOne({ where: {userId: ctx.req.session!.token }});
+    const cart = await Cart.findOne({ where: {costumerId: ctx.req.session!.token }});
     if(cart) {
       const result = await getConnection()
         .createQueryBuilder()

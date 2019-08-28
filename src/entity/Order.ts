@@ -1,7 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToMany, JoinTable} from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import {Coupon} from "./Coupon";
-import {User} from "./User";
+import {Costumer} from "./Costumer";
 import {OrderProduct} from "./OrderProduct";
 
 @ObjectType()
@@ -34,8 +34,8 @@ export class Order extends BaseEntity {
   @ManyToOne(() => Coupon, (coupon: Coupon) => coupon.orders, { nullable : true})
   public coupon?: Coupon;
 
-  @ManyToOne(() => User, (user: User) => user.orders)
-  public user: User;
+  @ManyToOne(() => Costumer, (costumer: Costumer) => costumer.orders)
+  public costumer: Costumer;
 
   @Field(() => [OrderProduct])
   @OneToMany(() => OrderProduct, (orderProduct: OrderProduct) => orderProduct.order)

@@ -1,13 +1,13 @@
-import {User} from "../../src/entity/User";
+import {Costumer} from "../../src/entity/Costumer";
 import {Address} from "../../src/entity/Address";
 import {Order} from "../../src/entity/Order";
 import faker from "faker";
 import {OrderProduct} from "../../src/entity/OrderProduct";
 import {createProductHelper} from "./createProductHelper";
 
-export async function createOrderHelper(address: Address, user: User, productCount: number) {
+export async function createOrderHelper(address: Address, costumer: Costumer, productCount: number) {
   const order = await Order.create({
-    user,
+    costumer,
     address: address.address,
     driver: faker.name.firstName() + " " + faker.name.lastName(),
     status: faker.lorem.word()
