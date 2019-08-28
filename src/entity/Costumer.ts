@@ -1,10 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne,JoinColumn,OneToMany,ManyToMany, JoinTable } from "typeorm";
-import { ObjectType, Field, ID } from "type-graphql";
-import { Address } from "./Address";
+import {BaseEntity, Column, Entity, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Field, ID, ObjectType} from "type-graphql";
+import {Address} from "./Address";
 import {Coupon} from "./Coupon";
 import {Cart} from "./Cart";
 import {Order} from "./Order";
-import {Product} from "./Product";
+import {UserCoupon} from "./UserCoupon";
 
 @ObjectType()
 @Entity()
@@ -40,13 +40,9 @@ export class Costumer extends BaseEntity {
   @OneToMany(() => Address, (address: Address) => address.costumer)
   public addresses: Address[];
 
-  @ManyToMany(() => Coupon)
+  @OneToMany(() => Coupon, (userCoupon: UserCoupon) => userCoupon.user)
   @JoinTable()
   public coupons: Coupon[];
-
-  @ManyToMany(() => Product)
-  @JoinColumn()
-  public products: Product[];
 
   @OneToOne(() => Cart)
   @JoinTable()
