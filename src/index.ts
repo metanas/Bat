@@ -1,13 +1,15 @@
 import "reflect-metadata";
 import {createConnection} from "typeorm";
-import {ApolloServer} from "apollo-server-express";
+import {ApolloServer, ForbiddenError} from "apollo-server-express";
 import {buildSchema} from "type-graphql";
 import cors from "cors";
 import {join} from "path";
 import Express from "express";
 import session from "express-session";
 import {redis} from "./redis";
-import connectRedis = require("connect-redis");
+import connectRedis from "connect-redis";
+import isAuthorized from "./utils/authorizationChecker";
+import {User} from "./entity/User";
 
 const main = async (): Promise<void> => {
   await createConnection();
@@ -22,7 +24,21 @@ const main = async (): Promise<void> => {
 
   const apolloServerAdmin = new ApolloServer({
     schema: schemaAdmin,
-    context: ({req, res}) => ({req, res})
+    context: async ({req, res}) => {
+      const token = req.headers.authorization || "";
+
+      let user;
+
+      if(!isAuthorized(token)) {
+        throw new ForbiddenError("Permission denied!");
+      }
+
+      if(req.session!.token) {
+        user = await User.findOne(req.session!.token);
+      }
+
+      return { req , res, user }
+    }
   });
 
   const app = Express();

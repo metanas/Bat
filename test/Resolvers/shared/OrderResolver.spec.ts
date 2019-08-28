@@ -1,14 +1,14 @@
 import {Connection} from "typeorm";
-import {connection} from "../test-utils/connection";
-import {Costumer} from "../../src/entity/Costumer";
-import {createCostumerHelper} from "../helper/createCostumerHelper";
-import {createAddressHelper} from "../helper/createAddressHelper";
-import {graphqlCall} from "../test-utils/graphqlCall";
-import {createOrderHelper} from "../helper/createOrderHelper";
-import {createCartHelper} from "../helper/createCartHelper";
-import {createCartProductHelper} from "../helper/createCartProductHelper";
-import {CartProduct} from "../../src/entity/CartProduct";
-import {createProductHelper} from "../helper/createProductHelper";
+import {connection} from "../../test-utils/connection";
+import {Costumer} from "../../../src/entity/Costumer";
+import {createCostumerHelper} from "../../helper/createCostumerHelper";
+import {createAddressHelper} from "../../helper/createAddressHelper";
+import {graphqlCall} from "../../test-utils/graphqlCall";
+import {createOrderHelper} from "../../helper/createOrderHelper";
+import {createCartHelper} from "../../helper/createCartHelper";
+import {createCartProductHelper} from "../../helper/createCartProductHelper";
+import {CartProduct} from "../../../src/entity/CartProduct";
+import {createProductHelper} from "../../helper/createProductHelper";
 import {get, slice, take} from "lodash";
 
 let conn: Connection;
@@ -151,33 +151,6 @@ describe("Test Order Resolver", () => {
     });
 
   });
-
-  // it("Test Update Order Status", async () => {
-  //   const address = await createAddressHelper(costumer);
-  //
-  //   const order = await createOrderHelper(address, costumer, 3);
-  //
-  //   const updateOrderStatusQuery = `mutation {
-  //     updateOrderStatus(id: ${order.id}, status: "Done") {
-  //       id
-  //       status
-  //     }
-  //   }`;
-  //
-  //   const response = await graphqlCall({
-  //     source: updateOrderStatusQuery,
-  //     token: costumer.id
-  //   });
-  //
-  //   expect(response).toMatchObject({
-  //     data: {
-  //       updateOrderStatus: {
-  //         id: order.id.toString(),
-  //         status: "Done"
-  //       }
-  //     }
-  //   });
-  // });
 
   it("Test Get Orders Pagination", async () => {
     costumer = await createCostumerHelper();
