@@ -9,13 +9,14 @@ interface Options {
     [key: string]: any;
   }>;
   token?: string;
+  isAdmin?: boolean;
 }
 
 let schema: GraphQLSchema;
 
-export const graphqlCall = async ({ source, variableValues, token }: Options) => {
+export const graphqlCall = async ({ source, variableValues, token, isAdmin }: Options) => {
   if(!schema) {
-    schema = await createSchema();
+    schema = await createSchema(isAdmin);
   }
   return graphql({
     schema,

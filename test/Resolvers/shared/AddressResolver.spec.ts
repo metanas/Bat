@@ -1,12 +1,12 @@
 import {Connection} from "typeorm";
-import {connection} from "../test-utils/connection";
-import {Costumer} from "../../src/entity/Costumer";
+import {connection} from "../../test-utils/connection";
+import {Costumer} from "../../../src/entity/Costumer";
 import faker from "faker";
-import {graphqlCall} from "../test-utils/graphqlCall";
-import {Address} from "../../src/entity/Address";
-import { get, slice, take } from "lodash";
-import {createCostumerHelper} from "../helper/createCostumerHelper";
-import {createAddressHelper} from "../helper/createAddressHelper";
+import {graphqlCall} from "../../test-utils/graphqlCall";
+import {Address} from "../../../src/entity/Address";
+import {get, slice, take} from "lodash";
+import {createCostumerHelper} from "../../helper/createCostumerHelper";
+import {createAddressHelper} from "../../helper/createAddressHelper";
 
 describe("Test Address Resolver",  () => {
   let conn: Connection;

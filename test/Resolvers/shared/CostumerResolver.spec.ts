@@ -1,8 +1,8 @@
-import {graphqlCall} from "../test-utils/graphqlCall";
-import {createCostumerHelper} from "../helper/createCostumerHelper";
-import {connection} from "../test-utils/connection";
+import {graphqlCall} from "../../test-utils/graphqlCall";
+import {createCostumerHelper} from "../../helper/createCostumerHelper";
+import {connection} from "../../test-utils/connection";
 import {Connection} from "typeorm";
-import {Costumer} from "../../src/entity/Costumer";
+import {Costumer} from "../../../src/entity/Costumer";
 
 let costumer: Costumer;
 let conn: Connection;
