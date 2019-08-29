@@ -1,5 +1,6 @@
-import {Column, Entity, PrimaryGeneratedColumn, BaseEntity} from "typeorm";
+import {Column, Entity, PrimaryGeneratedColumn, BaseEntity, ManyToOne} from "typeorm";
 import {Field, ID, ObjectType} from "type-graphql";
+import {UserGroup} from "./UserGroup";
 
 @Entity()
 @ObjectType()
@@ -22,6 +23,7 @@ export class User extends BaseEntity {
   @Column({ default: true })
   public active: boolean;
 
-  @Column({ type: "jsonb" })
-  public permissions: object;
+  @Field(() => UserGroup)
+  @ManyToOne(() => UserGroup)
+  public userGroup: UserGroup;
 }
