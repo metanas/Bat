@@ -1,18 +1,18 @@
-import {Column, Entity, PrimaryGeneratedColumn, BaseEntity} from "typeorm";
-import {Field, ID, ObjectType} from "type-graphql";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Field, ObjectType} from "type-graphql";
 
 @Entity()
 @ObjectType()
 export class User extends BaseEntity {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn({ type: "uuid"})
-  public id: any;
+  @Field()
+  @PrimaryGeneratedColumn("uuid")
+  public id: string;
 
   @Column()
   public name: string;
 
   @Column()
-  password: string;
+  public password: string;
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
