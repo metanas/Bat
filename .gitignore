@@ -7,3 +7,4 @@ temp/
 images/
 .env
 ormlogs.log
+yarn-error.log

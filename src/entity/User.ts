@@ -1,13 +1,13 @@
-import {Column, Entity, PrimaryGeneratedColumn, BaseEntity, ManyToOne} from "typeorm";
-import {Field, ID, ObjectType} from "type-graphql";
+import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Field, ObjectType} from "type-graphql";
 import {UserGroup} from "./UserGroup";
 
 @Entity()
 @ObjectType()
 export class User extends BaseEntity {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn({ type: "uuid"})
-  public id: any;
+  @Field()
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   public name: string;
