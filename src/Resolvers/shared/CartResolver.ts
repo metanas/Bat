@@ -65,10 +65,10 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteAllFromCart(@Ctx() ctx: ApiContext) {
-    const cart = await Cart.findOne({ where: { costumerId: ctx.req.session!.token }});
-    const result = await getConnection().createQueryBuilder().delete().from(CartProduct)
-      .where("cartId=:id", {cartId: cart!.id})
-      .returning("id")
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const cart = await Cart.findOne({ where: { costumer }});
+    const result = await CartProduct.createQueryBuilder().delete()
+      .where("cartId=:id", { id: cart!.id })
       .execute();
     return !!result.affected
   }
