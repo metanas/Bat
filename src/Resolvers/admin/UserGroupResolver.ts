@@ -1,8 +1,9 @@
-import {Arg, Args, Mutation, Query, Resolver} from "type-graphql";
+import {Arg, Args, Int, Mutation, Query, Resolver} from "type-graphql";
 import {UserGroup} from "../../entity/UserGroup";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil} from "lodash";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
+import {User} from "../../entity/User";
 
 const PaginatedUserGroupResponse = PaginatedResponse(UserGroup);
 // @ts-ignore
@@ -20,13 +21,12 @@ export class UserGroupResolver {
     }
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => UserGroup)
   public async addUserGroup(@Arg("name") name: string, @Arg("permissions") permissions: string) {
-    console.log(JSON.parse(permissions));
-    return !!UserGroup.create({
+    return await UserGroup.create({
       name,
       permissions: JSON.parse(permissions)
-    }).save()
+    }).save();
   }
 
   @Mutation(() => UserGroup)
@@ -41,4 +41,21 @@ export class UserGroupResolver {
 
     return userGroup.raw[0]
   }
+
+  @Mutation(() => Int)
+  public async deleteUserGroup(@Arg("id") id: number) {
+    const userCount = await User.count({ where: { userGroupId: id } });
+
+    if(userCount > 0) {
+      throw new Error("This Group is already used!!");
+    }
+
+    const result = await UserGroup.createQueryBuilder()
+      .delete()
+      .where("id=:id", {id})
+      .execute();
+    return result.affected;
+  }
+
+
 }
