@@ -7,6 +7,6 @@ export async function createCartProductHelper(product: Product, cart: Cart) {
   return await CartProduct.create({
     cart,
     product,
-    quantity: faker.random.number()
+    quantity: faker.random.number(10)
   }).save();
 }
