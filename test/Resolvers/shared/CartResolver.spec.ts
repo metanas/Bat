@@ -1,13 +1,13 @@
-import {Costumer} from "../../src/entity/Costumer";
-import {createCostumerHelper} from "../helper/createCostumerHelper";
-import {connection} from "../test-utils/connection";
+import {Costumer} from "../../../src/entity/Costumer";
+import {createCostumerHelper} from "../../helper/createCostumerHelper";
+import {connection} from "../../test-utils/connection";
 import {Connection} from "typeorm";
-import {graphqlCall} from "../test-utils/graphqlCall";
-import {createCartHelper} from "../helper/createCartHelper";
-import {createCartProductHelper} from "../helper/createCartProductHelper";
-import {createProductHelper} from "../helper/createProductHelper";
-import {Product} from "../../src/entity/Product";
-import {CartProduct} from "../../src/entity/CartProduct";
+import {graphqlCall} from "../../test-utils/graphqlCall";
+import {createCartHelper} from "../../helper/createCartHelper";
+import {createCartProductHelper} from "../../helper/createCartProductHelper";
+import {createProductHelper} from "../../helper/createProductHelper";
+import {Product} from "../../../src/entity/Product";
+import {CartProduct} from "../../../src/entity/CartProduct";
 import { GraphQLError } from "graphql";
 
 describe("Test Cart Resolver",  () => {

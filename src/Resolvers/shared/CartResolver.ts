@@ -56,7 +56,7 @@ export class CartResolver {
         throw new Error("Quantity Selected is Not Available");
       }
     }
-    console.log(cart);
+
     if(cart) {
       await CartProduct.create({
         cart,
