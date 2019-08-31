@@ -62,6 +62,7 @@ export class CartResolver {
     return await this.getCart(ctx)
   }
 
+
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteAllFromCart(@Ctx() ctx: ApiContext) {
