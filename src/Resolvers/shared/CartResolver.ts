@@ -13,7 +13,9 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Query(() => Cart, { nullable: true})
   public async getCart(@Ctx() ctx: ApiContext): Promise<Cart | undefined> {
-    const cart = await Cart.findOne({where: { costumerId: ctx.req.session!.token }});
+    const costumer = await Costumer.findOne(ctx.req.session!.token );
+    const cart = await Cart.findOne({where: { costumer }});
+
     if(cart) {
       cart.cartProducts = await CartProduct.find({
         join: {
@@ -27,6 +29,7 @@ export class CartResolver {
         }
       });
     }
+
     return cart
   }
 
@@ -34,7 +37,7 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Cart)
   public async setCouponToCart (@Ctx() ctx: ApiContext, @Arg("idCoupon", { nullable: true }) idCoupon?: number){
-    const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token} });
+    const costumer = await Costumer.findOne( ctx.req.session!.token);
     const coupon = (idCoupon) ? await Coupon.findOne({ where: { id: idCoupon} }) : undefined;
     if(!coupon) {
       throw new Error("Invalid Coupon !!")
@@ -45,13 +48,15 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Cart)
   public async addProductToCart(@Ctx() ctx: ApiContext, @Arg("productId") productId: number, @Arg("quantity") quantity: number) {
-    const cart = await Cart.findOne({ where: { costumerId: ctx.req.session!.token } });
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const cart = await Cart.findOne({where: { costumer}});
     const product = await Product.findOne(productId);
     if(product) {
       if (quantity > product!.quantity) {
         throw new Error("Quantity Selected is Not Available");
       }
     }
+
     if(cart) {
       await CartProduct.create({
         cart,
@@ -61,6 +66,7 @@ export class CartResolver {
     }
     return await this.getCart(ctx)
   }
+
 
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
@@ -76,23 +82,23 @@ export class CartResolver {
   @Mutation(() => Cart)
   @UseMiddleware(Auth)
   public async updateProductQuantity(@Ctx() ctx: ApiContext, @Arg("productId") productId: number, @Arg("quantity") quantity: number) {
-    const cart = await Cart.findOne({ where: { costumerId: ctx.req.session!.token }});
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const cart = await Cart.findOne({ where: { costumer }});
     const product = await Product.findOne(productId);
 
     if(product && product.quantity < quantity) {
       throw new Error("Quantity Selected is Not Available");
     }
 
-    if(cart) {
-      await getConnection()
-        .createQueryBuilder()
-        .update(CartProduct)
+    if(cart && product) {
+      CartProduct.createQueryBuilder()
+        .update()
         .set({
           quantity
         })
-        .where("cartId= :cartId", {cartId: cart.id})
-        .andWhere("productId=:productId", { productId })
-        .execute();
+        .where("cartId=:cartId", { cartId: cart.id })
+        .andWhere("productId=:productId", { productId: product.id })
+        .execute().catch((reason => console.log(reason)));
     }
 
     return await this.getCart(ctx)
@@ -101,7 +107,8 @@ export class CartResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(Auth)
   public async removeProductFromCart(@Ctx() ctx: ApiContext, @Arg("productId") productId: number) {
-    const cart = await Cart.findOne({ where: {costumerId: ctx.req.session!.token }});
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const cart = await Cart.findOne({ where: { costumer }});
     if(cart) {
       const result = await getConnection()
         .createQueryBuilder()
