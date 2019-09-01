@@ -9,6 +9,7 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   public id: string;
 
+  @Field()
   @Column()
   public name: string;
 

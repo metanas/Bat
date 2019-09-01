@@ -2,6 +2,7 @@ import {Connection} from "typeorm";
 import {connection} from "../../test-utils/connection";
 import {createUserGroupHelper} from "../../helper/createUserGroupHelper";
 import {graphqlCall} from "../../test-utils/graphqlCall";
+import {UserGroup} from "../../../src/entity/UserGroup";
 
 describe("Product Resolver Test", () => {
   let conn: Connection;
@@ -102,4 +103,29 @@ describe("Product Resolver Test", () => {
     });
   });
 
+  it("Test Delete User Group", async () => {
+    let userGroup = await createUserGroupHelper();
+    for(let i=0; i < 3; i++) {
+      userGroup = await createUserGroupHelper();
+    }
+
+    const deleteUserGroupQuery = `mutation {
+      deleteUserGroup(id: ${userGroup.id})
+    }`;
+
+    const response = await graphqlCall({
+      source: deleteUserGroupQuery,
+      isAdmin: true
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        deleteUserGroup: true
+      }
+    });
+
+    const resultExpect = await UserGroup.findOne(userGroup.id);
+
+    expect(resultExpect).toBeUndefined()
+  });
 });

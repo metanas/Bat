@@ -1,4 +1,4 @@
-import {Arg, Args, Int, Mutation, Query, Resolver} from "type-graphql";
+import {Arg, Args, Mutation, Query, Resolver} from "type-graphql";
 import {UserGroup} from "../../entity/UserGroup";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil} from "lodash";
@@ -42,7 +42,7 @@ export class UserGroupResolver {
     return userGroup.raw[0]
   }
 
-  @Mutation(() => Int)
+  @Mutation(() => Boolean)
   public async deleteUserGroup(@Arg("id") id: number) {
     const userCount = await User.count({ where: { userGroupId: id } });
 
@@ -54,7 +54,7 @@ export class UserGroupResolver {
       .delete()
       .where("id=:id", {id})
       .execute();
-    return result.affected;
+    return !!result.affected;
   }
 
 

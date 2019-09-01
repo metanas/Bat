@@ -50,6 +50,7 @@
       "lint": "eslint src/*.ts",
       "start": "ts-node-dev src/index.ts",
       "db:setup": "ts-node ./test/test-utils/setup.ts",
-      "test": "yarn db:setup && jest --runInBand"
+      "test": "yarn db:setup && jest --runInBand",
+      "testUnit": "jest --runInBand -o"
    }
 }
