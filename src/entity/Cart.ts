@@ -9,7 +9,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn
 } from "typeorm";
-import {Field, ID, ObjectType} from "type-graphql";
+import {Field, ID, Int, ObjectType} from "type-graphql";
 import {Coupon} from "./Coupon";
 import {CartProduct} from "./CartProduct";
 import {Costumer} from "./Costumer";
@@ -33,6 +33,13 @@ export class Cart extends BaseEntity {
   @OneToOne(() => Costumer, (costumer: Costumer) => costumer.cart)
   @JoinColumn()
   public costumer: Costumer;
+
+  @Field(() => Int, { name: "count" })
+  public count(): number {
+    if(this.cartProducts)
+      return this.cartProducts.length;
+    return 0
+  }
 
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
