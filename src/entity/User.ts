@@ -1,13 +1,15 @@
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ObjectType} from "type-graphql";
+import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Field, ID, ObjectType} from "type-graphql";
+import {UserGroup} from "./UserGroup";
 
 @Entity()
 @ObjectType()
 export class User extends BaseEntity {
-  @Field()
+  @Field(() => ID)
   @PrimaryGeneratedColumn("uuid")
   public id: string;
 
+  @Field()
   @Column()
   public name: string;
 
@@ -22,6 +24,7 @@ export class User extends BaseEntity {
   @Column({ default: true })
   public active: boolean;
 
-  @Column({ type: "jsonb" })
-  public permissions: object;
+  @Field(() => UserGroup)
+  @ManyToOne(() => UserGroup)
+  public userGroup: UserGroup;
 }

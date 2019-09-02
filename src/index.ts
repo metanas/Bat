@@ -9,7 +9,6 @@ import session from "express-session";
 import {redis} from "./redis";
 import connectRedis from "connect-redis";
 import isAuthorized from "./utils/authorizationChecker";
-import {User} from "./entity/User";
 
 const main = async (): Promise<void> => {
   await createConnection();
@@ -27,17 +26,11 @@ const main = async (): Promise<void> => {
     context: async ({req, res}) => {
       const token = req.headers.authorization || "";
 
-      let user;
-
       if(!isAuthorized(token)) {
         throw new ForbiddenError("Permission denied!");
       }
 
-      if(req.session!.token) {
-        user = await User.findOne(req.session!.token);
-      }
-
-      return { req , res, user }
+      return { req , res }
     }
   });
 
