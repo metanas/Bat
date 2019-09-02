@@ -34,14 +34,16 @@ export class UserResolver {
   public async addUser(@Arg("name") name: string, @Arg("password") password: string, @Arg("userGroupId") userGroupId: number) {
     const hash = await bcrypt.hash(password, 12);
     const userGroup = await UserGroup.findOne(userGroupId);
-    return await User.create({
+    const user =await User.create({
       name,
       password: hash,
       userGroup
-    }).save()
+    }).save();
+
+    return this.getUser(user.id);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => User)
   public async login(@Ctx() ctx: ApiContext, @Arg("name") name: string, @Arg("password") password: string) {
     const user = await User.findOne({ where: { name }});
     if(user) {
@@ -50,18 +52,16 @@ export class UserResolver {
       if(!isAuth) {
         throw new AuthenticationError("User and Password not register!")
       }
-    } else {
-      throw new AuthenticationError("User and Password not register!")
+
+      ctx.req.session!.token = user.id;
+      ctx.req.session!.user = user;
     }
 
-    ctx.req.session!.token = user.id;
-    ctx.req.session!.user = user;
-
-    return true;
+    return user;
   }
 
   @Mutation(() => Boolean)
-  public async deleteUser(@Arg("id") id: number) {
+  public async deleteUser(@Arg("id") id: string) {
     const result = await User.createQueryBuilder()
       .delete()
       .where("id=:id", { id })
