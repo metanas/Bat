@@ -3,6 +3,7 @@ import {connection} from "../../test-utils/connection";
 import {createUserGroupHelper} from "../../helper/createUserGroupHelper";
 import {graphqlCall} from "../../test-utils/graphqlCall";
 import {UserGroup} from "../../../src/entity/UserGroup";
+import {truncate} from "../../helper/truncateTables";
 
 describe("Product Resolver Test", () => {
   let conn: Connection;
@@ -16,6 +17,7 @@ describe("Product Resolver Test", () => {
   });
 
   it("Test Get User Groups", async () => {
+    await truncate(conn, "user_group");
     const userGroupsList: {id: number}[] = [];
     for(let i=0; i < 7; i++) {
       const userGroup = await createUserGroupHelper();
