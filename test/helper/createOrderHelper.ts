@@ -9,7 +9,7 @@ export async function createOrderHelper(address: Address, costumer: Costumer, pr
   const order = await Order.create({
     costumer,
     address: address.address,
-    driver: faker.name.firstName() + " " + faker.name.lastName(),
+    driverName: faker.name.firstName() + " " + faker.name.lastName(),
     status: faker.lorem.word()
   }).save();
 

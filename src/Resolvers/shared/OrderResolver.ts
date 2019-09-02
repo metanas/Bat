@@ -39,7 +39,7 @@ export class OrderResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Order)
-  public async addOrder (@Ctx() ctx: ApiContext, @Arg("status") status: string,@Arg("driver") driver: string, @Arg("addressId") addressId: number){
+  public async addOrder (@Ctx() ctx: ApiContext, @Arg("status") status: string,@Arg("driverName") driverName: string, @Arg("addressId") addressId: number){
     const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token} });
     const cart = await Cart.findOne({ where: { costumer } });
     if(cart) {
@@ -59,7 +59,7 @@ export class OrderResolver {
     const order = await Order.create({
       costumer,
       status,
-      driver,
+      driverName,
       address: address!.address,
     }).save();
     order.orderProducts = [];

@@ -3,6 +3,7 @@ import { ObjectType, Field, ID } from "type-graphql";
 import {Coupon} from "./Coupon";
 import {Costumer} from "./Costumer";
 import {OrderProduct} from "./OrderProduct";
+import {Driver} from "./Driver";
 
 @ObjectType()
 @Entity()
@@ -25,7 +26,7 @@ export class Order extends BaseEntity {
 
   @Field()
   @Column()
-  public driver: string;
+  public driverName: string;
 
   @Field()
   @Column()
@@ -44,5 +45,8 @@ export class Order extends BaseEntity {
 
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
+
+  @ManyToOne(() => Driver, (driver: Driver) => driver.orders)
+  public driver: Driver;
 
 }

@@ -32,7 +32,7 @@ describe("Test Order Resolver", () => {
     const getOrderQuery = `{
       getOrder(id: ${order.id}) {
         address
-        driver
+        driverName
         orderProducts {
           product {
             name
@@ -52,7 +52,7 @@ describe("Test Order Resolver", () => {
       data: {
         getOrder: {
           address: address.address,
-          driver: order.driver,
+          driverName: order.driverName,
           orderProducts: [
             {
               product: {
@@ -94,9 +94,9 @@ describe("Test Order Resolver", () => {
     }
 
     const addOrderQuery = `mutation {
-      addOrder(addressId: ${address.id}, driver: "test", status: "in progress"){
+      addOrder(addressId: ${address.id}, driverName: "test", status: "in progress"){
         address
-        driver
+        driverName
         status
         orderProducts {
           product {
@@ -118,7 +118,7 @@ describe("Test Order Resolver", () => {
       data: {
         addOrder: {
           address: address.address,
-          driver: "test",
+          driverName: "test",
           status: "in progress",
           orderProducts: [
             {
