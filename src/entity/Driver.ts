@@ -28,6 +28,10 @@ export class Driver extends BaseEntity {
 
   @Field()
   @Column()
+  public isActive: boolean;
+
+  @Field()
+  @Column()
   public longitude: string;
 
   @Field()
