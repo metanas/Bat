@@ -1,7 +1,6 @@
 import {Arg, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Auth} from "../../Middleware/Auth";
 import {Driver} from "../../entity/Driver";
-import {getConnection} from "typeorm";
 import {ceil} from "lodash";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
@@ -16,7 +15,7 @@ export class DriverResolver {
   @UseMiddleware(Auth)
   @Query(() => Driver, {nullable: true})
   public async getDriver(@Arg("id") id: string): Promise<Driver | undefined> {
-    return await Driver.findOne({where: {id}})
+    return await Driver.findOne(id)
   }
 
   @UseMiddleware(Auth)
@@ -36,7 +35,7 @@ export class DriverResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Driver)
   public async updateDriverStatus(@Arg("id") id: string, @Arg("isActive") isActive: boolean){
-    await getConnection()
+    await Driver
       .createQueryBuilder()
       .update(Driver)
       .set({isActive})
@@ -47,7 +46,7 @@ export class DriverResolver {
 
   @Mutation(() => Boolean)
   public async deleteDriver(@Arg("id") id: string) {
-    const result = await getConnection().createQueryBuilder().delete().from(Driver)
+    const result = await Driver.createQueryBuilder().delete().from(Driver)
       .where("id=:id", {id}).returning("id").execute();
     return !!result.affected
   }
