@@ -7,7 +7,7 @@ import {Order} from "./Order";
 @Entity()
 export class Driver extends BaseEntity {
   @Field(() => ID)
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn()
   public id: string;
 
   @Field()
@@ -22,9 +22,9 @@ export class Driver extends BaseEntity {
   @Column()
   public point: number;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  public avatar?: string;
+  @Field()
+  @Column()
+  public status: string;
 
   @Field()
   @Column()
