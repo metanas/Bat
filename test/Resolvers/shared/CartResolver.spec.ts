@@ -50,7 +50,7 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: getCartQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -92,7 +92,7 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: deleteAllFromCartQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -134,7 +134,7 @@ describe("Test Cart Resolver",  () => {
 
     let response = await graphqlCall({
       source: updateProductQuantityQuery,
-      token: costumer.id,
+      user: costumer,
     });
 
     expect(response).toMatchObject({
@@ -159,7 +159,7 @@ describe("Test Cart Resolver",  () => {
 
     response = await graphqlCall({
       source: updateProductQuantityQuery,
-      token: costumer.id,
+      user: costumer,
     });
 
     expect(response.errors).toContainEqual(new GraphQLError("Quantity Selected is Not Available"));
@@ -185,7 +185,7 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: addProductToCartQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -219,7 +219,7 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: removeProductFromCartQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({

@@ -35,7 +35,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: getAddressQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -62,7 +62,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: addAddressQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -97,7 +97,7 @@ describe("Test Address Resolver",  () => {
 
     let response = await graphqlCall({
       source: getAddressesQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(get(response.data, "getAddresses.items")).toEqual(take(listAddress, 5));
@@ -116,7 +116,7 @@ describe("Test Address Resolver",  () => {
 
     response = await graphqlCall({
       source: getAddressesQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 5, 10));
@@ -135,7 +135,7 @@ describe("Test Address Resolver",  () => {
 
     response = await graphqlCall({
       source: getAddressesQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 10, 12));
@@ -150,7 +150,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: deleteAddressQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -180,7 +180,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: updateAddressQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(get(response.data,"updateAddress.id")).toEqual(`${address.id}`);

@@ -45,7 +45,7 @@ export class UserResolver {
 
   @Mutation(() => User)
   public async login(@Ctx() ctx: ApiContext, @Arg("name") name: string, @Arg("password") password: string) {
-    const user = await User.findOne({ where: { name }});
+    const user = await User.findOne({ where: { name }, relations: ["userGroup"]});
     if(user) {
       const isAuth = await bcrypt.compare(password, user.password);
 
