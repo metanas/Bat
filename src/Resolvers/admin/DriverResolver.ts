@@ -6,6 +6,7 @@ import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 
 
+
 const PaginatedDriverResponse = PaginatedResponse(Driver);
 // @ts-ignore
 type PaginatedDriverResponse = InstanceType<typeof PaginatedDriverResponse>;
@@ -46,9 +47,21 @@ export class DriverResolver {
 
   @Mutation(() => Boolean)
   public async deleteDriver(@Arg("id") id: string) {
-    const result = await Driver.createQueryBuilder().delete().from(Driver)
+    const result = await Driver.createQueryBuilder().delete()
       .where("id=:id", {id}).returning("id").execute();
     return !!result.affected
+  }
+
+  @UseMiddleware(Auth)
+  @Mutation(() => Driver)
+  public async updateDriver(@Arg("id") id: string,@Arg("name") name: string,@Arg("telephone") telephone: string,@Arg("point") point: number,@Arg("avatar") avatar: string , @Arg("longitude") longitude: string,@Arg("latitude") latitude: string){
+    await Driver
+      .createQueryBuilder()
+      .update(Driver)
+      .set({ name, telephone, point,avatar,longitude,latitude})
+      .where("id=:id",{ id })
+      .execute();
+    return await Driver.findOne(id);
   }
 
   @Query(() => PaginatedDriverResponse)
