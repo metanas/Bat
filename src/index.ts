@@ -1,38 +1,19 @@
 import "reflect-metadata";
 import {createConnection} from "typeorm";
-import {ApolloServer, ForbiddenError} from "apollo-server-express";
-import {buildSchema} from "type-graphql";
 import cors from "cors";
-import {join} from "path";
 import Express from "express";
 import session from "express-session";
 import {redis} from "./redis";
 import connectRedis from "connect-redis";
-import isAuthorized from "./utils/authorizationChecker";
+import {createApolloServer} from "./server";
+import {createApolloServerAdmin} from "./server/admin";
 
 const main = async (): Promise<void> => {
   await createConnection();
 
-  const schema = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/shared/*.ts") ]});
+  const apolloServer = await createApolloServer();
 
-  const schemaAdmin = await buildSchema({resolvers: [ join(__dirname + "/Resolvers/admin/*.ts") ]});
-
-  const apolloServer = new ApolloServer({
-    schema, context: ({req, res}) => ({req, res})
-  });
-
-  const apolloServerAdmin = new ApolloServer({
-    schema: schemaAdmin,
-    context: async ({req, res}) => {
-      const token = req.headers.authorization || "";
-
-      if(!isAuthorized(token)) {
-        throw new ForbiddenError("Permission denied!");
-      }
-
-      return { req , res }
-    }
-  });
+  const apolloServerAdmin = await createApolloServerAdmin();
 
   const app = Express();
 

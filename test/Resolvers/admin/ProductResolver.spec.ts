@@ -1,25 +1,25 @@
 import {Connection} from "typeorm";
-import {Costumer} from "../../../src/entity/Costumer";
 import {Product} from "../../../src/entity/Product";
 import {connection} from "../../test-utils/connection";
-import {createCostumerHelper} from "../../helper/createCostumerHelper";
 import faker from "faker";
 import {createProductHelper} from "../../helper/createProductHelper";
-import { toInteger } from "lodash";
+import {toInteger} from "lodash";
 import {graphqlCall} from "../../test-utils/graphqlCall";
 import {createCategoryHelper} from "../../helper/createCategoryHelper";
 import {Category} from "../../../src/entity/Category";
+import {createUserHelper} from "../../helper/createUserHelper";
+import {createUserGroupHelper} from "../../helper/createUserGroupHelper";
+import {User} from "../../../src/entity/User";
 
 describe("Product Resolver Test", () => {
   let conn: Connection;
 
-  let user: Costumer;
+  let user: User;
   let product: Product;
   let category: Category;
 
   beforeAll(async () => {
     conn = await connection();
-    user = await createCostumerHelper();
   });
 
   afterAll(async () => {
@@ -27,6 +27,9 @@ describe("Product Resolver Test", () => {
   });
 
   it("Test Update Product", async () => {
+    const userGroup = await createUserGroupHelper();
+    user = await createUserHelper(userGroup);
+
     product = await createProductHelper();
 
     const newProduct = {
@@ -46,7 +49,7 @@ describe("Product Resolver Test", () => {
 
     const response = await graphqlCall({
       source: updateProductQuery,
-      token: user.id,
+      user: user,
       isAdmin: true
     });
 
@@ -63,6 +66,9 @@ describe("Product Resolver Test", () => {
   });
 
   it("Test Add New Product", async () => {
+    const userGroup = await createUserGroupHelper();
+    user = await createUserHelper(userGroup);
+
     category = await createCategoryHelper();
 
     const newProduct = {
@@ -81,7 +87,7 @@ describe("Product Resolver Test", () => {
 
     const response = await graphqlCall({
       source: addProductQuery,
-      token: user.id,
+      user: user,
       isAdmin: true
     });
 
@@ -97,6 +103,9 @@ describe("Product Resolver Test", () => {
   });
 
   it("Test Delete Product", async () => {
+    const userGroup = await createUserGroupHelper();
+    user = await createUserHelper(userGroup);
+
     product = await createProductHelper();
 
     const deleteProductQuery = `mutation {
@@ -105,7 +114,7 @@ describe("Product Resolver Test", () => {
 
     const response = await graphqlCall({
       source: deleteProductQuery,
-      token: user.id,
+      user,
       isAdmin: true
     });
 

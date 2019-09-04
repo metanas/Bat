@@ -1,4 +1,4 @@
-import {Arg, Mutation, Resolver, UseMiddleware} from "type-graphql";
+import {Arg, Authorized, Mutation, Resolver, UseMiddleware} from "type-graphql";
 import {Auth} from "../../Middleware/Auth";
 import {Product} from "../../entity/Product";
 import {Category} from "../../entity/Category";
@@ -6,7 +6,7 @@ import {getConnection} from "typeorm";
 
 @Resolver()
 export class ProductResolver {
-  @UseMiddleware(Auth)
+  @Authorized("AddProduct")
   @Mutation(() => Product)
   public async addProduct(@Arg("name") name: string, @Arg("priceUnit") priceUnit: number, @Arg("quantity") quantity: number, @Arg("categoriesId") categoryId: number): Promise<Product> {
     const categories = await Category.find({ where : {id: categoryId }});

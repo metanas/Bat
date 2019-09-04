@@ -17,13 +17,13 @@ export class AddressResolver {
   @UseMiddleware(Auth)
   @Query(() => Address, { nullable: true})
   public async getAddress(@Arg("id") id: number): Promise<Address | undefined> {
-    return await Address.findOne({where: { id }})
+    return await Address.findOne(id)
   }
 
   @UseMiddleware(Auth)
   @Mutation(() => Address)
   public async addAddress(@Ctx() ctx: ApiContext, @Arg("address") address: string, @Arg("longitude") longitude: string, @Arg("latitude") latitude: string) {
-    const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token} });
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
     return await Address.create({
       address,
       longitude,

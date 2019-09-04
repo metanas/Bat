@@ -25,7 +25,7 @@ export class Order extends BaseEntity {
   public status: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   public driverName: string;
 
   @Field()
@@ -46,7 +46,7 @@ export class Order extends BaseEntity {
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @ManyToOne(() => Driver, (driver: Driver) => driver.orders)
+  @ManyToOne(() => Driver, (driver: Driver) => driver.orders, { nullable: true })
   public driver: Driver;
 
 }

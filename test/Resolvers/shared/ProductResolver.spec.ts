@@ -37,7 +37,7 @@ describe("Product Resolver Test", () => {
 
     const response = await graphqlCall({
       source: getProductQuery,
-      token: user.id
+      user
     });
 
     expect(response).toMatchObject({
@@ -75,7 +75,7 @@ describe("Product Resolver Test", () => {
 
     let response = await graphqlCall({
       source: getProductsQuery,
-      token: user.id
+      user
     });
 
     expect(response).toMatchObject({
@@ -100,7 +100,7 @@ describe("Product Resolver Test", () => {
 
     response = await graphqlCall({
       source: getProductsQuery,
-      token: user.id
+      user
     });
 
     expect(response).toMatchObject({
