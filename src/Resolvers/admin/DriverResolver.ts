@@ -4,7 +4,7 @@ import {Driver} from "../../entity/Driver";
 import {ceil} from "lodash";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
-
+import {Order} from "../../entity/Order";
 
 
 const PaginatedDriverResponse = PaginatedResponse(Driver);
@@ -16,7 +16,21 @@ export class DriverResolver {
   @UseMiddleware(Auth)
   @Query(() => Driver, {nullable: true})
   public async getDriver(@Arg("id") id: string): Promise<Driver | undefined> {
-    return await Driver.findOne(id)
+    const driver =  await Driver.findOne(id);
+    if(driver) {
+      driver.orders = await Order.find({
+        join: {
+          alias: "order",
+          leftJoinAndSelect: {
+            name: "order.driverName"
+          }
+        },
+        where: {
+          driverName: driver.name
+        }
+      });
+    }
+    return driver
   }
 
   @UseMiddleware(Auth)
@@ -63,6 +77,22 @@ export class DriverResolver {
       .execute();
     return await Driver.findOne(id);
   }
+
+  @UseMiddleware(Auth)
+  @Mutation(() => Order)
+  public async setDriverToOrder(@Arg("id") id: string, @Arg("orderId") orderId: number) {
+    const driver = await Driver.findOne(id);
+    if(driver){
+      await Order
+        .createQueryBuilder()
+        .update(Order)
+        .set( {driverName : driver.name , driver} )
+        .where("orderId=:orderId",{orderId})
+        .execute();
+    }
+    return await Order.findOne(orderId)
+  }
+
 
   @Query(() => PaginatedDriverResponse)
   public async getDrivers(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedDriverResponse> {
