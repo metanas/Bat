@@ -45,7 +45,7 @@ describe("Test Order Resolver", () => {
 
     const response = await graphqlCall({
       source: getOrderQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -111,7 +111,7 @@ describe("Test Order Resolver", () => {
 
     const response = await graphqlCall({
       source: addOrderQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -178,7 +178,7 @@ describe("Test Order Resolver", () => {
 
     let response = await graphqlCall({
       source: getOrdersQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(get(response.data, "getOrders.items")).toEqual(
@@ -199,7 +199,7 @@ describe("Test Order Resolver", () => {
 
     response = await graphqlCall({
       source: getOrdersQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(get(response.data, "getOrders.items")).toEqual(

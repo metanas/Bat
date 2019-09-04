@@ -31,7 +31,7 @@ describe("Me", () => {
 
     const response = await graphqlCall({
       source: meQuery,
-      token: costumer.id
+      user: costumer
     });
 
     expect(response).toMatchObject({
@@ -71,7 +71,7 @@ describe("Me", () => {
         }
       }
     });
-  }, 30000);
+  });
 
   it("Test Login", async () => {
     const registerQuery = `mutation { 
@@ -86,7 +86,6 @@ describe("Me", () => {
 
     const response = await graphqlCall({
       source: registerQuery,
-      token: undefined
     });
 
     expect(response).toMatchObject({
@@ -113,8 +112,7 @@ describe("Me", () => {
 
 
     const response = await graphqlCall({
-      source: registerQuery,
-      token: undefined
+      source: registerQuery
     });
 
     expect(response.data).toBeNull();

@@ -33,7 +33,7 @@ describe("Test Order Resolver", () => {
 
     const response = await graphqlCall({
       source: updateOrderStatusQuery,
-      token: user.id,
+      user: user,
       isAdmin: true
     });
 
