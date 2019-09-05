@@ -25,6 +25,6 @@ export class User extends BaseEntity {
   public active: boolean;
 
   @Field(() => UserGroup)
-  @ManyToOne(() => UserGroup)
+  @ManyToOne(() => UserGroup, {eager: true})
   public userGroup: UserGroup;
 }

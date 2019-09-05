@@ -14,7 +14,7 @@ export class CartProduct extends BaseEntity {
   public productId: number;
 
   @Field(() => Product)
-  @ManyToOne(() => Product, (cart: Cart) => cart.cartProducts, { primary: true})
+  @ManyToOne(() => Product, (cart: Cart) => cart.cartProducts, { primary: true, eager: true})
   @JoinColumn({ name: "productId"})
   public product: Product;
 

@@ -1,25 +1,24 @@
 import {Arg, Mutation, Resolver} from "type-graphql";
 import {Category} from "../../entity/Category";
-import {getConnection} from "typeorm";
-import {CategoryResolver as Base } from "../shared/CategoryResolver";
+import {CategoryResolver as Base} from "../shared/CategoryResolver";
 
 @Resolver()
 export class CategoryResolver extends Base{
   @Mutation(() => Category)
   public async updateCategory(@Arg("id") id: number, @Arg("name") name: string) {
-    await getConnection()
+    await Category
       .createQueryBuilder()
-      .update(Category)
+      .update()
       .set({name})
       .where("id=:id", {id})
       .execute();
 
-    return await Category.findOne({where: {id}})
+    return await Category.findOne(id);
   }
 
   @Mutation(() => Boolean)
   public async deleteCategory(@Arg("id") id: number) {
-    const result = await getConnection().createQueryBuilder().delete().from(Category)
+    const result = await Category.createQueryBuilder().delete()
       .where("id=:id", {id}).returning("id").execute();
     return !!result.affected
   }

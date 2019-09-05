@@ -52,7 +52,7 @@ export class DriverResolver {
   public async updateDriverStatus(@Arg("id") id: string, @Arg("isActive") isActive: boolean){
     await Driver
       .createQueryBuilder()
-      .update(Driver)
+      .update()
       .set({isActive})
       .where("id=:id", {id})
       .execute();
@@ -71,7 +71,7 @@ export class DriverResolver {
   public async updateDriver(@Arg("id") id: string,@Arg("name") name: string,@Arg("telephone") telephone: string,@Arg("point") point: number,@Arg("avatar") avatar: string , @Arg("longitude") longitude: string,@Arg("latitude") latitude: string){
     await Driver
       .createQueryBuilder()
-      .update(Driver)
+      .update()
       .set({ name, telephone, point,avatar,longitude,latitude})
       .where("id=:id",{ id })
       .execute();
@@ -85,7 +85,7 @@ export class DriverResolver {
     if(driver){
       await Order
         .createQueryBuilder()
-        .update(Order)
+        .update()
         .set( {driverName : driver.name , driver} )
         .where("orderId=:orderId",{orderId})
         .execute();
