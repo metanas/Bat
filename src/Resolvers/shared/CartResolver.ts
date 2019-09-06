@@ -3,7 +3,6 @@ import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Cart} from "../../entity/Cart";
 import {ApiContext} from "../../types/ApiContext";
 import {Coupon} from "../../entity/Coupon";
-import {getConnection} from "typeorm";
 import {CartProduct} from "../../entity/CartProduct";
 import {Costumer} from "../../entity/Costumer";
 import {Product} from "../../entity/Product";
@@ -14,23 +13,7 @@ export class CartResolver {
   @Query(() => Cart, { nullable: true})
   public async getCart(@Ctx() ctx: ApiContext): Promise<Cart | undefined> {
     const costumer = await Costumer.findOne(ctx.req.session!.token );
-    const cart = await Cart.findOne({where: { costumer }});
-
-    if(cart) {
-      cart.cartProducts = await CartProduct.find({
-        join: {
-          alias: "cartProduct",
-          leftJoinAndSelect: {
-            product: "cartProduct.product"
-          }
-        },
-        where: {
-          cartId: cart.id
-        }
-      });
-    }
-
-    return cart
+    return await Cart.findOne({where: {costumer}})
   }
 
   // TODO Implementation
@@ -49,7 +32,7 @@ export class CartResolver {
   @Mutation(() => Cart)
   public async addProductToCart(@Ctx() ctx: ApiContext, @Arg("productId") productId: number, @Arg("quantity") quantity: number) {
     const costumer = await Costumer.findOne(ctx.req.session!.token);
-    const cart = await Cart.findOne({where: { costumer}});
+    const cart = await Cart.findOne({where: { costumer }});
     const product = await Product.findOne(productId);
     if(product) {
       if (quantity > product!.quantity) {
@@ -91,14 +74,14 @@ export class CartResolver {
     }
 
     if(cart && product) {
-      CartProduct.createQueryBuilder()
+      await CartProduct.createQueryBuilder()
         .update()
         .set({
           quantity
         })
         .where("cartId=:cartId", { cartId: cart.id })
         .andWhere("productId=:productId", { productId: product.id })
-        .execute().catch((reason => console.log(reason)));
+        .execute();
     }
 
     return await this.getCart(ctx)
@@ -110,10 +93,9 @@ export class CartResolver {
     const costumer = await Costumer.findOne(ctx.req.session!.token);
     const cart = await Cart.findOne({ where: { costumer }});
     if(cart) {
-      const result = await getConnection()
+      const result = await CartProduct
         .createQueryBuilder()
         .delete()
-        .from(CartProduct)
         .where("productId=:productId", {productId})
         .execute();
       return !!result.affected;

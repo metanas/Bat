@@ -94,9 +94,8 @@ describe("Test Order Resolver", () => {
     }
 
     const addOrderQuery = `mutation {
-      addOrder(addressId: ${address.id}, driverName: "test", status: "in progress"){
+      addOrder(addressId: ${address.id}){
         address
-        driverName
         status
         orderProducts {
           product {
@@ -118,8 +117,7 @@ describe("Test Order Resolver", () => {
       data: {
         addOrder: {
           address: address.address,
-          driverName: "test",
-          status: "in progress",
+          status: "In Progress",
           orderProducts: [
             {
               product: {
@@ -155,7 +153,7 @@ describe("Test Order Resolver", () => {
   it("Test Get Orders Pagination", async () => {
     costumer = await createCostumerHelper();
 
-    const orders: {id: string}[] = [];
+    let orders: {id: string}[] = [];
 
     for (let i=0; i < 17; i++) {
       const address = await createAddressHelper(costumer);
@@ -164,6 +162,8 @@ describe("Test Order Resolver", () => {
 
       orders.push({ id: order.id.toString() });
     }
+
+    orders = orders.reverse();
 
     let getOrdersQuery = `{
       getOrders(data: { page: 1, limit: 7 }) {

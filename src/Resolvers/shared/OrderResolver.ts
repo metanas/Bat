@@ -9,7 +9,6 @@ import {ceil} from "lodash";
 import {OrderProduct} from "../../entity/OrderProduct";
 import {Cart} from "../../entity/Cart";
 import {Address} from "../../entity/Address";
-import {CartProduct} from "../../entity/CartProduct";
 
 const PaginatedOrderResponse = PaginatedResponse(Order);
 // @ts-ignore
@@ -20,69 +19,49 @@ export class OrderResolver {
   @UseMiddleware(Auth)
   @Query(() => Order, { nullable: true})
   public async getOrder(@Arg("id") id: number): Promise<Order | undefined> {
-    const order = await Order.findOne(id);
-    if(order) {
-      order.orderProducts = await OrderProduct.find({
-        join: {
-          alias: "orderProduct",
-          leftJoinAndSelect: {
-            product: "orderProduct.product"
-          }
-        },
-        where: {
-          orderId: order.id
-        }
-      });
-    }
-    return order;
+    return await Order.findOne(id);
   }
 
   @UseMiddleware(Auth)
   @Mutation(() => Order)
-  public async addOrder (@Ctx() ctx: ApiContext, @Arg("status") status: string,@Arg("driverName") driverName: string, @Arg("addressId") addressId: number){
-    const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token} });
+  public async addOrder (@Ctx() ctx: ApiContext,  @Arg("addressId") addressId: number){
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
     const cart = await Cart.findOne({ where: { costumer } });
-    if(cart) {
-      cart.cartProducts = await CartProduct.find({
-        join: {
-          alias: "cartProduct",
-          leftJoinAndSelect: {
-            product: "cartProduct.product"
-          }
-        },
-        where: {
-          cartId: cart.id
-        }
-      });
+
+    if(cart && cart.count() === 0){
+      throw new Error("Your Cart is Empty")
     }
+
     const address = await Address.findOne(addressId);
+
+    if(!address) {
+      throw new Error("Please set Address!")
+    }
+
     const order = await Order.create({
       costumer,
-      status,
-      driverName,
-      address: address!.address,
+      address: address.address,
     }).save();
-    order.orderProducts = [];
+
     if(order && cart!.cartProducts) {
       for(let i=0; i < cart!.cartProducts.length; i++){
-        const orderProduct = await OrderProduct.create({
+        await OrderProduct.create({
           order,
           product: cart!.cartProducts[i].product,
           price: cart!.cartProducts[i].product.priceUnit,
           quantity: cart!.cartProducts[i].quantity
         }).save();
-        order.orderProducts.push(orderProduct);
       }
     }
 
-    return order;
+    return await Order.findOne(order.id);
   }
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedOrderResponse)
   public async getOrders(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedOrderResponse> {
     const costumer = await Costumer.findOne(ctx.req.session!.token);
-    const result = await Order.findAndCount({where: { costumer }, skip: (page - 1) * limit, take: limit});
+    const result = await Order.findAndCount({ where: { costumer }, order: { id: "DESC" }, skip: (page - 1) * limit, take: limit});
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),

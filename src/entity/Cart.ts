@@ -25,7 +25,7 @@ export class Cart extends BaseEntity {
   public coupon?: Coupon;
 
   @Field(() => [CartProduct])
-  @OneToMany(() => CartProduct, (cartProduct: CartProduct) => cartProduct.cart, { onDelete: "CASCADE" })
+  @OneToMany(() => CartProduct, (cartProduct: CartProduct) => cartProduct.cart, { eager: true })
   @JoinTable()
   public cartProducts?: CartProduct[];
 

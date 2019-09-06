@@ -22,7 +22,7 @@ export class OrderProduct extends BaseEntity {
   public quantity: number;
 
   @Field(() => Product)
-  @ManyToOne(() => Product, (order: Order) => order.orderProducts, { primary: true })
+  @ManyToOne(() => Product, (order: Order) => order.orderProducts, { primary: true, eager: true })
   @JoinColumn({name: "productId"})
   public product: Product;
 
