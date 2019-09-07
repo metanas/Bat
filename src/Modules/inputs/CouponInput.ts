@@ -4,6 +4,9 @@ import {IsDateString, IsInt, IsString, Max} from "class-validator";
 @InputType()
 export class CouponInput {
   @Field()
+  public id?: string;
+
+  @Field()
   @IsString()
   public name!: string;
 

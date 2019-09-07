@@ -30,7 +30,7 @@ export class CouponResolver extends Base {
   }
 
   @Mutation(() => Coupon)
-  public async updateCoupon(@Arg("data") {name, couponUse, dateBegin, dateEnd, discountAmount, discountPercent, discountType, key }: CouponInput) {
+  public async updateCoupon(@Arg("data") {id, name, couponUse, dateBegin, dateEnd, discountAmount, discountPercent, discountType, key }: CouponInput) {
     await Coupon.createQueryBuilder()
       .update()
       .set({
@@ -38,11 +38,12 @@ export class CouponResolver extends Base {
         couponUse,
         dateBegin,
         dateEnd,
+        key,
         discountType,
         discountPercent,
         discountAmount
       })
-      .where("key=:key", { key })
+      .where("id=:id", { id })
       .execute();
     return await super.getCoupon(key)
   }
