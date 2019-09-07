@@ -16,16 +16,20 @@ export class CartResolver {
     return await Cart.findOne({where: {costumer}})
   }
 
-  // TODO Implementation
   @UseMiddleware(Auth)
   @Mutation(() => Cart)
-  public async setCouponToCart (@Ctx() ctx: ApiContext, @Arg("idCoupon", { nullable: true }) idCoupon?: number){
-    const costumer = await Costumer.findOne( ctx.req.session!.token);
-    const coupon = (idCoupon) ? await Coupon.findOne({ where: { id: idCoupon} }) : undefined;
+  public async setCouponToCart (@Ctx() ctx: ApiContext, @Arg("key") key: string){
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const coupon = await Coupon.findOne({ where: { key } });
     if(!coupon) {
       throw new Error("Invalid Coupon !!")
     }
-    await Cart.update({costumer}, {coupon});
+    await Cart.createQueryBuilder()
+      .update()
+      .set({ coupon })
+      .where("costumerId=:id", { id: costumer!.id})
+      .execute();
+    return Cart.findOne({ where: { costumer }});
   }
 
   @UseMiddleware(Auth)
