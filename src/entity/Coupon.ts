@@ -24,15 +24,15 @@ export class Coupon extends BaseEntity {
   public key: string;
 
   @Field()
-  @Column({ name: "discount_percent" })
+  @Column({ name: "discount_percent", nullable: true })
   public discountPercent: number;
 
   @Field()
-  @Column({ name: "discount_amount" })
+  @Column({ name: "discount_amount", nullable: true })
   public discountAmount: number;
 
   @Field()
-  @Column({ type: "timestamp", name: "date_begin" })
+  @Column({ type: "timestamp", name: "date_begin", nullable: true })
   public dateBegin: string;
 
   @Field()
@@ -47,7 +47,7 @@ export class Coupon extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @OneToMany(() => CouponProduct, (couponProduct: CouponProduct) => couponProduct.coupon)
+  @OneToMany(() => CouponProduct, (couponProduct: CouponProduct) => couponProduct.coupon, { eager: true })
   @JoinTable()
   public couponProducts: CouponProduct[];
 
@@ -55,7 +55,7 @@ export class Coupon extends BaseEntity {
   public carts: Cart[];
 
   @Field(() => [Order])
-  @OneToMany(() => Order, (order: Order) => order.coupon)
+  @OneToMany(() => Order, (order: Order) => order.coupon, { eager: true })
   @JoinTable()
   public orders: Order[];
 

@@ -3,8 +3,8 @@ import {IsDateString, IsInt, IsString, Max} from "class-validator";
 
 @InputType()
 export class CouponInput {
-  @Field()
-  public id?: string;
+  @Field({ nullable: true })
+  public id?: number;
 
   @Field()
   @IsString()
@@ -30,7 +30,7 @@ export class CouponInput {
   @IsDateString()
   public dateBegin: string;
 
-  @Field()
+  @Field({ nullable: true })
   @IsDateString()
   public dateEnd: string;
 

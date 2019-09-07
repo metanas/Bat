@@ -11,15 +11,7 @@ export class CouponResolver {
   @UseMiddleware(Auth)
   @Query(() => Coupon)
   public async getCoupon(@Arg("key") key: string) {
-    const coupon = await Coupon.findOne({where: {key},
-      join: {
-        alias: "CouponProduct",
-        leftJoinAndSelect: {
-          product: "CouponProduct.product"
-        }
-      },
-      relations: ["order"]
-    });
+    const coupon = await Coupon.findOne({ where: { key } });
     if(!coupon || !coupon.isValid()) {
       throw new Error("Invalid Coupon Key!")
     }
@@ -32,6 +24,11 @@ export class CouponResolver {
   public async setCouponToCostumer(@Ctx() ctx: ApiContext, @Arg("couponKey") key: string) {
     const costumer = await Costumer.findOne(ctx.req.session!.token);
     const coupon = await Coupon.findOne({ where: { key } });
+
+    if(!coupon || !coupon.isValid()) {
+      throw new Error("Invalid Coupon!");
+    }
+
     return !!await CostumerCoupon.create({
       costumer,
       coupon
