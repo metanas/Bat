@@ -2,7 +2,6 @@ import {Arg, Authorized, Mutation, Resolver, UseMiddleware} from "type-graphql";
 import {Auth} from "../../Middleware/Auth";
 import {Product} from "../../entity/Product";
 import {Category} from "../../entity/Category";
-import {getConnection} from "typeorm";
 
 @Resolver()
 export class ProductResolver {
@@ -21,9 +20,9 @@ export class ProductResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Product)
   public async updateProduct(@Arg("id") id: number,@Arg("name") name: string,@Arg("priceUnit") priceUnit: number,@Arg("quantity") quantity: number){
-    await getConnection()
+    await Product
       .createQueryBuilder()
-      .update(Product)
+      .update()
       .set({ name, priceUnit, quantity })
       .where("id=:id",{ id })
       .execute();
@@ -33,7 +32,7 @@ export class ProductResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteProduct(@Arg("id") id: number) {
-    const result = await getConnection().createQueryBuilder().delete().from(Product)
+    const result = await Product.createQueryBuilder().delete()
       .where("id=:id", {id}).returning("id").execute();
     return !!result.affected
   }

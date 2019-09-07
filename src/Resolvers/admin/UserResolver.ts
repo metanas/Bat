@@ -16,7 +16,7 @@ type PaginatedUserResponse = InstanceType<typeof PaginatedUserResponse>;
 export class UserResolver {
   @Query(() => PaginatedUserResponse)
   public async getUsers(@Args() { limit, page }: PaginatedResponseArgs) {
-    const result = await User.findAndCount({skip: (page-1) * limit, take: limit, order: { "create_at": "ASC"}, relations: ["userGroup"]});
+    const result = await User.findAndCount({skip: (page-1) * limit, take: limit, order: { "create_at": "ASC"}});
 
     return {
       items: result[0],
