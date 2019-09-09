@@ -24,11 +24,23 @@ export class Product extends BaseEntity {
 
   @Field()
   @Column()
-  public priceUnit: number;
+  public priceCent: number;
+
+  @Field()
+  @Column()
+  public weight: number;
+
+  @Field()
+  @Column()
+  public unit: string;
 
   @Field()
   @Column()
   public quantity: number;
+
+  @Field()
+  @Column({ default: false })
+  public enabled: boolean;
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })

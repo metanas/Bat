@@ -124,7 +124,7 @@ describe("Test Order Resolver", () => {
                 id: cartProduct[0].product.id.toString(),
                 name: cartProduct[0].product.name
               },
-              price: cartProduct[0].product.priceUnit,
+              price: cartProduct[0].product.priceCent,
               quantity: cartProduct[0].quantity
             },
             {
@@ -132,7 +132,7 @@ describe("Test Order Resolver", () => {
                 id: cartProduct[1].product.id.toString(),
                 name: cartProduct[1].product.name
               },
-              price: cartProduct[1].product.priceUnit,
+              price: cartProduct[1].product.priceCent,
               quantity: cartProduct[1].quantity
             },
             {
@@ -140,7 +140,7 @@ describe("Test Order Resolver", () => {
                 id: cartProduct[2].product.id.toString(),
                 name: cartProduct[2].product.name
               },
-              price: cartProduct[2].product.priceUnit,
+              price: cartProduct[2].product.priceCent,
               quantity: cartProduct[2].quantity
             },
           ]

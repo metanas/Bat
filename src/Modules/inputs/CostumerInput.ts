@@ -10,5 +10,4 @@ export class CostumerInput {
 
   @Field({nullable: true })
   public birthday: string;
-
 }

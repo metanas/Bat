@@ -30,7 +30,7 @@ describe("Product Resolver Test", () => {
       getProduct(id: ${product.id}) {
         id
         name
-        priceUnit
+        priceCent
         quantity
       }
     }`;
@@ -45,7 +45,7 @@ describe("Product Resolver Test", () => {
         getProduct: {
           id: `${product.id}`,
           name: product.name,
-          priceUnit: product.priceUnit,
+          priceCent: product.priceCent,
           quantity: product.quantity
         }
       }

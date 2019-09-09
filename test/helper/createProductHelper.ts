@@ -7,6 +7,8 @@ export async function createProductHelper() {
   return await Product.create({
     name: faker.commerce.productName(),
     quantity: faker.random.number(),
-    priceUnit: toInteger(faker.commerce.price())
+    priceCent: toInteger(faker.commerce.price()),
+    weight: faker.random.number({ min: 0, max: 100 }),
+    unit: faker.name.prefix()
   }).save();
 }
