@@ -15,22 +15,8 @@ type PaginatedDriverResponse = InstanceType<typeof PaginatedDriverResponse>;
 export class DriverResolver {
   @UseMiddleware(Auth)
   @Query(() => Driver, {nullable: true})
-  public async getDriver(@Arg("id") id: string): Promise<Driver | undefined> {
-    const driver =  await Driver.findOne(id);
-    if(driver) {
-      driver.orders = await Order.find({
-        join: {
-          alias: "order",
-          leftJoinAndSelect: {
-            name: "order.driverName"
-          }
-        },
-        where: {
-          driverName: driver.name
-        }
-      });
-    }
-    return driver
+  public async getDriver(@Arg("id") id: number): Promise<Driver | undefined> {
+    return await Driver.findOne(id)
   }
 
   @UseMiddleware(Auth)
@@ -49,7 +35,7 @@ export class DriverResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Driver)
-  public async updateDriverStatus(@Arg("id") id: string, @Arg("isActive") isActive: boolean){
+  public async updateDriverStatus(@Arg("id") id: number, @Arg("isActive") isActive: boolean){
     await Driver
       .createQueryBuilder()
       .update()
@@ -60,7 +46,7 @@ export class DriverResolver {
   }
 
   @Mutation(() => Boolean)
-  public async deleteDriver(@Arg("id") id: string) {
+  public async deleteDriver(@Arg("id") id: number) {
     const result = await Driver.createQueryBuilder().delete()
       .where("id=:id", {id}).returning("id").execute();
     return !!result.affected
@@ -68,7 +54,7 @@ export class DriverResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Driver)
-  public async updateDriver(@Arg("id") id: string,@Arg("name") name: string,@Arg("telephone") telephone: string,@Arg("point") point: number,@Arg("avatar") avatar: string , @Arg("longitude") longitude: string,@Arg("latitude") latitude: string){
+  public async updateDriver(@Arg("id") id: number,@Arg("name") name: string,@Arg("telephone") telephone: string,@Arg("point") point: number,@Arg("avatar") avatar: string , @Arg("longitude") longitude: string,@Arg("latitude") latitude: string){
     await Driver
       .createQueryBuilder()
       .update()
@@ -80,7 +66,7 @@ export class DriverResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Order)
-  public async setDriverToOrder(@Arg("id") id: string, @Arg("orderId") orderId: number) {
+  public async setDriverToOrder(@Arg("id") id: number, @Arg("orderId") orderId: number) {
     const driver = await Driver.findOne(id);
     if(driver){
       await Order
@@ -93,7 +79,7 @@ export class DriverResolver {
     return await Order.findOne(orderId)
   }
 
-
+  @UseMiddleware(Auth)
   @Query(() => PaginatedDriverResponse)
   public async getDrivers(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedDriverResponse> {
     const result = await Driver.findAndCount({ skip: (page - 1) * limit, take: limit });
