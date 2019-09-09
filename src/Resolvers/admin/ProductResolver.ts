@@ -4,21 +4,31 @@ import {Product} from "../../entity/Product";
 import {Category} from "../../entity/Category";
 import {ProductArgs} from "../../Modules/inputs/ProductArgs";
 import {ProductResolver as Base} from "../shared/ProductResolver";
-import { In } from "typeorm";
+import {In} from "typeorm";
+import {ProductCategory} from "../../entity/ProductCategory";
 
 @Resolver()
 export class ProductResolver extends Base {
   @Mutation(() => Product)
   public async addProduct(@Args() args: ProductArgs): Promise<Product> {
     const categories = await Category.find({ where: { id: In(args.categoryIds) } });
-    return await Product.create({
+
+    const product = await Product.create({
       name: args.name,
       priceCent: args.priceCent,
       weight: args.weight,
       quantity: args.quantity,
-      unit: args.unit,
-      categories
+      unit: args.unit
     }).save();
+
+    categories.forEach((category: Category) =>
+      ProductCategory.create({
+        category,
+        product
+      }).save().catch((error) => console.log(error))
+    );
+
+    return product
   }
 
   @UseMiddleware(Auth)
@@ -35,8 +45,8 @@ export class ProductResolver extends Base {
         unit: args.unit,
         weight: args.weight})
       .where("id=:id",{ id })
-      .execute().catch((error) => console.log(error) );
-    return super.getProduct(id);
+      .execute();
+    return await Product.findOne(id);
   }
 
   @UseMiddleware(Auth)

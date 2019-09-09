@@ -24,7 +24,7 @@ describe("Product Resolver Test", () => {
   });
 
   it("Test Get Product", async () => {
-    product = await createProductHelper();
+    product = await createProductHelper(true);
 
     const getProductQuery = `{
       getProduct(id: ${product.id}) {
@@ -59,12 +59,12 @@ describe("Product Resolver Test", () => {
     const productList: { id: string }[] = [];
 
     for(let i = 0; i < 12; i++){
-      product = await createProductHelper();
+      product = await createProductHelper(true);
       productList.push({ id: `${product.id}` });
     }
 
     let getProductsQuery = `{
-      getProducts(data: {page: 1, limit: 5}) {
+      getProducts(page: 1, limit: 5) {
         items {
           id
         }
@@ -89,7 +89,7 @@ describe("Product Resolver Test", () => {
     });
 
     getProductsQuery = `{
-      getProducts(data: {page: 2, limit: 5}) {
+      getProducts(page: 2, limit: 5) {
         items {
           id
         }
@@ -113,4 +113,6 @@ describe("Product Resolver Test", () => {
       }
     });
   });
+
+  //TODO GET PRODUCTS BY FILTER NAME
 });

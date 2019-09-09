@@ -1,15 +1,7 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  BaseEntity,
-  OneToMany,
-  ManyToMany,
-  JoinTable
-} from "typeorm";
-import { ObjectType, Field, ID } from "type-graphql";
+import {BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Field, ID, ObjectType} from "type-graphql";
 import {ProductPicture} from "./ProductPicture";
-import {Category} from "./Category";
+import {ProductCategory} from "./ProductCategory";
 
 @ObjectType()
 @Entity()
@@ -51,8 +43,9 @@ export class Product extends BaseEntity {
   @JoinTable()
   public productPictures: ProductPicture[];
 
-  @ManyToMany(() => Category)
+  @Field(() => [ProductCategory])
+  @OneToMany(() => ProductCategory, (productCategory: ProductCategory) => productCategory.product)
   @JoinTable()
-  public categories: Category[];
+  public ProductCategory: ProductCategory[];
 }
 
