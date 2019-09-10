@@ -7,8 +7,8 @@ import {Product} from "./Product";
 @ObjectType()
 @Entity()
 export class Favourite extends BaseEntity{
-  @PrimaryColumn()
-  public costumerId: number;
+  @PrimaryColumn("uuid")
+  public costumerId: string;
 
   @PrimaryColumn()
   public productId: number;
