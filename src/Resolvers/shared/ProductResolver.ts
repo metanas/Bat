@@ -21,15 +21,19 @@ export class ProductResolver {
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedProductResponse)
-  public async getProducts(@Args() { page, limit, name }: PaginatedResponseArgs): Promise<PaginatedProductResponse> {
+  public async getProducts(@Arg("categoryId", { nullable: true }) categoryId: number, @Args() { page, limit, name }: PaginatedResponseArgs): Promise<PaginatedProductResponse> {
     const options: FindManyOptions = {
       skip: (page - 1) * limit,
       take: limit,
       where: { enabled: true }
     };
 
+    if(categoryId) {
+      set(options, "where.categoryId", categoryId);
+    }
+
     if(name) {
-      set(options, "where.name", Raw(columnAlias => `lower(${columnAlias}) like '%${name.toLowerCase()}%'`))
+      set(options, "where.name", Raw(columnAlias => `lower(${columnAlias}) like '%${name.toLowerCase()}%'`));
     }
 
     const result = await Product.findAndCount(options);
