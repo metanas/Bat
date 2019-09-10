@@ -175,7 +175,7 @@ describe("Test Address Resolver",  () => {
         address
         longitude
         latitude
-      } 
+      } si 
     }`;
 
     const response = await graphqlCall({
