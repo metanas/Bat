@@ -28,22 +28,21 @@ describe("Test Cart Resolver",  () => {
     product = await createProductHelper();
 
     const addDelFavouriteQuery = `mutation {
-    addDelFavourite(productId: ${product.id})}`;
-
+      addDelFavourite(productId: ${product.id})
+    }`;
 
     const response = await graphqlCall({
       source: addDelFavouriteQuery,
       user: costumer
     });
 
-
     console.log(response.errors);
 
     expect(response).toMatchObject({
       data:{
         addDelFavourite: true
-        }
-      });
+      }
+    });
   });
 
 

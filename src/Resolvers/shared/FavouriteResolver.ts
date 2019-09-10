@@ -11,14 +11,12 @@ export class FavouriteResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async addDelFavourite(@Ctx() ctx: ApiContext,@Arg("productId") productId: number) {
-
     const costumer = await Costumer.findOne(ctx.req.session!.token);
-    const product = await Product.findOne({where:{productId}});
+    const product = await Product.findOne(productId);
     const idCostumer= ctx.req.session!.token;
-    const favourite = await Favourite.findOne({where:{idCostumer,productId}});
+    const favourite = await Favourite.findOne({ where:{ idCostumer, productId } });
 
     if (favourite) {
-
       const result= await Favourite
         .createQueryBuilder()
         .delete()
@@ -34,12 +32,5 @@ export class FavouriteResolver {
       product,
     }).save();
     return result !== undefined;
-
-
-
-
-
   }
-
-
 }
