@@ -10,6 +10,7 @@ import {
 import { ObjectType, Field, ID } from "type-graphql";
 import {ProductPicture} from "./ProductPicture";
 import {Category} from "./Category";
+import {Favourite} from "./Favourite";
 
 @ObjectType()
 @Entity()
@@ -42,5 +43,9 @@ export class Product extends BaseEntity {
   @ManyToMany(() => Category)
   @JoinTable()
   public categories: Category[];
+
+  
+  @OneToMany(() => Favourite, (favourite: Favourite) => favourite.product)
+  favourite: Favourite;
 }
 
