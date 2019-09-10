@@ -44,9 +44,8 @@ export class Product extends BaseEntity {
   @JoinTable()
   public categories: Category[];
 
-  @Field(() => [Favourite])
+  
   @OneToMany(() => Favourite, (favourite: Favourite) => favourite.product)
-  @JoinTable()
   favourite: Favourite;
 }
 
