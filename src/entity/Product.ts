@@ -2,6 +2,7 @@ import {BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn
 import {Field, ID, ObjectType} from "type-graphql";
 import {ProductPicture} from "./ProductPicture";
 import {ProductCategory} from "./ProductCategory";
+import {Favourite} from "./Favourite";
 
 @ObjectType()
 @Entity()
@@ -47,5 +48,8 @@ export class Product extends BaseEntity {
   @OneToMany(() => ProductCategory, (productCategory: ProductCategory) => productCategory.product)
   @JoinTable()
   public ProductCategory: ProductCategory[];
+
+  @OneToMany(() => Favourite, (favourite: Favourite) => favourite.product)
+  favourite: Favourite;
 }
 
