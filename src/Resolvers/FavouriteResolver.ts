@@ -38,23 +38,23 @@ export class OrderResolver {
 
     }
 
-    else {
+    
 
-      const result = await Favourite.create({
-        costumer,
-        product,
-      }).save();
+    const result = await Favourite.create({
+      costumer,
+      product,
+    }).save();
 
-      return result !== undefined;
+    return result !== undefined;
 
-    }
+    
 
 
 
   }
 
   @Query(() => PaginatedFavouriteResponse)
-  public async getProductsFavourite(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedFavouriteResponse> {
+  public async getProductsFavourite(@Arg("data") { page, limit }: paginatedResponseArgs): Promise<PaginatedFavouriteResponse> {
     const result = await Favourite.findAndCount({ skip: (page - 1) * limit, take: limit });
     return {
       items: result[0],
