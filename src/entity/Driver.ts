@@ -27,7 +27,7 @@ export class Driver extends BaseEntity {
   public avatar?: string;
 
   @Field()
-  @Column({default: true})
+  @Column({default: false})
   public isActive: boolean;
 
   @Field()

@@ -168,7 +168,6 @@ describe("Test Driver Resolver",  () => {
       user: user,
       isAdmin: true
     });
-    console.log(response.errors);
 
     expect(response).toMatchObject({
       data: {
