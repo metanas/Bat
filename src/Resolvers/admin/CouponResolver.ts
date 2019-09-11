@@ -1,5 +1,5 @@
 import {Arg, Args, Mutation, Query, Resolver} from "type-graphql";
-import {CouponInput} from "../../Modules/inputs/CouponInput";
+import {CouponArgs} from "../../Modules/inputs/CouponArgs";
 import {Coupon} from "../../entity/Coupon";
 import {CouponResolver as Base} from "../shared/CouponResolver";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
@@ -14,16 +14,16 @@ type PaginatedCouponResponse = InstanceType<typeof PaginatedCouponResponse>;
 export class CouponResolver extends Base {
   // // TODO Admin PERMISSION
   @Mutation(() => Coupon)
-  public async addCoupon(@Arg("data") { name, couponUse, dateBegin, dateEnd, discountAmount, discountPercent, discountType, key }: CouponInput) {
+  public async addCoupon(@Args() args: CouponArgs) {
     return await Coupon.create({
-      name,
-      couponUse,
-      key,
-      dateBegin,
-      dateEnd,
-      discountAmount,
-      discountPercent,
-      discountType
+      name: args.name,
+      couponUse: args.couponUse,
+      dateBegin: args.dateBegin,
+      dateEnd: args.dateEnd,
+      key: args.key,
+      discountType: args.discountType,
+      discountPercent: args.discountPercent,
+      discountAmount: args.discountAmount
     }).save();
   }
 
@@ -37,18 +37,18 @@ export class CouponResolver extends Base {
   }
 
   @Mutation(() => Coupon)
-  public async updateCoupon(@Arg("data") {id, name, couponUse, dateBegin, dateEnd, discountAmount, discountPercent, discountType, key }: CouponInput) {
+  public async updateCoupon(@Arg("id") id: number, @Args() args: CouponArgs) {
     await Coupon.createQueryBuilder()
       .update()
       .set({
-        name,
-        couponUse,
-        dateBegin,
-        dateEnd,
-        key,
-        discountType,
-        discountPercent,
-        discountAmount
+        name: args.name,
+        couponUse: args.couponUse,
+        dateBegin: args.dateBegin,
+        dateEnd: args.dateEnd,
+        key: args.key,
+        discountType: args.discountType,
+        discountPercent: args.discountPercent,
+        discountAmount: args.discountAmount
       })
       .where("id=:id", { id })
       .execute();
