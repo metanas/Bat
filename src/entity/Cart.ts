@@ -25,7 +25,7 @@ export class Cart extends BaseEntity {
   public coupon?: Coupon;
 
   @Field(() => [CartProduct])
-  @OneToMany(() => CartProduct, (cartProduct: CartProduct) => cartProduct.cart, { eager: true })
+  @OneToMany(() => CartProduct, (cartProduct: CartProduct) => cartProduct.cart)
   @JoinTable()
   public cartProducts?: CartProduct[];
 
@@ -35,10 +35,8 @@ export class Cart extends BaseEntity {
   public costumer: Costumer;
 
   @Field(() => Int, { name: "count" })
-  public count(): number {
-    if(this.cartProducts)
-      return this.cartProducts.length;
-    return 0
+  public async count()  {
+    return await CartProduct.count({ where: {cartId: this.id } })
   }
 
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })

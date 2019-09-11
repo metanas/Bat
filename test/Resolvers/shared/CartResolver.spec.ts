@@ -28,13 +28,15 @@ describe("Test Cart Resolver",  () => {
     costumer = await createCostumerHelper();
     const cart = await createCartHelper(costumer);
 
-    const cartExpect = [];
+    let cartExpect = [];
 
     for (let i=0; i < 5; i++) {
       product = await createProductHelper();
       cartProduct = await createCartProductHelper(product,cart);
       cartExpect.push({ product: { id: product.id.toString() }, quantity: cartProduct.quantity})
     }
+
+    cartExpect = cartExpect.reverse();
 
     const getCartQuery = `{
       getCart {

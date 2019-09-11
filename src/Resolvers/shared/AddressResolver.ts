@@ -4,11 +4,9 @@ import {ApiContext} from "../../types/ApiContext";
 import {Costumer} from "../../entity/Costumer";
 import {Auth} from "../../Middleware/Auth";
 import {getConnection} from "typeorm";
-import { ceil } from "lodash";
+import {ceil} from "lodash";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 import {PaginatedAddressResponse} from "../../types/PaginatedResponseTypes";
-
-
 
 @Resolver()
 export class AddressResolver {
