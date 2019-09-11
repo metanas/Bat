@@ -1,15 +1,13 @@
 import {Arg, Args, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Auth} from "../../Middleware/Auth";
 import {Product} from "../../entity/Product";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil, set} from "lodash";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
 import {FindManyOptions, Raw, In,} from "typeorm";
 import {ProductCategory} from "../../entity/ProductCategory";
+import {PaginatedProductResponse} from "../../types/PaginatedResponseTypes";
 
-const PaginatedProductResponse = PaginatedResponse(Product);
-// @ts-ignore
-type PaginatedProductResponse = InstanceType<typeof PaginatedProductResponse>
+
 
 
 @Resolver()
@@ -22,7 +20,7 @@ export class ProductResolver {
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedProductResponse)
-  public async getProducts(@Arg("categoryId", { nullable: true }) categoryId: number, @Args() { page, limit, name }: PaginatedResponseArgs): Promise<PaginatedProductResponse> {
+  public async getProducts(@Arg("categoryId", { nullable: true }) categoryId: number, @Args() { page, limit, name }: PaginatedResponseArgs) {
     const options: FindManyOptions = {
       skip: (page - 1) * limit,
       take: limit,

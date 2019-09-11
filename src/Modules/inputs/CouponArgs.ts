@@ -5,11 +5,11 @@ import {IsDateString, IsInt, IsString, Max} from "class-validator";
 export class CouponArgs {
   @Field()
   @IsString()
-  public name!: string;
+  public name: string;
 
   @Field()
   @IsString()
-  public key!: string;
+  public key: string;
 
   @Field()
   public discountType: string;

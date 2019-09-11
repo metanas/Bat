@@ -11,7 +11,7 @@ import {createFavouriteHelper} from "../../helper/createFavouriteHelper";
 
 
 
-describe("Test Cart Resolver",  () => {
+describe("Test Favourite Resolver",  () => {
 
   let conn: Connection;
   let costumer: Costumer;
@@ -26,7 +26,7 @@ describe("Test Cart Resolver",  () => {
     await conn.close();
   });
 
-  it("Test Add and Delete Favourite", async () => {
+  it("Test Add Favourite", async () => {
 
     costumer = await createCostumerHelper();
     product = await createProductHelper();
@@ -41,7 +41,28 @@ describe("Test Cart Resolver",  () => {
       user: costumer
     });
 
-    console.log(response.errors);
+    expect(response).toMatchObject({
+      data:{
+        addDelFavourite: true
+      }
+    });
+  });
+  it("Test Del Favourite", async () => {
+
+    costumer = await createCostumerHelper();
+    product = await createProductHelper();
+    await createFavouriteHelper(costumer,product);
+
+
+
+    const addDelFavouriteQuery = `mutation {
+      addDelFavourite(productId: ${product.id})
+    }`;
+
+    const response = await graphqlCall({
+      source: addDelFavouriteQuery,
+      user: costumer
+    });
 
     expect(response).toMatchObject({
       data:{
@@ -49,24 +70,26 @@ describe("Test Cart Resolver",  () => {
       }
     });
   });
-  it("Test Get Coupons", async () => {
+  it("Test Get Favourite Products", async () => {
     await truncate(conn, "favourite");
 
 
-    const favouriteList: {costumerId: string,productId:number}[] = [];
+    const favouriteList: { id : string , name : string }[] = [];
     costumer = await createCostumerHelper();
+
     for(let i=0; i< 22; i++) {
 
       product = await createProductHelper();
       const favourite = await createFavouriteHelper(costumer,product);
-      favouriteList.push({ costumerId: favourite.costumerId.toString(),productId:favourite.productId });
+
+      favouriteList.push({ id : favourite.productId.toString() , name : product.name });
     }
 
     const getProductsFavouriteQuery = `{
       getProductsFavourite(page: 1, limit: 10) {
         items {
-          costumerId
-          productId
+          id
+          name
         }
         total_pages
         total_count
@@ -75,7 +98,11 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: getProductsFavouriteQuery,
+      user : costumer
+
     });
+
+
 
     expect(response).toMatchObject({
       data: {
@@ -87,6 +114,7 @@ describe("Test Cart Resolver",  () => {
       }
     })
   });
+
 
 
 });

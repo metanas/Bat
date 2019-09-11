@@ -1,16 +1,14 @@
-import {Arg, Ctx, Mutation, Query,Resolver, UseMiddleware} from "type-graphql";
+import {Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Costumer} from "../../entity/Costumer";
 import {Auth} from "../../Middleware/Auth";
 import {Favourite} from "../../entity/Favourite";
 import {Product} from "../../entity/Product";
 import {ApiContext} from "../../types/ApiContext";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import { ceil } from "lodash";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
+import {In} from "typeorm";
+import {PaginatedProductResponse} from "../../types/PaginatedResponseTypes";
 
-const PaginatedFavouriteResponse = PaginatedResponse(Favourite);
-// @ts-ignore
-type PaginatedFavouriteResponse = InstanceType<typeof PaginatedFavouriteResponse>;
 
 
 @Resolver()
@@ -30,7 +28,6 @@ export class FavouriteResolver {
         .where("costumerId=:costumerId", { costumerId : ctx.req.session!.token  })
         .andWhere("productId=:productId",  {productId} )
         .execute();
-
       return !!result.affected
 
     }
@@ -41,11 +38,15 @@ export class FavouriteResolver {
     return result !== undefined;
   }
 
-  @Query(() => PaginatedFavouriteResponse)
-  public async getProductsFavourite(@Arg() { page, limit }: PaginatedResponseArgs): Promise<PaginatedFavouriteResponse> {
-    const result = await Favourite.findAndCount({ skip: (page - 1) * limit, take: limit });
+  @Query(() => PaginatedProductResponse)
+  public async getProductsFavourite(@Ctx() ctx: ApiContext,@Args() { page, limit }: PaginatedResponseArgs){
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const result = await Favourite.findAndCount({where :{costumer}, skip: (page - 1) * limit, take: limit , select: [ "productId" ] });
+    const productIds : number [] = [] ;
+    await result[0].forEach((favourite: Favourite ) => productIds.push(favourite.productId));
+    const product = await Product.find({where :{ id : In(productIds) } });
     return {
-      items: result[0],
+      items: product,
       totalPages: ceil(result[1] / limit),
       totalCount: result[1]
     };
