@@ -1,4 +1,4 @@
-import {Arg, Args, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
+import {Arg, Args,  Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Auth} from "../../Middleware/Auth";
 import {Driver} from "../../entity/Driver";
 import {ceil} from "lodash";
@@ -10,8 +10,13 @@ import {PaginatedDriverResponse} from "../../types/PaginatedResponseTypes";
 export class DriverResolver {
   @UseMiddleware(Auth)
   @Query(() => Driver, {nullable: true})
-  public async getDriver(@Arg("id") id: number): Promise<Driver | undefined> {
-    return await Driver.findOne(id)
+  public async getDriver(@Arg("id") id: number, @Args() { page, limit }: PaginatedResponseArgs): Promise<Driver | undefined> {
+    const driver = await Driver.findOne(id) ;
+    if (driver){
+      driver.orders = await Order.find({ where: { driver: driver }, skip: (page - 1) * limit, take: limit});
+    }
+    return driver
+
   }
 
   @UseMiddleware(Auth)
@@ -37,7 +42,7 @@ export class DriverResolver {
       .set({isActive})
       .where("id=:id", {id})
       .execute();
-    return await this.getDriver(id)
+    return await Driver.findOne(id) ;
   }
 
   @Mutation(() => Boolean)
