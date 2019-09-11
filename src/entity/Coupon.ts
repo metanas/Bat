@@ -40,7 +40,7 @@ export class Coupon extends BaseEntity {
   public dateEnd: string;
 
   @Field()
-  @Column()
+  @Column({ name: "coupon_user"})
   public couponUse: number;
 
   @Field()

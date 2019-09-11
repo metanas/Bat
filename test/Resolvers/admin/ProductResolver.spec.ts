@@ -34,15 +34,15 @@ describe("Product Resolver Test", () => {
 
     const newProduct = {
       name: faker.commerce.productName(),
-      priceUnit: toInteger(faker.commerce.price()),
+      priceCent: toInteger(faker.commerce.price()),
       quantity: faker.random.number()
     };
 
     const updateProductQuery = `mutation {
-      updateProduct( id: ${product.id}, name: "${newProduct.name}", priceUnit: ${newProduct.priceUnit}, quantity: ${newProduct.quantity}) {
+      updateProduct( id: ${product.id}, name: "${newProduct.name}", priceCent: ${newProduct.priceCent}, unit: "KG", weight: 1, quantity: ${newProduct.quantity}, categoryIds: [1]) {
         id
         name
-        priceUnit
+        priceCent
         quantity
       }
     }`;
@@ -58,7 +58,7 @@ describe("Product Resolver Test", () => {
         updateProduct: {
           id: `${product.id}`,
           name: newProduct.name,
-          priceUnit: newProduct.priceUnit,
+          priceCent: newProduct.priceCent,
           quantity: newProduct.quantity
         }
       }
@@ -73,14 +73,14 @@ describe("Product Resolver Test", () => {
 
     const newProduct = {
       name: faker.commerce.productName(),
-      priceUnit: toInteger(faker.commerce.price()),
+      priceCent: toInteger(faker.commerce.price()),
       quantity: faker.random.number()
     };
 
     const addProductQuery =  `mutation {
-      addProduct(name: "${newProduct.name}", priceUnit: ${newProduct.priceUnit}, quantity: ${newProduct.quantity}, categoriesId: ${category.id}) {
+      addProduct(name: "${newProduct.name}", priceCent: ${newProduct.priceCent}, unit: "kg", weight: 1 ,quantity: ${newProduct.quantity}, categoryIds: [${category.id}]) {
         name
-        priceUnit
+        priceCent
         quantity
       }
     }`;
@@ -95,7 +95,7 @@ describe("Product Resolver Test", () => {
       data: {
         addProduct: {
           name: newProduct.name,
-          priceUnit: newProduct.priceUnit,
+          priceCent: newProduct.priceCent,
           quantity: newProduct.quantity
         }
       }
@@ -120,6 +120,30 @@ describe("Product Resolver Test", () => {
 
     expect(response.data).toMatchObject({
       deleteProduct: true
+    });
+  });
+
+  it("Test Toggle State Product", async () => {
+    const product = await createProductHelper();
+
+    const toggleProductQuery = `mutation {
+      toggleProduct(id: ${product.id}) {
+        enabled
+      }
+    }`;
+
+    const response = await graphqlCall({
+      source: toggleProductQuery,
+      user,
+      isAdmin: true
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        toggleProduct: {
+          enabled: true
+        }
+      }
     });
   });
 });

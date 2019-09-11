@@ -1,5 +1,5 @@
 import {ArgsType, Field} from "type-graphql";
-import {IsInt, Max, Min} from "class-validator";
+import {IsInt, IsString, Max, Min} from "class-validator";
 
 @ArgsType()
 export class PaginatedResponseArgs {
@@ -12,4 +12,8 @@ export class PaginatedResponseArgs {
   @Max(100)
   @Min(1)
   public limit: number;
+
+  @Field({ nullable: true })
+  @IsString()
+  public name?: string;
 }
