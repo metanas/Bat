@@ -5,11 +5,11 @@ import {IsInt, Max, Min} from "class-validator";
 export class PaginatedResponseInput {
   @Field()
   @IsInt()
-  public page!: number;
+  public page: number;
 
   @Field()
   @IsInt()
   @Max(100)
   @Min(1)
-  public limit!: number;
+  public limit: number;
 }
