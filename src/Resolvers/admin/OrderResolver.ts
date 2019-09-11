@@ -8,12 +8,17 @@ export class OrderResolver extends Base {
   @UseMiddleware(Auth)
   @Mutation(() => Order)
   public async updateOrderStatus(@Arg("id") id: number, @Arg("status") status: string){
-    await Order
-      .createQueryBuilder()
-      .update()
-      .set({status})
-      .where("id=:id", {id})
-      .execute();
-    return await this.getOrder(id)
+    const order = await Order.findOne(id);
+    if(order) {
+      await Order
+        .createQueryBuilder()
+        .update()
+        .set({status})
+        .where("id=:id", {id: order.id})
+        .execute();
+
+      await order.reload()
+    }
+    return order;
   }
 }

@@ -4,22 +4,20 @@ import {ApiContext} from "../../types/ApiContext";
 import {Order} from "../../entity/Order";
 import {Costumer} from "../../entity/Costumer";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil} from "lodash";
 import {OrderProduct} from "../../entity/OrderProduct";
 import {Cart} from "../../entity/Cart";
 import {Address} from "../../entity/Address";
-
-const PaginatedOrderResponse = PaginatedResponse(Order);
-// @ts-ignore
-type PaginatedOrderResponse = InstanceType<typeof PaginatedOrderResponse>;
+import {CartProduct} from "../../entity/CartProduct";
+import {PaginatedOrderResponse} from "../../types/PaginatedResponseTypes";
 
 @Resolver()
 export class OrderResolver {
   @UseMiddleware(Auth)
   @Query(() => Order, { nullable: true})
-  public async getOrder(@Arg("id") id: number): Promise<Order | undefined> {
-    return await Order.findOne(id);
+  public async getOrder(@Ctx() ctx: ApiContext, @Arg("id") id: number): Promise<Order | undefined> {
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    return await Order.findOne({where: { id, costumer }});
   }
 
   @UseMiddleware(Auth)
@@ -28,9 +26,11 @@ export class OrderResolver {
     const costumer = await Costumer.findOne(ctx.req.session!.token);
     const cart = await Cart.findOne({ where: { costumer } });
 
-    if(cart && cart.count() === 0){
+    if(!cart || await cart.count() === 0){
       throw new Error("Your Cart is Empty")
     }
+
+    cart.cartProducts = await CartProduct.find({cart});
 
     const address = await Address.findOne(addressId);
 
@@ -59,7 +59,7 @@ export class OrderResolver {
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedOrderResponse)
-  public async getOrders(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedOrderResponse> {
+  public async getOrders(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ){
     const costumer = await Costumer.findOne(ctx.req.session!.token);
     const result = await Order.findAndCount({ where: { costumer }, order: { id: "DESC" }, skip: (page - 1) * limit, take: limit});
     return {

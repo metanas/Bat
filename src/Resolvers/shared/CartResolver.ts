@@ -1,19 +1,26 @@
 import {Auth} from "../../Middleware/Auth";
-import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
+import {Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Cart} from "../../entity/Cart";
 import {ApiContext} from "../../types/ApiContext";
 import {Coupon} from "../../entity/Coupon";
 import {CartProduct} from "../../entity/CartProduct";
 import {Costumer} from "../../entity/Costumer";
 import {Product} from "../../entity/Product";
+import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
 
 @Resolver()
 export class CartResolver {
   @UseMiddleware(Auth)
   @Query(() => Cart, { nullable: true})
-  public async getCart(@Ctx() ctx: ApiContext): Promise<Cart | undefined> {
+  public async getCart(@Ctx() ctx: ApiContext, @Args() { page, limit }: PaginatedResponseArgs): Promise<Cart | undefined> {
     const costumer = await Costumer.findOne(ctx.req.session!.token );
-    return await Cart.findOne({where: {costumer}})
+    const cart = await Cart.findOne({where: {costumer}});
+
+    if(cart) {
+      cart.cartProducts = await CartProduct.find({ where: { cartId: cart.id }, skip: (page - 1) * limit, take: limit, order: { "create_at": "DESC" }})
+    }
+
+    return cart
   }
 
   @UseMiddleware(Auth)
@@ -49,9 +56,10 @@ export class CartResolver {
         cart,
         quantity,
         productId
-      }).save()
+      }).save();
     }
-    return await this.getCart(ctx)
+
+    return this.getCart(ctx, { page: 1, limit: 20 })
   }
 
 
@@ -86,9 +94,10 @@ export class CartResolver {
         .where("cartId=:cartId", { cartId: cart.id })
         .andWhere("productId=:productId", { productId: product.id })
         .execute();
+
     }
 
-    return await this.getCart(ctx)
+    return this.getCart(ctx, {page: 1, limit: 20});
   }
 
   @Mutation(() => Boolean)

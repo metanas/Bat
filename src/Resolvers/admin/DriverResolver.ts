@@ -2,14 +2,9 @@ import {Arg, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Auth} from "../../Middleware/Auth";
 import {Driver} from "../../entity/Driver";
 import {ceil} from "lodash";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 import {Order} from "../../entity/Order";
-
-
-const PaginatedDriverResponse = PaginatedResponse(Driver);
-// @ts-ignore
-type PaginatedDriverResponse = InstanceType<typeof PaginatedDriverResponse>;
+import {PaginatedDriverResponse} from "../../types/PaginatedResponseTypes";
 
 @Resolver()
 export class DriverResolver {
@@ -95,7 +90,7 @@ export class DriverResolver {
 
 
   @Query(() => PaginatedDriverResponse)
-  public async getDrivers(@Arg("data") { page, limit }: PaginatedResponseInput): Promise<PaginatedDriverResponse> {
+  public async getDrivers(@Arg("data") { page, limit }: PaginatedResponseInput) {
     const result = await Driver.findAndCount({ skip: (page - 1) * limit, take: limit });
     return {
       items: result[0],

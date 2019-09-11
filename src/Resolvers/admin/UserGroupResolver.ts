@@ -1,18 +1,14 @@
 import {Arg, Args, Mutation, Query, Resolver} from "type-graphql";
 import {UserGroup} from "../../entity/UserGroup";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil} from "lodash";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
 import {User} from "../../entity/User";
-
-const PaginatedUserGroupResponse = PaginatedResponse(UserGroup);
-// @ts-ignore
-type PaginatedUserGroupResponse = InstanceType<typeof PaginatedUserGroupResponse>;
+import {PaginatedUserGroupResponse} from "../../types/PaginatedResponseTypes";
 
 @Resolver()
 export class UserGroupResolver {
   @Query(() => PaginatedUserGroupResponse)
-  public async getUserGroups(@Args() { page, limit }: PaginatedResponseArgs): Promise<PaginatedUserGroupResponse> {
+  public async getUserGroups(@Args() { page, limit }: PaginatedResponseArgs) {
     const result = await UserGroup.findAndCount({ skip: (page - 1) * limit, take: limit });
     return {
       items: result[0],
