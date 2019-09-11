@@ -5,12 +5,8 @@ import bcrypt from "bcrypt";
 import {UserGroup} from "../../entity/UserGroup";
 import {ApiContext} from "../../types/ApiContext";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
-import { ceil } from "lodash";
-
-const PaginatedUserResponse = PaginatedResponse(User);
-// @ts-ignore
-type PaginatedUserResponse = InstanceType<typeof PaginatedUserResponse>;
+import {ceil} from "lodash";
+import {PaginatedUserResponse} from "../../types/PaginatedResponseTypes";
 
 @Resolver()
 export class UserResolver {

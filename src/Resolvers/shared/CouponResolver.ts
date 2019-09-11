@@ -5,7 +5,6 @@ import {ApiContext} from "../../types/ApiContext";
 import {Costumer} from "../../entity/Costumer";
 import {CostumerCoupon} from "../../entity/CostumerCoupon";
 
-
 @Resolver()
 export class CouponResolver {
   @UseMiddleware(Auth)

@@ -2,14 +2,9 @@ import {Arg, Args, Mutation, Query, Resolver, UseMiddleware} from "type-graphql"
 import {Auth} from "../../Middleware/Auth";
 import {Driver} from "../../entity/Driver";
 import {ceil} from "lodash";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
 import {Order} from "../../entity/Order";
-
-
-const PaginatedDriverResponse = PaginatedResponse(Driver);
-// @ts-ignore
-type PaginatedDriverResponse = InstanceType<typeof PaginatedDriverResponse>;
+import {PaginatedDriverResponse} from "../../types/PaginatedResponseTypes";
 
 @Resolver()
 export class DriverResolver {

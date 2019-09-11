@@ -2,13 +2,9 @@ import {Arg, Args, Mutation, Query, Resolver} from "type-graphql";
 import {CouponArgs} from "../../Modules/inputs/CouponArgs";
 import {Coupon} from "../../entity/Coupon";
 import {CouponResolver as Base} from "../shared/CouponResolver";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
-import { ceil } from "lodash";
-
-const PaginatedCouponResponse = PaginatedResponse(Coupon);
-// @ts-ignore
-type PaginatedCouponResponse = InstanceType<typeof PaginatedCouponResponse>;
+import {ceil} from "lodash";
+import {PaginatedCouponResponse} from "../../types/PaginatedResponseTypes";
 
 @Resolver()
 export class CouponResolver extends Base {

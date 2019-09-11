@@ -7,9 +7,6 @@ import {FindManyOptions, Raw, In,} from "typeorm";
 import {ProductCategory} from "../../entity/ProductCategory";
 import {PaginatedProductResponse} from "../../types/PaginatedResponseTypes";
 
-
-
-
 @Resolver()
 export class ProductResolver {
   @UseMiddleware(Auth)

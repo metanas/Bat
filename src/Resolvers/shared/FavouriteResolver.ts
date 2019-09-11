@@ -9,8 +9,6 @@ import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs"
 import {In} from "typeorm";
 import {PaginatedProductResponse} from "../../types/PaginatedResponseTypes";
 
-
-
 @Resolver()
 export class FavouriteResolver {
   @UseMiddleware(Auth)
@@ -41,10 +39,10 @@ export class FavouriteResolver {
   @Query(() => PaginatedProductResponse)
   public async getProductsFavourite(@Ctx() ctx: ApiContext,@Args() { page, limit }: PaginatedResponseArgs){
     const costumer = await Costumer.findOne(ctx.req.session!.token);
-    const result = await Favourite.findAndCount({where :{costumer}, skip: (page - 1) * limit, take: limit , select: [ "productId" ] });
-    const productIds : number [] = [] ;
+    const result = await Favourite.findAndCount({where: {costumer}, skip: (page - 1) * limit, take: limit , select: [ "productId" ] });
+    const productIds: number [] = [] ;
     await result[0].forEach((favourite: Favourite ) => productIds.push(favourite.productId));
-    const product = await Product.find({where :{ id : In(productIds) } });
+    const product = await Product.find({where: { id : In(productIds) } });
     return {
       items: product,
       totalPages: ceil(result[1] / limit),
