@@ -1,7 +1,7 @@
-import {BaseEntity, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {Field, ID, ObjectType} from "type-graphql";
 import {ProductPicture} from "./ProductPicture";
-import {Category} from "./Category";
+import {ProductCategory} from "./ProductCategory";
 
 @ObjectType()
 @Entity()
@@ -16,23 +16,36 @@ export class Product extends BaseEntity {
 
   @Field()
   @Column()
-  public priceUnit: number;
+  public priceCent: number;
+
+  @Field()
+  @Column()
+  public weight: number;
+
+  @Field()
+  @Column()
+  public unit: string;
 
   @Field()
   @Column()
   public quantity: number;
 
   @Field()
+  @Column({ default: false })
+  public enabled: boolean;
+
+  @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
   @Field(() => [ProductPicture])
-  @OneToMany(() => ProductPicture, (productPicture: ProductPicture) => productPicture.product)
+  @OneToMany(() => ProductPicture, (productPicture: ProductPicture) => productPicture.product, { onDelete: "CASCADE" })
   @JoinTable()
   public productPictures: ProductPicture[];
 
-  @ManyToMany(() => Category)
+  @Field(() => [ProductCategory])
+  @OneToMany(() => ProductCategory, (productCategory: ProductCategory) => productCategory.product, { onDelete: "CASCADE" })
   @JoinTable()
-  public categories: Category[];
+  public ProductCategory: ProductCategory[];
 }
 

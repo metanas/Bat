@@ -48,7 +48,7 @@ export class OrderResolver {
         await OrderProduct.create({
           order,
           product: cart!.cartProducts[i].product,
-          price: cart!.cartProducts[i].product.priceUnit,
+          price: cart!.cartProducts[i].product.priceCent,
           quantity: cart!.cartProducts[i].quantity
         }).save();
       }

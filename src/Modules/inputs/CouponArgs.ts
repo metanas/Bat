@@ -1,11 +1,8 @@
-import {Field, InputType} from "type-graphql";
+import {ArgsType, Field} from "type-graphql";
 import {IsDateString, IsInt, IsString, Max} from "class-validator";
 
-@InputType()
-export class CouponInput {
-  @Field({ nullable: true })
-  public id?: number;
-
+@ArgsType()
+export class CouponArgs {
   @Field()
   @IsString()
   public name!: string;

@@ -20,7 +20,7 @@ export async function createOrderHelper(address: Address, costumer: Costumer, pr
     order.orderProducts.push(await OrderProduct.create({
       order,
       product,
-      price: product.priceUnit,
+      price: product.priceCent,
       quantity: faker.random.number(10)
     }).save());
   }

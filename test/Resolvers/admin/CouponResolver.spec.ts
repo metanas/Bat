@@ -26,7 +26,7 @@ describe("Test Coupon Resolver", () => {
   it("Test add Coupon", async () => {
     await truncate(conn, "coupon");
     const addCouponQuery = `mutation {
-      addCoupon(data: {name: "test", couponUse: 2, discountAmount: 10, dateBegin: "2019-09-07T18:40:46", dateEnd: "2019-09-10T00:00:00", discountType: "amount", key: "HA893IUD"}) {
+      addCoupon(name: "test", couponUse: 2, discountAmount: 10, dateBegin: "2019-09-07T18:40:46", dateEnd: "2019-09-10T00:00:00", discountType: "amount", key: "HA893IUD") {
         name
         couponUse
       }
@@ -72,7 +72,7 @@ describe("Test Coupon Resolver", () => {
     const coupon = await createCouponHelper();
 
     const updateCouponQuery = `mutation {
-      updateCoupon(data: {id: ${coupon.id}, name: "test", couponUse: 2, discountAmount: 10, dateBegin: "2019-09-07T18:40:46", dateEnd: "2019-09-10T00:00:00", discountType: "amount", key: "KO829SDO"}) {
+      updateCoupon(id: ${coupon.id}, name: "test", couponUse: 2, discountAmount: 10, dateBegin: "2019-09-07T18:40:46", dateEnd: "2019-09-10T00:00:00", discountType: "amount", key: "KO829SDO") {
         name
         couponUse
         discountAmount

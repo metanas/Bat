@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
-import { ObjectType, Field, ID } from "type-graphql";
+import {BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Field, ID, ObjectType} from "type-graphql";
+import {ProductCategory} from "./ProductCategory";
 
 @ObjectType()
 @Entity()
@@ -14,4 +15,9 @@ export class Category extends BaseEntity {
 
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
+
+  @Field(() => [ProductCategory])
+  @OneToMany(() => ProductCategory, (productCategory: ProductCategory) => productCategory.category)
+  @JoinTable()
+  productCategory: ProductCategory;
 }
