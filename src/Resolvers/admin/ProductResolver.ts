@@ -21,12 +21,12 @@ export class ProductResolver extends Base {
       unit: args.unit
     }).save();
 
-    categories.forEach((category: Category) =>
-      ProductCategory.create({
-        category,
+    for(let i= 0; i < categories.length; i++) {
+      await ProductCategory.create({
+        category: categories[i],
         product
-      }).save().catch((error) => console.log(error))
-    );
+      }).save()
+    }
 
     return product
   }

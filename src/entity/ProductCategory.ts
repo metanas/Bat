@@ -13,12 +13,12 @@ export class ProductCategory extends BaseEntity{
   public productId: number;
 
   @Field(() => Category)
-  @ManyToOne(() => Product, { primary: true })
+  @ManyToOne(() => Category, { primary: true , eager: true})
   @JoinColumn({ name: "categoryId"})
   public category: Category;
 
   @Field(() => Product)
-  @ManyToOne(() => Product, { primary: true })
+  @ManyToOne(() => Product, { primary: true, eager: true })
   @JoinColumn({ name: "productId" })
   public product: Product;
 

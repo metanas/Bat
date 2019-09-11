@@ -114,5 +114,5 @@ describe("Product Resolver Test", () => {
     });
   });
 
-  //TODO GET PRODUCTS BY FILTER NAME
+  //TODO GET PRODUCTS BY FILTER NAME AND CATEGORY
 });

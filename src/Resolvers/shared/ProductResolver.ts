@@ -4,7 +4,8 @@ import {Product} from "../../entity/Product";
 import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import {ceil, set} from "lodash";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
-import {FindManyOptions, Raw} from "typeorm";
+import {FindManyOptions, Raw, In,} from "typeorm";
+import {ProductCategory} from "../../entity/ProductCategory";
 
 const PaginatedProductResponse = PaginatedResponse(Product);
 // @ts-ignore
@@ -29,7 +30,10 @@ export class ProductResolver {
     };
 
     if(categoryId) {
-      set(options, "where.categoryId", categoryId);
+      const productIds: number[] = [];
+      const productCategory = await ProductCategory.find({ where: {categoryId}, select: ["productId"]});
+      await productCategory.forEach(product => productIds.push(product.productId));
+      set(options, "where.id", In(productIds));
     }
 
     if(name) {
