@@ -4,13 +4,11 @@ import {ApiContext} from "../../types/ApiContext";
 import {Costumer} from "../../entity/Costumer";
 import {Auth} from "../../Middleware/Auth";
 import {getConnection} from "typeorm";
-import PaginatedResponse from "../../Modules/interfaces/PaginatedResponse";
 import { ceil } from "lodash";
 import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
+import {PaginatedAddressResponse} from "../../types/PaginatedResponseTypes";
 
-const PaginatedAddressResponse = PaginatedResponse(Address);
-// @ts-ignore
-type PaginatedAddressResponse = InstanceType<typeof PaginatedAddressResponse>;
+
 
 @Resolver()
 export class AddressResolver {
@@ -55,7 +53,7 @@ export class AddressResolver {
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedAddressResponse)
-  public async getAddresses(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ): Promise<PaginatedAddressResponse> {
+  public async getAddresses(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ) {
     const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token }});
     const result = await Address.findAndCount({where: {costumer}, skip: (page - 1) * limit, take: limit});
     return {
