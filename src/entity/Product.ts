@@ -46,6 +46,6 @@ export class Product extends BaseEntity {
   @Field(() => [ProductCategory])
   @OneToMany(() => ProductCategory, (productCategory: ProductCategory) => productCategory.product, { onDelete: "CASCADE" })
   @JoinTable()
-  public ProductCategory: ProductCategory[];
+  public productCategory: ProductCategory[];
 }
 

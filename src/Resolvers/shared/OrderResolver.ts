@@ -1,15 +1,15 @@
 import {Auth} from "../../Middleware/Auth";
-import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
+import {Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {ApiContext} from "../../types/ApiContext";
 import {Order} from "../../entity/Order";
 import {Costumer} from "../../entity/Costumer";
-import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 import {ceil} from "lodash";
 import {OrderProduct} from "../../entity/OrderProduct";
 import {Cart} from "../../entity/Cart";
 import {Address} from "../../entity/Address";
 import {CartProduct} from "../../entity/CartProduct";
 import {PaginatedOrderResponse} from "../../types/PaginatedResponseTypes";
+import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
 
 @Resolver()
 export class OrderResolver {
@@ -59,7 +59,7 @@ export class OrderResolver {
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedOrderResponse)
-  public async getOrders(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ){
+  public async getOrders(@Ctx() ctx: ApiContext, @Args() { page, limit }: PaginatedResponseArgs ){
     const costumer = await Costumer.findOne(ctx.req.session!.token);
     const result = await Order.findAndCount({ where: { costumer }, order: { id: "DESC" }, skip: (page - 1) * limit, take: limit});
     return {

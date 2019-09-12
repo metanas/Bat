@@ -1,12 +1,12 @@
-import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware,} from "type-graphql";
+import {Arg, Args, Ctx, Mutation, Query, Resolver, UseMiddleware,} from "type-graphql";
 import {Address} from "../../entity/Address";
 import {ApiContext} from "../../types/ApiContext";
 import {Costumer} from "../../entity/Costumer";
 import {Auth} from "../../Middleware/Auth";
 import {getConnection} from "typeorm";
 import {ceil} from "lodash";
-import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput";
 import {PaginatedAddressResponse} from "../../types/PaginatedResponseTypes";
+import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
 
 @Resolver()
 export class AddressResolver {
@@ -51,7 +51,7 @@ export class AddressResolver {
 
   @UseMiddleware(Auth)
   @Query(() => PaginatedAddressResponse)
-  public async getAddresses(@Ctx() ctx: ApiContext, @Arg("data") { page, limit }: PaginatedResponseInput ) {
+  public async getAddresses(@Ctx() ctx: ApiContext, @Args() { page, limit }: PaginatedResponseArgs ) {
     const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token }});
     const result = await Address.findAndCount({where: {costumer}, skip: (page - 1) * limit, take: limit});
     return {

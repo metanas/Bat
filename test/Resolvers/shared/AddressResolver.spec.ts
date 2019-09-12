@@ -25,12 +25,12 @@ describe("Test Address Resolver",  () => {
     const address = await createAddressHelper(costumer);
 
     const getAddressQuery = `{
-      getAddress(id: ${address.id}) { 
+      getAddress(id: ${address.id}) {
         id
         address
         longitude
         latitude
-      }    
+      }
     }`;
 
     const response = await graphqlCall({
@@ -80,7 +80,7 @@ describe("Test Address Resolver",  () => {
     costumer = await createCostumerHelper();
 
     let getAddressesQuery = `{
-      getAddresses(data: { limit: 5, page: 1 }) {
+      getAddresses(limit: 5, page: 1) {
         items {
           address
         }
@@ -105,7 +105,7 @@ describe("Test Address Resolver",  () => {
     expect(get(response.data, "getAddresses.total_count")).toEqual(12);
 
     getAddressesQuery = `{
-      getAddresses(data: { limit: 5, page: 2 }) {
+      getAddresses(limit: 5, page: 2) {
         items {
           address
         }
@@ -124,7 +124,7 @@ describe("Test Address Resolver",  () => {
     expect(get(response.data, "getAddresses.total_count")).toEqual(12);
 
     getAddressesQuery = `{
-      getAddresses(data: { limit: 5, page: 3 }) {
+      getAddresses(limit: 5, page: 3) {
         items {
           address
         }
@@ -169,13 +169,13 @@ describe("Test Address Resolver",  () => {
       costumer: costumer
     }).save();
 
-    const updateAddressQuery = `mutation { 
+    const updateAddressQuery = `mutation {
       updateAddress(id: ${address.id}, address: "${faker.address.streetName()}", longitude: "${faker.address.longitude()}", latitude: "${faker.address.latitude()}") {
         id
         address
         longitude
         latitude
-      } 
+      }
     }`;
 
     const response = await graphqlCall({
