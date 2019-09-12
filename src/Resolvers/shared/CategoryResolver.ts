@@ -1,8 +1,9 @@
-import {Arg, Query, Resolver} from "type-graphql";
+import {Arg, Query, Resolver, Args} from "type-graphql";
 import {Category} from "../../entity/Category";
-import {PaginatedResponseInput} from "../../Modules/inputs/PaginatedResponseInput"
-import {ceil} from "lodash";
+import {ceil, set} from "lodash";
 import {PaginatedCategoryResponse} from "../../types/PaginatedResponseTypes";
+import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
+import {FindManyOptions, Raw} from "typeorm";
 
 @Resolver()
 export class CategoryResolver {
@@ -12,8 +13,16 @@ export class CategoryResolver {
   }
 
   @Query(() => PaginatedCategoryResponse)
-  public async getCategories(@Arg("data") { page, limit }: PaginatedResponseInput) {
-    const result = await Category.findAndCount({ skip: page - 1, take: limit });
+  public async getCategories(@Args() { name, page, limit }: PaginatedResponseArgs) {
+    const options: FindManyOptions = {
+      skip: (page - 1) * 10, take: limit,
+    };
+
+    if(name) {
+      set(options, "where.name", Raw(columnAlias => `lower(${columnAlias}) like '%${name.toLowerCase()}%'`));
+    }
+
+    const result = await Category.findAndCount(options);
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),

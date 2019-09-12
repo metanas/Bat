@@ -166,7 +166,7 @@ describe("Test Order Resolver", () => {
     orders = orders.reverse();
 
     let getOrdersQuery = `{
-      getOrders(data: { page: 1, limit: 7 }) {
+      getOrders( page: 1, limit: 7 ) {
         items {
           id
         }
@@ -188,7 +188,7 @@ describe("Test Order Resolver", () => {
     expect(get(response.data, "getOrders.total_count")).toEqual(17);
 
     getOrdersQuery = `{
-      getOrders(data: { page: 2, limit: 7 }) {
+      getOrders( page: 2, limit: 7 ) {
         items {
           id
         }
