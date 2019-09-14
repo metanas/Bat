@@ -10,7 +10,7 @@ import {Costumer} from "../../../src/entity/Costumer";
 import {truncate} from "../../helper/truncateTables";
 describe("Test Driver Resolver",  () => {
   let conn: Connection;
-  let driver : Driver ;
+  let driver: Driver ;
   let user: Costumer;
 
 
@@ -86,7 +86,7 @@ describe("Test Driver Resolver",  () => {
   });
   it("Test Get Drivers", async () => {
     await truncate(conn, "driver");
-    const driverList: { id : string  }[] = [];
+    const driverList: { id: string  }[] = [];
 
     for(let i=0; i< 22; i++) {
       const driver = await createDriverHelper();
@@ -109,7 +109,6 @@ describe("Test Driver Resolver",  () => {
       user : user
 
     });
-    console.log(response.errors);
 
     expect(response).toMatchObject({
       data: {

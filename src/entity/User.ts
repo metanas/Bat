@@ -10,8 +10,12 @@ export class User extends BaseEntity {
   public id: string;
 
   @Field()
-  @Column()
+  @Column({ unique: true })
   public name: string;
+
+  @Field()
+  @Column({ unique: true })
+  public email: string;
 
   @Column()
   public password: string;
@@ -25,6 +29,6 @@ export class User extends BaseEntity {
   public active: boolean;
 
   @Field(() => UserGroup)
-  @ManyToOne(() => UserGroup, {eager: true})
+  @ManyToOne(() => UserGroup, { eager: true })
   public userGroup: UserGroup;
 }

@@ -116,7 +116,7 @@ describe("Test Address Resolver",  () => {
     const userGroup = await createUserGroupHelper();
 
     const addUserQuery = `mutation {
-      addUser(name: "user", password: "password", userGroupId: ${userGroup.id}){
+      addUser(name: "user", email: "your@email.com", password: "password", userGroupId: ${userGroup.id}){
         name
         userGroup {
           name
@@ -146,7 +146,7 @@ describe("Test Address Resolver",  () => {
 
     const user = await createUserHelper(userGroup, "TestPassword");
     const loginQuery = `mutation {
-      login(name: "${user.name}", password: "TestPassword") {
+      login(email: "${user.email}", password: "TestPassword") {
         id 
         name
       }
@@ -174,7 +174,7 @@ describe("Test Address Resolver",  () => {
 
     await createUserHelper(userGroup, "TestPassword");
     let loginQuery = `mutation {
-      login(name: "tttttt", password: "TestPassword") {
+      login(email: "email@test.com", password: "TestPassword") {
         id 
         name
       }
@@ -185,12 +185,10 @@ describe("Test Address Resolver",  () => {
       isAdmin: true
     });
 
-    expect(response).toMatchObject({
-      data: null
-    });
+    expect(response).toMatchObject({ errors: [new GraphQLError("User and Password not register!")] });
 
     loginQuery = `mutation {
-      login(name: "user", password: "pppppppp") {
+      login(email: "user@user.com", password: "pppppppp") {
         id 
         name
       }
