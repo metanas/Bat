@@ -5,14 +5,26 @@ import bcrypt from "bcrypt";
 import {UserGroup} from "../../entity/UserGroup";
 import {ApiContext} from "../../types/ApiContext";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
-import {ceil} from "lodash";
+import {ceil, set} from "lodash";
 import {PaginatedUserResponse} from "../../types/PaginatedResponseTypes";
+import {UserArgs} from "../../Modules/inputs/UserArgs";
+import {FindManyOptions, Raw} from "typeorm";
 
 @Resolver()
 export class UserResolver {
   @Query(() => PaginatedUserResponse)
-  public async getUsers(@Args() { limit, page }: PaginatedResponseArgs) {
-    const result = await User.findAndCount({skip: (page-1) * limit, take: limit, order: { "create_at": "ASC"}});
+  public async getUsers(@Arg("email", { nullable: true }) email: string, @Args() { name, limit, page }: PaginatedResponseArgs) {
+    const options: FindManyOptions = { skip: (page-1) * limit, take: limit, order: { "create_at": "ASC"} };
+
+    if (name) {
+      set(options, "where.name", Raw(columnAlias => `lower(${columnAlias}) like '%${name.toLowerCase()}%'`))
+    }
+
+    if(email) {
+      set(options, "where.email", Raw(columnAlias => `lower(${columnAlias}) like '%${email.toLowerCase()}%'`))
+    }
+
+    const result = await User.findAndCount(options);
 
     return {
       items: result[0],
@@ -27,12 +39,13 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  public async addUser(@Arg("name") name: string, @Arg("password") password: string, @Arg("userGroupId") userGroupId: number) {
+  public async addUser(@Args() { email, name, password }: UserArgs,@Arg("userGroupId") userGroupId: number) {
     const hash = await bcrypt.hash(password, 12);
     const userGroup = await UserGroup.findOne(userGroupId);
     const user =await User.create({
       name,
       password: hash,
+      email,
       userGroup
     }).save();
 
@@ -40,18 +53,24 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  public async login(@Ctx() ctx: ApiContext, @Arg("name") name: string, @Arg("password") password: string) {
-    const user = await User.findOne({ where: { name }, relations: ["userGroup"]});
-    if(user) {
-      const isAuth = await bcrypt.compare(password, user.password);
+  public async login(@Ctx() ctx: ApiContext, @Args() { email, password }: UserArgs) {
+    const user = await User.findOne({ where: { email }});
 
-      if(!isAuth) {
-        throw new AuthenticationError("User and Password not register!")
-      }
-
-      ctx.req.session!.token = user.id;
-      ctx.req.session!.user = user;
+    if(!user) {
+      throw new AuthenticationError("User and Password not register!")
     }
+
+    const isAuth = await bcrypt.compare(password, user.password);
+
+    if(!isAuth) {
+      throw new AuthenticationError("User and Password not register!")
+    }
+
+    if(!user.active) {
+      throw new AuthenticationError("Your account is disabled, please concat support for more information!")
+    }
+
+    ctx.req.session!.token = user.id;
 
     return user;
   }

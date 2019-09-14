@@ -9,6 +9,7 @@ export async function createUserHelper(userGroup: UserGroup, password?: string) 
   return await User.create({
     name: faker.name.lastName() + " " + faker.name.lastName(),
     password: await bcrypt.hash(password ,12),
+    email: faker.internet.email(),
     userGroup
   }).save();
 }
