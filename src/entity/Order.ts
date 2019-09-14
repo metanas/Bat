@@ -46,6 +46,7 @@ export class Order extends BaseEntity {
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
+  @Field(() => [Driver])
   @ManyToOne(() => Driver, (driver: Driver) => driver.orders, { nullable: true, eager: true })
   public driver: Driver;
 

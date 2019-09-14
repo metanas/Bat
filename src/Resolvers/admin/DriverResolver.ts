@@ -1,29 +1,19 @@
-import {Arg, Args, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
+import {Arg, Args,  Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Auth} from "../../Middleware/Auth";
 import {Driver} from "../../entity/Driver";
 import {ceil} from "lodash";
+import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
 import {Order} from "../../entity/Order";
 import {PaginatedDriverResponse} from "../../types/PaginatedResponseTypes";
-import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
 
 @Resolver()
 export class DriverResolver {
   @UseMiddleware(Auth)
   @Query(() => Driver, {nullable: true})
-  public async getDriver(@Arg("id") id: string): Promise<Driver | undefined> {
-    const driver =  await Driver.findOne(id);
-    if(driver) {
-      driver.orders = await Order.find({
-        join: {
-          alias: "order",
-          leftJoinAndSelect: {
-            name: "order.driverName"
-          }
-        },
-        where: {
-          driverName: driver.name
-        }
-      });
+  public async getDriver(@Arg("id") id: number, @Args() { page, limit }: PaginatedResponseArgs): Promise<Driver | undefined> {
+    const driver = await Driver.findOne(id) ;
+    if (driver){
+      driver.orders = await Order.find({ where: { driver: driver }, skip: (page - 1) * limit, take: limit});
     }
     return driver
   }
@@ -44,18 +34,18 @@ export class DriverResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Driver)
-  public async updateDriverStatus(@Arg("id") id: string, @Arg("isActive") isActive: boolean){
+  public async updateDriverStatus(@Arg("id") id: number, @Arg("isActive") isActive: boolean){
     await Driver
       .createQueryBuilder()
       .update()
       .set({isActive})
       .where("id=:id", {id})
       .execute();
-    return await this.getDriver(id)
+    return await Driver.findOne(id) ;
   }
 
   @Mutation(() => Boolean)
-  public async deleteDriver(@Arg("id") id: string) {
+  public async deleteDriver(@Arg("id") id: number) {
     const result = await Driver.createQueryBuilder().delete()
       .where("id=:id", {id}).returning("id").execute();
     return !!result.affected
@@ -63,7 +53,7 @@ export class DriverResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Driver)
-  public async updateDriver(@Arg("id") id: string,@Arg("name") name: string,@Arg("telephone") telephone: string,@Arg("point") point: number,@Arg("avatar") avatar: string , @Arg("longitude") longitude: string,@Arg("latitude") latitude: string){
+  public async updateDriver(@Arg("id") id: number,@Arg("name") name: string,@Arg("telephone") telephone: string,@Arg("point") point: number,@Arg("avatar") avatar: string , @Arg("longitude") longitude: string,@Arg("latitude") latitude: string){
     await Driver
       .createQueryBuilder()
       .update()
@@ -75,7 +65,7 @@ export class DriverResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Order)
-  public async setDriverToOrder(@Arg("id") id: string, @Arg("orderId") orderId: number) {
+  public async setDriverToOrder(@Arg("id") id: number, @Arg("orderId") orderId: number) {
     const driver = await Driver.findOne(id);
     if(driver){
       await Order
@@ -88,7 +78,7 @@ export class DriverResolver {
     return await Order.findOne(orderId)
   }
 
-
+  @UseMiddleware(Auth)
   @Query(() => PaginatedDriverResponse)
   public async getDrivers(@Args() { page, limit }: PaginatedResponseArgs) {
     const result = await Driver.findAndCount({ skip: (page - 1) * limit, take: limit });

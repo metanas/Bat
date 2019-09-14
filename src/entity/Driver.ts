@@ -7,8 +7,8 @@ import {Order} from "./Order";
 @Entity()
 export class Driver extends BaseEntity {
   @Field(() => ID)
-  @PrimaryGeneratedColumn("uuid")
-  public id: string;
+  @PrimaryGeneratedColumn()
+  public id: number;
 
   @Field()
   @Column()
@@ -27,7 +27,7 @@ export class Driver extends BaseEntity {
   public avatar?: string;
 
   @Field()
-  @Column()
+  @Column({default: false})
   public isActive: boolean;
 
   @Field()
@@ -38,6 +38,7 @@ export class Driver extends BaseEntity {
   @Column()
   public latitude: string;
 
+  @Field(() => [Order])
   @OneToMany(() => Order, (order: Order) => order.driver)
   public orders: Order[];
 
