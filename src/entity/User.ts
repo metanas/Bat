@@ -25,7 +25,7 @@ export class User extends BaseEntity {
   public create_at: string;
 
   @Field()
-  @Column({ default: true })
+  @Column({ default: false })
   public active: boolean;
 
   @Field(() => UserGroup)
