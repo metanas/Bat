@@ -19,6 +19,7 @@ afterAll(async () => {
 
 describe("Test Category Resolver",  () => {
   it("test Add Category", async () => {
+
     const addCategoryQuery = `
     mutation {
       addCategory(name: "snacks" ) {
@@ -39,6 +40,7 @@ describe("Test Category Resolver",  () => {
       }
     })
   });
+
   it("Test Delete Category", async () => {
     const category = await Category.create({
       name: faker.name.findName(),

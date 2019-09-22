@@ -1,7 +1,9 @@
 import {User} from "../../src/entity/User";
 import faker from "faker";
-import bcrypt from "bcrypt";
 import {UserGroup} from "../../src/entity/UserGroup";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const bcrypt = require("bcrypt");
 
 
 export async function createUserHelper(userGroup: UserGroup, password?: string, active = true) {

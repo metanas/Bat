@@ -9,8 +9,8 @@ import {Driver} from "./Driver";
 @Entity()
 export class Order extends BaseEntity {
   @Field(() => ID)
-  @PrimaryGeneratedColumn()
-  public id: number;
+  @PrimaryGeneratedColumn("uuid")
+  public id: string;
 
   @Field()
   @Column({ nullable: true })

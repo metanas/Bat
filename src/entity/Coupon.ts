@@ -3,6 +3,7 @@ import {Field, ID, ObjectType} from "type-graphql";
 import {Cart} from "./Cart";
 import {Order} from "./Order";
 import {CouponProduct} from "./CouponProduct";
+import {CostumerCoupon} from "./CostumerCoupon";
 
 @ObjectType()
 @Entity()
@@ -58,6 +59,10 @@ export class Coupon extends BaseEntity {
   @OneToMany(() => Order, (order: Order) => order.coupon, { eager: true })
   @JoinTable()
   public orders: Order[];
+
+  @Field(() => [CostumerCoupon])
+  @OneToMany(() => CostumerCoupon, (costumerCoupon: CostumerCoupon) => costumerCoupon.coupon)
+  public costumerCoupon: CostumerCoupon[];
 
   @Field(() => Boolean)
   public isValid() {

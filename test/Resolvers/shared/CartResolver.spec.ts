@@ -206,6 +206,33 @@ describe("Test Cart Resolver",  () => {
     });
   });
 
+  it("Test Add product Quantity more than disponible", async () => {
+    costumer = await createCostumerHelper();
+    await createCartHelper(costumer);
+    product = await createProductHelper();
+
+
+    const addProductToCartQuery = `mutation {
+      addProductToCart(productId: ${product.id} ,quantity: ${product.quantity + 1} ) {
+        id
+        cartProducts {
+          product {
+            id
+          }
+        }
+      }
+    }`;
+
+    const response = await graphqlCall({
+      source: addProductToCartQuery,
+      user: costumer
+    });
+
+    expect(response).toMatchObject({
+      errors: [new GraphQLError("Quantity Selected is Not Available")]
+    });
+  });
+
   it("Test remove Product From Cart", async () => {
     costumer = await createCostumerHelper();
     const cart = await createCartHelper(costumer);

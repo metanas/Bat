@@ -25,7 +25,7 @@ describe("Test Order Resolver", () => {
     const order = await createOrderHelper(address, user, 3);
 
     const updateOrderStatusQuery = `mutation {
-      updateOrderStatus(id: ${order.id}, status: "Done") {
+      updateOrderStatus(id: "${order.id}", status: "Done") {
         id
         status
       }

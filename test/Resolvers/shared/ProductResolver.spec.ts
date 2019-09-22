@@ -7,6 +7,8 @@ import {createProductHelper} from "../../helper/createProductHelper";
 import {graphqlCall} from "../../test-utils/graphqlCall";
 import {slice, take} from "lodash";
 import {truncate} from "../../helper/truncateTables";
+import {createCategoryHelper} from "../../helper/createCategoryHelper";
+import {associateProductAndCategory} from "../../helper/associateProductAndCategoryHelper";
 
 describe("Product Resolver Test", () => {
   let conn: Connection;
@@ -115,4 +117,65 @@ describe("Product Resolver Test", () => {
   });
 
   //TODO GET PRODUCTS BY FILTER NAME AND CATEGORY
+
+  it("Search Product By Name and Category Id", async () => {
+    const category = await createCategoryHelper();
+    const product = await createProductHelper(true);
+
+    await associateProductAndCategory(product, category);
+
+    let getProductsQuery = `{
+      getProducts(name: "${product.name}",page: 1, limit: 5) {
+        items {
+          id
+        }
+        total_count
+        total_pages
+      }
+    }`;
+
+    let response = await graphqlCall({
+      source: getProductsQuery,
+      user
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        getProducts: {
+          items: [ {id: product.id.toString()} ],
+          "total_count": 1,
+          "total_pages": 1
+        }
+      }
+    });
+
+    getProductsQuery = `{
+      getProducts(categoryId: ${category.id}, page: 1, limit: 5) {
+        items {
+          id
+        }
+        total_count
+        total_pages
+      }
+    }`;
+
+    response = await graphqlCall({
+      source: getProductsQuery,
+      user
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        getProducts: {
+          items: [
+            {
+              id: product.id.toString()
+            }
+          ],
+          "total_count": 1,
+          "total_pages": 1
+        }
+      }
+    })
+  });
 });

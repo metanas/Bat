@@ -6,7 +6,7 @@
    "password": "root",
    "database": "project-api",
    "synchronize": true,
-   "logging": "error",
+   "logging": true,
    "entities": [
       "src/entity/*.ts"
    ],

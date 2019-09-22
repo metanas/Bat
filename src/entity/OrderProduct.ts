@@ -8,7 +8,7 @@ import {Product} from "./Product";
 @Entity()
 export class OrderProduct extends BaseEntity {
   @PrimaryColumn()
-  public orderId: number;
+  public orderId: string;
 
   @PrimaryColumn()
   public productId: number;
