@@ -1,5 +1,5 @@
 import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ID, ObjectType} from "type-graphql";
+import {Field, ID, Int, ObjectType} from "type-graphql";
 import {Order} from "./Order";
 
 
@@ -41,5 +41,10 @@ export class Driver extends BaseEntity {
   @Field(() => [Order])
   @OneToMany(() => Order, (order: Order) => order.driver)
   public orders: Order[];
+
+  @Field(() => Int)
+  public count() {
+    return Order.count({ where: { driverId: this.id }})
+  }
 
 }

@@ -1,7 +1,6 @@
 import {Arg, Args, Ctx, Mutation, Query, Resolver} from "type-graphql";
 import {AuthenticationError} from "apollo-server-express";
 import {User} from "../../entity/User";
-import bcrypt from "bcrypt";
 import {UserGroup} from "../../entity/UserGroup";
 import {ApiContext} from "../../types/ApiContext";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
@@ -9,6 +8,9 @@ import {ceil, set} from "lodash";
 import {PaginatedUserResponse} from "../../types/PaginatedResponseTypes";
 import {UserArgs} from "../../Modules/inputs/UserArgs";
 import {FindManyOptions, Raw} from "typeorm";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const bcrypt =  require("bcrypt");
 
 @Resolver()
 export class UserResolver {

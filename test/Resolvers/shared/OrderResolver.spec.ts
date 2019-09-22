@@ -30,7 +30,7 @@ describe("Test Order Resolver", () => {
     const order = await createOrderHelper(address, costumer, 3);
 
     const getOrderQuery = `{
-      getOrder(id: ${order.id}) {
+      getOrder(id: "${order.id}") {
         address
         driverName
         orderProducts {

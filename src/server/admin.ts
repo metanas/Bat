@@ -3,6 +3,7 @@ import {ApolloServer, ForbiddenError} from "apollo-server-express";
 import isAuthorized from "../utils/authorizationChecker";
 import {buildSchema} from "type-graphql";
 import {Roles} from "../Middleware/Roles";
+import {complexity} from "../utils/complexity";
 
 
 export const createApolloServerAdmin = async () => {
@@ -21,6 +22,7 @@ export const createApolloServerAdmin = async () => {
       }
 
       return { req, res }
-    }
+    },
+    plugins: complexity(schemaAdmin),
   });
 };

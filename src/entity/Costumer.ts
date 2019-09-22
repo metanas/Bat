@@ -1,5 +1,5 @@
 import {BaseEntity, Column, Entity, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ID, ObjectType} from "type-graphql";
+import {Field, ID, ObjectType, Int} from "type-graphql";
 import {Address} from "./Address";
 import {Coupon} from "./Coupon";
 import {Cart} from "./Cart";
@@ -43,7 +43,7 @@ export class Costumer extends BaseEntity {
 
   @OneToMany(() => Coupon, (costumerCoupon: CostumerCoupon) => costumerCoupon.costumer)
   @JoinTable()
-  public coupons: Coupon[];
+  public coupons: CostumerCoupon[];
 
   @OneToOne(() => Cart)
   @JoinTable()
@@ -57,4 +57,8 @@ export class Costumer extends BaseEntity {
   @JoinTable()
   favourite: Favourite;
 
+  @Field(() => Int)
+  public async count() {
+    return await Favourite.count({ where : { costumerId: this.id }})
+  }
 }

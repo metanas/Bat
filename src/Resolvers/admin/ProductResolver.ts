@@ -96,7 +96,7 @@ export class ProductResolver {
     return product;
   }
 
-  @Query(() => PaginatedProductResponse)
+  @Query(() => PaginatedProductResponse, { complexity: 10 })
   public async getProducts(@Arg("categoryId", { nullable: true }) categoryId: number, @Args() { page, limit, name }: PaginatedResponseArgs) {
     const options: FindManyOptions = {
       skip: (page - 1) * limit,

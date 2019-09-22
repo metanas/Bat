@@ -14,13 +14,6 @@ import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs"
 @Resolver()
 export class OrderResolver {
   @UseMiddleware(Auth)
-  @Query(() => Order, { nullable: true})
-  public async getOrder(@Ctx() ctx: ApiContext, @Arg("id") id: number): Promise<Order | undefined> {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
-    return await Order.findOne({where: { id, costumer }});
-  }
-
-  @UseMiddleware(Auth)
   @Mutation(() => Order)
   public async addOrder (@Ctx() ctx: ApiContext,  @Arg("addressId") addressId: number){
     const costumer = await Costumer.findOne(ctx.req.session!.token);
@@ -61,11 +54,19 @@ export class OrderResolver {
   @Query(() => PaginatedOrderResponse)
   public async getOrders(@Ctx() ctx: ApiContext, @Args() { page, limit }: PaginatedResponseArgs ){
     const costumer = await Costumer.findOne(ctx.req.session!.token);
-    const result = await Order.findAndCount({ where: { costumer }, order: { id: "DESC" }, skip: (page - 1) * limit, take: limit});
+    const result = await Order.findAndCount({ where: { costumer }, order: { "create_at": "DESC" }, skip: (page - 1) * limit, take: limit});
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
       totalCount: result[1]
     };
   }
+
+  @UseMiddleware(Auth)
+  @Query(() => Order, { nullable: true })
+  public async getOrder(@Ctx() ctx: ApiContext, @Arg("id") id: string): Promise<Order | undefined> {
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    return await Order.findOne({where: { id, costumer }});
+  }
+
 }
