@@ -31,4 +31,7 @@ export class User extends BaseEntity {
   @Field(() => UserGroup)
   @ManyToOne(() => UserGroup, { eager: true })
   public userGroup: UserGroup;
+
+  @Column()
+  public tokenVersion: number;
 }

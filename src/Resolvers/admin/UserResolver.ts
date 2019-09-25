@@ -7,10 +7,12 @@ import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs"
 import {ceil, set} from "lodash";
 import {PaginatedUserResponse} from "../../types/PaginatedResponseTypes";
 import {UserArgs} from "../../Modules/inputs/UserArgs";
-import {FindManyOptions, Raw} from "typeorm";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const bcrypt =  require("bcrypt");
+import {FindManyOptions, getConnection, Raw} from "typeorm";
+import { hash, compare } from "bcryptjs";
+import {sendRefreshToken} from "../../utils/sendRefreshToken";
+import {createAccessToken, createRefreshToken} from "../../utils/tokenGen";
+import {LoginResponse} from "../../Modules/LoginResponse";
+import {verify} from "jsonwebtoken";
 
 @Resolver()
 export class UserResolver {
@@ -42,19 +44,26 @@ export class UserResolver {
 
   @Mutation(() => User)
   public async addUser(@Args() { email, name, password }: UserArgs,@Arg("userGroupId") userGroupId: number) {
-    const hash = await bcrypt.hash(password, 12);
+    const passwordHashed = await hash(password, 12);
     const userGroup = await UserGroup.findOne(userGroupId);
     const user =await User.create({
       name,
-      password: hash,
+      password: passwordHashed,
       email,
       userGroup
     }).save();
 
     return this.getUser(user.id);
   }
+  @Mutation(() => Boolean)
+  public async revokeRefreshTokensForUser(@Arg("userId") userId: string): Promise<boolean> {
+    await getConnection()
+      .getRepository(User)
+      .increment({ id: userId }, "tokenVersion", 1);
 
-  @Mutation(() => User)
+    return true;
+  }
+  @Mutation(() => LoginResponse)
   public async login(@Ctx() ctx: ApiContext, @Args() { email, password }: UserArgs) {
     const user = await User.findOne({ where: { email }});
 
@@ -62,7 +71,7 @@ export class UserResolver {
       throw new AuthenticationError("User and Password not register!")
     }
 
-    const isAuth = await bcrypt.compare(password, user.password);
+    const isAuth = await compare(password, user.password);
 
     if(!isAuth) {
       throw new AuthenticationError("User and Password not register!")
@@ -72,9 +81,37 @@ export class UserResolver {
       throw new AuthenticationError("Your account is disabled, please concat support for more information!")
     }
 
-    ctx.req.session!.token = user.id;
+    sendRefreshToken(ctx.res, createRefreshToken(user));
 
-    return user;
+    return {
+      accessToken: createAccessToken(user),
+      user
+    };
+  }
+
+  @Query(() => User, { nullable: true })
+  public async me(@Ctx() ctx: ApiContext) {
+    const authorization = ctx.req.headers["authorization"];
+
+    if(!authorization) {
+      return Error("You should Sign In!");
+    }
+
+    try {
+      const token = authorization.split(" ")[1];
+      const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+      return await User.findOne(payload.userId);
+    } catch (e) {
+      return Error("Error");
+    }
+  }
+
+
+  @Mutation(() => Boolean)
+  public async logout(@Ctx() ctx: ApiContext) {
+    sendRefreshToken(ctx.res, "");
+
+    return true;
   }
 
   @Mutation(() => Boolean)
