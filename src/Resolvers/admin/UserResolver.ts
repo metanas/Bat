@@ -13,6 +13,7 @@ import {sendRefreshToken} from "../../utils/sendRefreshToken";
 import {createAccessToken, createRefreshToken} from "../../utils/tokenGen";
 import {LoginResponse} from "../../Modules/LoginResponse";
 import {verify} from "jsonwebtoken";
+import "dotenv/config";
 
 @Resolver()
 export class UserResolver {

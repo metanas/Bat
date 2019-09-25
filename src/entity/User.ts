@@ -32,6 +32,6 @@ export class User extends BaseEntity {
   @ManyToOne(() => UserGroup, { eager: true })
   public userGroup: UserGroup;
 
-  @Column()
+  @Column({ default: 0 })
   public tokenVersion: number;
 }
