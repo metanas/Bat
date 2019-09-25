@@ -1,40 +1,17 @@
 import "reflect-metadata";
 import {createConnection} from "typeorm";
-import cors from "cors";
-import Express from "express";
-import session from "express-session";
-import {redis} from "./redis";
-import connectRedis from "connect-redis";
 import {createApolloServer} from "./server";
 import {createApolloServerAdmin} from "./server/admin";
+import {InitServer} from "./server/rest";
 
 const main = async (): Promise<void> => {
   await createConnection();
 
+  const app = InitServer();
+
   const apolloServer = await createApolloServer();
 
   const apolloServerAdmin = await createApolloServerAdmin();
-
-  const app = Express();
-
-  app.use(cors());
-
-  const RedisStore = connectRedis(session);
-
-  app.use(session({
-    store: new RedisStore({
-      client: redis as any
-    }),
-    name: "token",
-    secret: "dev",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24 * 7 * 365 // 7 years
-    }
-  }));
 
   apolloServer.applyMiddleware({
     app,

@@ -1,9 +1,7 @@
-import { Request, Response } from "express";
-import { User } from "../entity/User";
-import { Costumer } from "../entity/Costumer";
+import {Request, Response} from "express";
 
 export interface ApiContext {
   req: Request;
   res: Response;
-  user?: User | Costumer;
+  payload?: { userId: string };
 }

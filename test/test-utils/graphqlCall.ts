@@ -33,7 +33,8 @@ export const graphqlCall = async ({ source, variableValues, user, isAdmin }: Opt
         }
       },
       res: {
-        clearCookie: jest.fn()
+        clearCookie: jest.fn(),
+        cookie: jest.fn()
       }
     }
   });

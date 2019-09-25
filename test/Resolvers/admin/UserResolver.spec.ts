@@ -110,7 +110,7 @@ describe("Test Address Resolver",  () => {
         }
       }
     });
-  }, 10000);
+  }, 15000);
 
   it("Test Add User", async () => {
     const userGroup = await createUserGroupHelper();
@@ -147,23 +147,27 @@ describe("Test Address Resolver",  () => {
     const user = await createUserHelper(userGroup, "TestPassword");
     const loginQuery = `mutation {
       login(email: "${user.email}", password: "TestPassword") {
-        id 
-        name
+        user {
+          id 
+          name
+        }
       }
     }`;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await graphqlCall({
       source: loginQuery,
       isAdmin: true
     });
 
+    console.error(response.errors);
 
     expect(response).toMatchObject({
       data: {
         login: {
-          id: user.id,
-          name: user.name
+          user: {
+            id: user.id,
+            name: user.name
+          }
         }
       }
     });
@@ -175,8 +179,10 @@ describe("Test Address Resolver",  () => {
     await createUserHelper(userGroup, "TestPassword");
     let loginQuery = `mutation {
       login(email: "email@test.com", password: "TestPassword") {
-        id 
-        name
+        user {
+          id 
+          name
+        }
       }
     }`;
 
@@ -189,8 +195,10 @@ describe("Test Address Resolver",  () => {
 
     loginQuery = `mutation {
       login(email: "user@user.com", password: "pppppppp") {
-        id 
-        name
+        user {
+          id 
+          name
+        }
       }
     }`;
 

@@ -10,6 +10,8 @@ export class CostumerResolver {
   @UseMiddleware(Auth)
   @Query(() => Costumer, { nullable: true })
   public async me(@Ctx() ctx: ApiContext): Promise<Costumer | undefined> {
+
+
     return await Costumer.findOne({ where: { id: ctx.req.session!.token }});
   }
 

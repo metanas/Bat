@@ -5,6 +5,7 @@ build/
 tmp/
 temp/
 images/
+coverage/
 .env
 ormlogs.log
 yarn-error.log
