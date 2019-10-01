@@ -56,6 +56,7 @@ export class UserResolver {
 
     return this.getUser(user.id);
   }
+
   @Mutation(() => Boolean)
   public async revokeRefreshTokensForUser(@Arg("userId") userId: string): Promise<boolean> {
     await getConnection()
@@ -64,6 +65,7 @@ export class UserResolver {
 
     return true;
   }
+
   @Mutation(() => LoginResponse)
   public async login(@Ctx() ctx: ApiContext, @Args() { email, password }: UserArgs) {
     const user = await User.findOne({ where: { email }});
@@ -106,7 +108,6 @@ export class UserResolver {
       return Error("Error");
     }
   }
-
 
   @Mutation(() => Boolean)
   public async logout(@Ctx() ctx: ApiContext) {
