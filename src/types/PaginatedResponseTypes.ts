@@ -7,6 +7,7 @@ import {UserGroup} from "../entity/UserGroup";
 import {User} from "../entity/User";
 import {Category} from "../entity/Category";
 import {Order} from "../entity/Order";
+import {Message} from "../entity/Message";
 
 export const PaginatedAddressResponse = PaginatedResponse(Address);
 // @ts-ignore
@@ -39,3 +40,7 @@ type PaginatedCategoryResponse = InstanceType<typeof PaginatedCategoryResponse>;
 export const PaginatedOrderResponse = PaginatedResponse(Order);
 // @ts-ignore
 type PaginatedOrderResponse = InstanceType<typeof PaginatedOrderResponse>;
+
+export const PaginatedMessageResponse = PaginatedResponse(Message);
+// @ts-ignore
+type PaginatedMessageResponse = InstanceType<typeof PaginatedMessageResponse>;
