@@ -19,6 +19,10 @@ export class Message extends BaseEntity {
   public content: string;
 
   @Field()
+  @Column({default: false})
+  public byAdmin: boolean;
+
+  @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
