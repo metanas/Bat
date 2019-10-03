@@ -1,5 +1,5 @@
 import {Field, ID, ObjectType} from "type-graphql";
-import {BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Costumer} from "./Costumer";
 
 
@@ -9,10 +9,6 @@ export class Message extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn()
   public id: number;
-
-  @Field()
-  @Column()
-  public creatorId: string;
 
   @Field()
   @Column()
@@ -26,9 +22,7 @@ export class Message extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @Field(() => Costumer)
-  @OneToOne(() => Costumer, (costumer: Costumer) => costumer.message)
-  @JoinColumn()
+  @ManyToOne(() => Costumer, (costumer: Costumer) => costumer.messages)
   public costumer: Costumer;
 
 }

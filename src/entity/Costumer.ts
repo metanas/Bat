@@ -50,9 +50,8 @@ export class Costumer extends BaseEntity {
   @JoinTable()
   public cart: Cart;
 
-  @OneToOne(() => Message)
-  @JoinTable()
-  public message: Message;
+  @OneToMany(() => Message, (message: Message) => message.costumer)
+  public messages: Message[];
 
   @OneToMany(() => Order, (order: Order) => order.costumer)
   public orders: Order[];
