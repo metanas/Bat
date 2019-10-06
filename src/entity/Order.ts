@@ -25,7 +25,7 @@ export class Order extends BaseEntity {
   public status: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: "citext" , nullable: true })
   public driverName?: string;
 
   @Field()

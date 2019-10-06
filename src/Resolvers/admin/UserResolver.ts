@@ -7,8 +7,8 @@ import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs"
 import {ceil, set} from "lodash";
 import {PaginatedUserResponse} from "../../types/PaginatedResponseTypes";
 import {UserArgs} from "../../Modules/inputs/UserArgs";
-import {FindManyOptions, getConnection, Raw} from "typeorm";
-import { hash, compare } from "bcryptjs";
+import {FindManyOptions, getConnection, Like} from "typeorm";
+import {compare, hash} from "bcryptjs";
 import {sendRefreshToken} from "../../utils/sendRefreshToken";
 import {createAccessToken, createRefreshToken} from "../../utils/tokenGen";
 import {LoginResponse} from "../../Modules/LoginResponse";
@@ -22,11 +22,11 @@ export class UserResolver {
     const options: FindManyOptions = { skip: (page-1) * limit, take: limit, order: { "create_at": "ASC"} };
 
     if (name) {
-      set(options, "where.name", Raw(columnAlias => `lower(${columnAlias}) like '%${name.toLowerCase()}%'`))
+      set(options, "where.name", Like(name));
     }
 
     if(email) {
-      set(options, "where.email", Raw(columnAlias => `lower(${columnAlias}) like '%${email.toLowerCase()}%'`))
+      set(options, "where.email", Like(email));
     }
 
     const result = await User.findAndCount(options);

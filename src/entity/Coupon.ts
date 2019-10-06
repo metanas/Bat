@@ -13,7 +13,7 @@ export class Coupon extends BaseEntity {
   public id: number;
 
   @Field()
-  @Column()
+  @Column({ type: "citext" })
   public name: string;
 
   @Field()
@@ -21,7 +21,7 @@ export class Coupon extends BaseEntity {
   public discountType: string;
 
   @Field()
-  @Column({ unique: true })
+  @Column({type: "citext", unique: true })
   public key: string;
 
   @Field()
