@@ -61,16 +61,18 @@ export class DriverResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Order)
-  public async setDriverToOrder(@Arg("id") id: number, @Arg("orderId") orderId: number) {
+  public async setDriverToOrder(@Arg("id") id: number, @Arg("orderId") orderId: string) {
     const driver = await Driver.findOne(id);
-    if(driver){
-      await Order
-        .createQueryBuilder()
-        .update()
-        .set( {driverName : driver.name , driver} )
-        .where("orderId=:orderId",{orderId})
-        .execute();
+    if(!driver){
+      return Error("Driver Not Found!")
     }
+    await Order
+      .createQueryBuilder()
+      .update()
+      .set( {driverName : driver.name , driver} )
+      .where("id=:orderId",{orderId})
+      .execute();
+
     return await Order.findOne(orderId)
   }
 
