@@ -15,7 +15,7 @@ export class Costumer extends BaseEntity {
   public id: string;
 
   @Field()
-  @Column()
+  @Column({ type: "citext" })
   public name: string;
 
   @Field()

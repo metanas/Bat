@@ -11,7 +11,7 @@ export class Driver extends BaseEntity {
   public id: number;
 
   @Field()
-  @Column()
+  @Column({ type: "citext" })
   public name: string;
 
   @Field()

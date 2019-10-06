@@ -10,11 +10,14 @@ export class Category extends BaseEntity {
   public id: number;
 
   @Field()
-  @Column()
+  @Column({ type: "citext" })
   public name: string;
 
   @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
+
+  @Column({ default: false })
+  public state: boolean;
 
   @Field(() => [ProductCategory])
   @OneToMany(() => ProductCategory, (productCategory: ProductCategory) => productCategory.category)
