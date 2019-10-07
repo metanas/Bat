@@ -10,11 +10,11 @@ export class User extends BaseEntity {
   public id: string;
 
   @Field()
-  @Column({ unique: true })
+  @Column({ type: "citext", unique: true })
   public name: string;
 
   @Field()
-  @Column({ unique: true })
+  @Column({ type: "citext" ,unique: true })
   public email: string;
 
   @Column()

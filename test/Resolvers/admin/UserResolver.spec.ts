@@ -159,8 +159,6 @@ describe("Test Address Resolver",  () => {
       isAdmin: true
     });
 
-    console.error(response.errors);
-
     expect(response).toMatchObject({
       data: {
         login: {

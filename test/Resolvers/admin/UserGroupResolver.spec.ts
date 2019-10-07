@@ -4,6 +4,8 @@ import {createUserGroupHelper} from "../../helper/createUserGroupHelper";
 import {graphqlCall} from "../../test-utils/graphqlCall";
 import {UserGroup} from "../../../src/entity/UserGroup";
 import {truncate} from "../../helper/truncateTables";
+import {createUserHelper} from "../../helper/createUserHelper";
+import { GraphQLError } from "graphql";
 
 describe("Product Resolver Test", () => {
   let conn: Connection;
@@ -111,11 +113,11 @@ describe("Product Resolver Test", () => {
       userGroup = await createUserGroupHelper();
     }
 
-    const deleteUserGroupQuery = `mutation {
+    let deleteUserGroupQuery = `mutation {
       deleteUserGroup(id: ${userGroup.id})
     }`;
 
-    const response = await graphqlCall({
+    let response = await graphqlCall({
       source: deleteUserGroupQuery,
       isAdmin: true
     });
@@ -128,6 +130,22 @@ describe("Product Resolver Test", () => {
 
     const resultExpect = await UserGroup.findOne(userGroup.id);
 
-    expect(resultExpect).toBeUndefined()
+    expect(resultExpect).toBeUndefined();
+
+    userGroup = await createUserGroupHelper();
+    await createUserHelper(userGroup);
+
+    deleteUserGroupQuery = `mutation {
+      deleteUserGroup(id: ${userGroup.id})
+    }`;
+
+    response = await graphqlCall({
+      source: deleteUserGroupQuery,
+      isAdmin: true
+    });
+
+    expect(response).toMatchObject({
+      errors: [new GraphQLError("This Group is already used!!")]
+    })
   });
 });

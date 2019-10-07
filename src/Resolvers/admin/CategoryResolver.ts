@@ -3,7 +3,7 @@ import {Category} from "../../entity/Category";
 import {CategoryResolver as Base} from "../shared/CategoryResolver";
 
 @Resolver()
-export class CategoryResolver extends Base{
+export class CategoryResolver extends Base {
   @Mutation(() => Category)
   public async updateCategory(@Arg("id") id: number, @Arg("name") name: string) {
     await Category

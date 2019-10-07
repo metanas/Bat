@@ -1,13 +1,13 @@
-import {Arg, Args, Mutation, Resolver, UseMiddleware, Query} from "type-graphql";
+import {Arg, Args, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 import {Auth} from "../../Middleware/Auth";
 import {Product} from "../../entity/Product";
 import {Category} from "../../entity/Category";
 import {ProductArgs} from "../../Modules/inputs/ProductArgs";
-import {FindManyOptions, In, Raw} from "typeorm";
+import {In} from "typeorm";
 import {ProductCategory} from "../../entity/ProductCategory";
 import {PaginatedProductResponse} from "../../types/PaginatedResponseTypes";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
-import { set, ceil } from "lodash";
+import {ceil} from "lodash";
 
 @Resolver()
 export class ProductResolver {
@@ -98,24 +98,22 @@ export class ProductResolver {
 
   @Query(() => PaginatedProductResponse, { complexity: 10 })
   public async getProducts(@Arg("categoryId", { nullable: true }) categoryId: number, @Args() { page, limit, name }: PaginatedResponseArgs) {
-    const options: FindManyOptions = {
-      skip: (page - 1) * limit,
-      take: limit,
-
-    };
+    let query = Product
+      .createQueryBuilder("product")
+      .select();
 
     if(categoryId) {
-      const productIds: number[] = [];
-      const productCategory = await ProductCategory.find({ where: {categoryId}, select: ["productId"]});
-      await productCategory.forEach(product => productIds.push(product.productId));
-      set(options, "where.id", In(productIds));
+      query = query.leftJoin("product.productCategory", "productCategory")
+        .andWhere("productCategory.categoryId=:id", { id: categoryId })
     }
 
     if(name) {
-      set(options, "where.name", Raw(columnAlias => `lower(${columnAlias}) like '%${name.toLowerCase()}%'`));
+      query = query.andWhere("product.name like :name",  { name: "%" + name + "%" })
     }
 
-    const result = await Product.findAndCount(options);
+    const result = await query.take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount();
 
     return {
       items: result[0],
