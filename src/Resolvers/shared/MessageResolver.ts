@@ -13,11 +13,10 @@ export class MessageResolver {
 
   @UseMiddleware(Auth)
   @Mutation(() => Message)
-  public async addMessage(@Ctx() ctx: ApiContext, @Arg("content") content: string, @Arg("byAdmin") byAdmin : boolean) {
+  public async addMessage(@Ctx() ctx: ApiContext, @Arg("content") content: string) {
     const costumer = await Costumer.findOne(ctx.req.session!.token);
     return await Message.create({
       content,
-      byAdmin,
       costumer
     }).save();
   }
@@ -26,7 +25,7 @@ export class MessageResolver {
   @UseMiddleware(Auth)
   @Query(() => PaginatedMessageResponse)
   public async getMessages(@Ctx() ctx: ApiContext, @Args() { page, limit }: PaginatedResponseArgs ) {
-    const costumer = await Costumer.findOne({ where: { id: ctx.req.session!.token }});
+    const costumer = await Costumer.findOne(ctx.req.session!.token);
     const result = await Message.findAndCount({where: {costumer}, skip: (page - 1) * limit, take: limit, order: {create_at:"DESC"}});
     return {
       items: result[0],

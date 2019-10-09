@@ -31,7 +31,8 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: addMessageQuery,
-      user: costumer
+      isAdmin: true
+
     });
 
     expect(response).toMatchObject({
