@@ -8,6 +8,10 @@ import {Driver} from "../../../src/entity/Driver";
 import {createCostumerHelper} from "../../helper/createCostumerHelper";
 import {Costumer} from "../../../src/entity/Costumer";
 import {truncate} from "../../helper/truncateTables";
+import {createOrderHelper} from "../../helper/createOrderHelper";
+import {createAddressHelper} from "../../helper/createAddressHelper";
+import {GraphQLError} from "graphql";
+
 describe("Test Driver Resolver",  () => {
   let conn: Connection;
   let driver: Driver ;
@@ -214,6 +218,47 @@ describe("Test Driver Resolver",  () => {
     });
   });
 
+  it("Test set Driver To Order", async  () => {
+    const customer = await createCostumerHelper();
+    const address = await createAddressHelper(customer);
+    const order = await createOrderHelper(address, customer, 3);
+    const driver = await createDriverHelper();
 
+    let setDriverToOrderQuery = `mutation {
+       setDriverToOrder(id: ${driver.id}, orderId: "${order.id}") {
+         id
+         driverName
+       }
+     }`;
 
+    let response = await graphqlCall({
+      source: setDriverToOrderQuery,
+      isAdmin: true,
+      user
+    });
+
+    expect(response).toMatchObject({
+      data: {
+        setDriverToOrder: {
+          id: order.id,
+          driverName: driver.name
+        }
+      }
+    });
+
+    setDriverToOrderQuery = `mutation {
+       setDriverToOrder(id: 907, orderId: "${order.id}") {
+         id
+         driverName
+       }
+     }`;
+
+    response = await graphqlCall({
+      source: setDriverToOrderQuery,
+      isAdmin: true,
+      user
+    });
+
+    expect(response.errors).toEqual([new GraphQLError("Driver Not Found!")])
+  });
 });

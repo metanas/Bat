@@ -3,7 +3,7 @@ import faker = require("faker");
 import { toInteger } from "lodash";
 
 
-export async function createProductHelper(enabled: boolean = false) {
+export async function createProductHelper(enabled = false) {
   return await Product.create({
     name: faker.commerce.productName(),
     quantity: faker.random.number(),
