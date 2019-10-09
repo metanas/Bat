@@ -11,6 +11,7 @@ import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs"
 @Resolver()
 export class MessageResolver {
 
+
   @UseMiddleware(Auth)
   @Mutation(() => Message)
   public async addMessage(@Ctx() ctx: ApiContext, @Arg("content") content: string) {
