@@ -6,6 +6,7 @@ import {ApiContext} from "../../types/ApiContext";
 import {ceil} from "lodash";
 import {PaginatedMessageResponse} from "../../types/PaginatedResponseTypes";
 import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
+import {Product} from "../../entity/Product";
 
 
 @Resolver()
@@ -33,6 +34,21 @@ export class MessageResolver {
     };
   }
 
-
-
+  @UseMiddleware(Auth)
+  @Query(() => PaginatedMessageResponse)
+  public async getMessagesGroupedByCostumer(@Args() { page, limit }: PaginatedResponseArgs ) {
+    let query = Product
+      .createQueryBuilder("message")
+      .select()
+      .groupBy("costumer")
+      .orderBy({create_at:"DESC"});
+    const result = await query.take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount();
+    return {
+      items: result[0],
+      totalPages: ceil(result[1] / limit),
+      totalCount: result[1]
+    };
+  }
 }
