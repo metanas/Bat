@@ -10,10 +10,11 @@ import { ceil } from "lodash";
 @Resolver()
 export class OrderResolver {
   @Query(() => PaginatedOrderResponse)
-  public async getOrders(@Arg("driverId") driverId: number, @Args() { page, limit }: PaginatedResponseArgs) {
+  public async getOrders(@Arg("driverId", {nullable: true}) driverId: number, @Args() { page, limit }: PaginatedResponseArgs) {
     const options: FindManyOptions = {
       skip: (page - 1) * limit,
-      take: limit
+      take: limit,
+      order: { "create_at": "DESC" }
     };
 
     if(driverId) {
