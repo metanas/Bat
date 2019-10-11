@@ -26,7 +26,7 @@ export class MessageResolver {
   @UseMiddleware(Auth)
   @Query(() => PaginatedMessageResponse)
   public async getMessages(@Ctx() ctx: ApiContext, @Args() { page, limit }: PaginatedResponseArgs ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne({where: {id: ctx.req.session!.token}});
     const result = await Message.findAndCount({where: {costumer}, skip: (page - 1) * limit, take: limit, order: {create_at:"DESC"}});
     return {
       items: result[0],

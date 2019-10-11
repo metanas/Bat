@@ -25,13 +25,13 @@ describe("Test Address Resolver",  () => {
     const addMessageQuery = `mutation {
       addMessage(content: "testTest",byAdmin: true) {
         content
-        byAdmin
       }
     }`;
 
     const response = await graphqlCall({
       source: addMessageQuery,
-      isAdmin: true
+      isAdmin: true,
+      user : costumer
 
     });
 
@@ -39,21 +39,61 @@ describe("Test Address Resolver",  () => {
       data: {
         addMessage: {
           content: "testTest",
-          byAdmin: true
         }
       }
     });
   });
 
 
-  it("Test Get Messages", async () => {
+  it("Test Get Messages Grouped By costumer", async () => {
     await truncate(conn, "message");
-    const messageList: { id: string  }[] = [];
+    let messageList: { id: string  }[] = [];
 
     for(let i=0; i< 22; i++) {
       const message = await createMessageHelper();
       messageList.push({ id : message.id.toString() });
     }
+    messageList = messageList.reverse();
+
+    const getMessagesGroupedByCostumerQuery = `{
+      getMessagesGroupedByCostumer(page: 1, limit: 10) {
+        items {
+          id
+        }
+        total_pages
+        total_count
+      }
+    }`;
+
+    const response = await graphqlCall({
+      source: getMessagesGroupedByCostumerQuery,
+      isAdmin : true ,
+      user : costumer
+    });
+
+    console.log(response.errors);
+
+    expect(response).toMatchObject({
+      data: {
+        getMessagesGroupedByCostumer: {
+          items: take(messageList, 10),
+          "total_pages": 3,
+          "total_count": 22
+        }
+      }
+    })
+  });
+
+
+  it("Test Get Messages", async () => {
+    await truncate(conn, "message");
+    let messageList: { id: string  }[] = [];
+
+    for(let i=0; i< 22; i++) {
+      const message = await createMessageHelper();
+      messageList.push({ id : message.id.toString() });
+    }
+    messageList = messageList.reverse();
 
     const getMessagesQuery = `{
       getMessages(page: 1, limit: 10) {
@@ -67,8 +107,8 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: getMessagesQuery,
+      isAdmin : true ,
       user : costumer
-
     });
 
     expect(response).toMatchObject({

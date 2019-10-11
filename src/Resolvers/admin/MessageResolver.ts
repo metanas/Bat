@@ -26,7 +26,7 @@ export class MessageResolver {
   @UseMiddleware(Auth)
   @Query(() => PaginatedMessageResponse)
   public async getMessages(@Args() { page, limit }: PaginatedResponseArgs ) {
-    const result = await Message.findAndCount({skip: (page - 1) * limit, take: limit, order: {create_at:"DESC"}});
+    const result = await Message.findAndCount({skip: (page - 1) * limit, take: limit,  order:{create_at:'DESC'}});
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
@@ -45,6 +45,7 @@ export class MessageResolver {
     const result = await query.take(limit)
       .skip((page - 1) * limit)
       .getManyAndCount();
+
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),

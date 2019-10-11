@@ -23,9 +23,9 @@ describe("Test Address Resolver",  () => {
   it("Test Add Message", async () => {
 
     const addMessageQuery = `mutation {
-      addMessage(content: "testTest",byAdmin: false) {
+      addMessage(content: "testTest") {
         content
-        byAdmin
+       
       }
     }`;
 
@@ -37,8 +37,7 @@ describe("Test Address Resolver",  () => {
     expect(response).toMatchObject({
       data: {
         addMessage: {
-          content: "testTest",
-          byAdmin: false
+          content: "testTest"
         }
       }
     });
@@ -47,12 +46,13 @@ describe("Test Address Resolver",  () => {
 
   it("Test Get Messages", async () => {
     await truncate(conn, "message");
-    const messageList: { id: string  }[] = [];
+    let messageList: { id: string  }[] = [];
 
     for(let i=0; i< 22; i++) {
       const message = await createMessageHelper();
       messageList.push({ id : message.id.toString() });
     }
+    //messageList = messageList.reverse();
 
     const getMessagesQuery = `{
       getMessages(page: 1, limit: 10) {
@@ -69,6 +69,7 @@ describe("Test Address Resolver",  () => {
       user : costumer
 
     });
+
 
     expect(response).toMatchObject({
       data: {
