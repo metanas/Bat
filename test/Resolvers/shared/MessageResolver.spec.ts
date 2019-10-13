@@ -52,7 +52,8 @@ describe("Test Address Resolver",  () => {
       const message = await createMessageHelper();
       messageList.push({ id : message.id.toString() });
     }
-    //messageList = messageList.reverse();
+
+    messageList = messageList.reverse();
 
     const getMessagesQuery = `{
       getMessages(page: 1, limit: 10) {
@@ -79,7 +80,8 @@ describe("Test Address Resolver",  () => {
           "total_count": 22
         }
       }
-    })
+    });
+
   });
 
 });

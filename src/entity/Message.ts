@@ -22,7 +22,7 @@ export class Message extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @ManyToOne(() => Costumer, (costumer: Costumer) => costumer.messages)
+  @ManyToOne(() => Costumer, (costumer: Costumer) => costumer.messages ,{eager: true})
   public costumer: Costumer;
 
 }

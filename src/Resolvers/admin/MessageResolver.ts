@@ -40,8 +40,8 @@ export class MessageResolver {
     let query = Product
       .createQueryBuilder("message")
       .select()
-      .groupBy("costumer")
-      .orderBy({create_at:"DESC"});
+      .groupBy('costumer')
+      .orderBy({create_at:'DESC'});
     const result = await query.take(limit)
       .skip((page - 1) * limit)
       .getManyAndCount();
