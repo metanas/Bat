@@ -1,5 +1,5 @@
 import {GraphQLRequestContext} from "apollo-server-types";
-import {fieldConfigEstimator, getComplexity, simpleEstimator} from "graphql-query-complexity";
+import {fieldExtensionsEstimator, getComplexity, simpleEstimator} from "graphql-query-complexity";
 import {separateOperations, GraphQLSchema} from "graphql";
 
 export function complexity(schema: GraphQLSchema) {
@@ -10,7 +10,7 @@ export function complexity(schema: GraphQLSchema) {
         query: request.operationName ? separateOperations(document!)[request.operationName] : document!,
         variables: request.variables,
         estimators: [
-          fieldConfigEstimator(),
+          fieldExtensionsEstimator(),
           simpleEstimator({defaultComplexity: 1}),
         ]
       });
