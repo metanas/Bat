@@ -16,8 +16,8 @@ export class FavouriteResolver {
   public async addDelFavourite(@Ctx() ctx: ApiContext,@Arg("productId") productId: number) {
     const costumer = await Costumer.findOne(ctx.req.session!.token);
     const product = await Product.findOne(productId);
-    const idCostumer= ctx.req.session!.token;
-    const favourite = await Favourite.findOne({ where:{ idCostumer, productId } });
+    const costumerId= ctx.req.session!.token;
+    const favourite = await Favourite.findOne({ where:{ costumerId, productId } });
 
     if (favourite) {
       const result= await Favourite

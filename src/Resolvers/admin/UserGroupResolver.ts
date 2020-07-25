@@ -40,7 +40,8 @@ export class UserGroupResolver {
 
   @Mutation(() => Boolean)
   public async deleteUserGroup(@Arg("id") id: number) {
-    const userCount = await User.count({ where: { userGroupId: id } });
+    const userGroup = await UserGroup.findOne({ where: {id }})
+    const userCount = await User.count({ where: { userGroup } });
 
     if(userCount > 0) {
       throw new Error("This Group is already used!!");
