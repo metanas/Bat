@@ -6,6 +6,7 @@ import {Cart} from "./Cart";
 import {Order} from "./Order";
 import {CostumerCoupon} from "./CostumerCoupon";
 import {Favourite} from "./Favourite";
+import {Message} from "./Message";
 
 @ObjectType()
 @Entity()
@@ -48,6 +49,9 @@ export class Costumer extends BaseEntity {
   @OneToOne(() => Cart)
   @JoinTable()
   public cart: Cart;
+
+  @OneToMany(() => Message, (message: Message) => message.costumer)
+  public messages: Message[];
 
   @OneToMany(() => Order, (order: Order) => order.costumer)
   public orders: Order[];
