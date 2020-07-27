@@ -7,12 +7,12 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from "typeorm";
-import {Field, ID, Int, ObjectType} from "type-graphql";
-import {Coupon} from "./Coupon";
-import {CartProduct} from "./CartProduct";
-import {Costumer} from "./Costumer";
+import { Field, ID, Int, ObjectType } from "type-graphql";
+import { Coupon } from "./Coupon";
+import { CartProduct } from "./CartProduct";
+import { Costumer } from "./Costumer";
 
 @ObjectType()
 @Entity()
@@ -35,10 +35,14 @@ export class Cart extends BaseEntity {
   public costumer: Costumer;
 
   @Field(() => Int, { name: "count" })
-  public async count()  {
-    return await CartProduct.count({ where: {cartId: this.id } })
+  public async count() {
+    return await CartProduct.count({ where: { cartId: this.id } });
   }
 
-  @Column({ name: "create_at" ,type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @Column({
+    name: "create_at",
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+  })
   public create_at: string;
 }

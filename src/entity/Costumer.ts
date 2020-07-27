@@ -1,11 +1,19 @@
-import {BaseEntity, Column, Entity, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ID, ObjectType, Int} from "type-graphql";
-import {Address} from "./Address";
-import {Coupon} from "./Coupon";
-import {Cart} from "./Cart";
-import {Order} from "./Order";
-import {CostumerCoupon} from "./CostumerCoupon";
-import {Favourite} from "./Favourite";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinTable,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Field, ID, ObjectType, Int } from "type-graphql";
+import { Address } from "./Address";
+import { Coupon } from "./Coupon";
+import { Cart } from "./Cart";
+import { Order } from "./Order";
+import { CostumerCoupon } from "./CostumerCoupon";
+import { Favourite } from "./Favourite";
 
 @ObjectType()
 @Entity()
@@ -19,11 +27,11 @@ export class Costumer extends BaseEntity {
   public name: string;
 
   @Field()
-  @Column({unique: true})
+  @Column({ unique: true })
   public telephone: string;
 
   @Field()
-  @Column({default: false})
+  @Column({ default: false })
   public status: boolean;
 
   @Field()
@@ -41,7 +49,10 @@ export class Costumer extends BaseEntity {
   @OneToMany(() => Address, (address: Address) => address.costumer)
   public addresses: Address[];
 
-  @OneToMany(() => Coupon, (costumerCoupon: CostumerCoupon) => costumerCoupon.costumer)
+  @OneToMany(
+    () => Coupon,
+    (costumerCoupon: CostumerCoupon) => costumerCoupon.costumer
+  )
   @JoinTable()
   public coupons: CostumerCoupon[];
 
@@ -59,6 +70,6 @@ export class Costumer extends BaseEntity {
 
   @Field(() => Int)
   public async count() {
-    return await Favourite.count({ where : { costumerId: this.id }})
+    return await Favourite.count({ where: { costumerId: this.id } });
   }
 }

@@ -1,9 +1,9 @@
-import {ArgsType, Field} from "type-graphql";
-import {IsInt, IsString, Max, Min} from "class-validator";
+import { ArgsType, Field } from "type-graphql";
+import { IsInt, IsString, Max, Min } from "class-validator";
 
 @ArgsType()
 export class PaginatedResponseArgs {
-  @Field({defaultValue: 1})
+  @Field({ defaultValue: 1 })
   @IsInt()
   public page: number;
 

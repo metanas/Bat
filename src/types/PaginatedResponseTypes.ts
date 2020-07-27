@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import PaginatedResponse from "../Modules/interfaces/PaginatedResponse";
-import {Address} from "../entity/Address";
-import {Product} from "../entity/Product";
-import {Coupon} from "../entity/Coupon";
-import {Driver} from "../entity/Driver";
-import {UserGroup} from "../entity/UserGroup";
-import {User} from "../entity/User";
-import {Category} from "../entity/Category";
-import {Order} from "../entity/Order";
+import { Address } from "../entity/Address";
+import { Product } from "../entity/Product";
+import { Coupon } from "../entity/Coupon";
+import { Driver } from "../entity/Driver";
+import { UserGroup } from "../entity/UserGroup";
+import { User } from "../entity/User";
+import { Category } from "../entity/Category";
+import { Order } from "../entity/Order";
 
 export const PaginatedAddressResponse = PaginatedResponse(Address);
 // @ts-ignore
@@ -24,9 +25,10 @@ export const PaginatedDriverResponse = PaginatedResponse(Driver);
 // @ts-ignore
 type PaginatedDriverResponse = InstanceType<typeof PaginatedDriverResponse>;
 
-export const PaginatedUserGroupResponse = PaginatedResponse(UserGroup);
+export const PaginatedUserGpResponse = PaginatedResponse(UserGroup);
+
 // @ts-ignore
-type PaginatedUserGroupResponse = InstanceType<typeof PaginatedUserGroupResponse>;
+type PaginatedUserGroupResponse = InstanceType<typeof PaginatedUserGpResponse>;
 
 export const PaginatedUserResponse = PaginatedResponse(User);
 // @ts-ignore

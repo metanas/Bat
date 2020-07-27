@@ -1,7 +1,12 @@
-import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ID, Int, ObjectType} from "type-graphql";
-import {Order} from "./Order";
-
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Field, ID, Int, ObjectType } from "type-graphql";
+import { Order } from "./Order";
 
 @ObjectType()
 @Entity()
@@ -15,7 +20,7 @@ export class Driver extends BaseEntity {
   public name: string;
 
   @Field()
-  @Column({unique: true})
+  @Column({ unique: true })
   public telephone: string;
 
   @Field()
@@ -27,7 +32,7 @@ export class Driver extends BaseEntity {
   public avatar?: string;
 
   @Field()
-  @Column({default: false})
+  @Column({ default: false })
   public isActive: boolean;
 
   @Field()
@@ -44,7 +49,6 @@ export class Driver extends BaseEntity {
 
   @Field(() => Int)
   public count() {
-    return Order.count({ where: { driverId: this.id }})
+    return Order.count({ where: { driverId: this.id } });
   }
-
 }

@@ -1,8 +1,14 @@
-import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn} from "typeorm";
-import {Field, ObjectType} from "type-graphql";
-import {Order} from "./Order";
-import {Product} from "./Product";
-
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from "typeorm";
+import { Field, ObjectType } from "type-graphql";
+import { Order } from "./Order";
+import { Product } from "./Product";
 
 @ObjectType()
 @Entity()
@@ -22,11 +28,14 @@ export class OrderProduct extends BaseEntity {
   public quantity: number;
 
   @Field(() => Product)
-  @ManyToOne(() => Product, (order: Order) => order.orderProducts, { primary: true, eager: true })
-  @JoinColumn({name: "productId"})
+  @ManyToOne(() => Product, (order: Order) => order.orderProducts, {
+    primary: true,
+    eager: true,
+  })
+  @JoinColumn({ name: "productId" })
   public product: Product;
 
   @ManyToOne(() => Order, { primary: true })
-  @JoinColumn({ name: "orderId"})
+  @JoinColumn({ name: "orderId" })
   public order: Order;
 }

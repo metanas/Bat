@@ -1,10 +1,10 @@
-import {Arg, Args, Mutation, Query, Resolver} from "type-graphql";
-import {CouponArgs} from "../../Modules/inputs/CouponArgs";
-import {Coupon} from "../../entity/Coupon";
-import {CouponResolver as Base} from "../shared/CouponResolver";
-import {PaginatedResponseArgs} from "../../Modules/inputs/PaginatedResponseArgs";
-import {ceil} from "lodash";
-import {PaginatedCouponResponse} from "../../types/PaginatedResponseTypes";
+import { Arg, Args, Mutation, Query, Resolver } from "type-graphql";
+import { CouponArgs } from "../../Modules/inputs/CouponArgs";
+import { Coupon } from "../../entity/Coupon";
+import { CouponResolver as Base } from "../shared/CouponResolver";
+import { PaginatedResponseArgs } from "../../Modules/inputs/PaginatedResponseArgs";
+import { ceil } from "lodash";
+import { PaginatedCouponResponse } from "../../types/PaginatedResponseTypes";
 
 @Resolver()
 export class CouponResolver extends Base {
@@ -19,7 +19,7 @@ export class CouponResolver extends Base {
       key: args.key,
       discountType: args.discountType,
       discountPercent: args.discountPercent,
-      discountAmount: args.discountAmount
+      discountAmount: args.discountAmount,
     }).save();
   }
 
@@ -29,7 +29,7 @@ export class CouponResolver extends Base {
       .delete()
       .where("id=:id", { id })
       .execute();
-    return !!result.affected
+    return !!result.affected;
   }
 
   @Mutation(() => Coupon)
@@ -44,7 +44,7 @@ export class CouponResolver extends Base {
         key: args.key,
         discountType: args.discountType,
         discountPercent: args.discountPercent,
-        discountAmount: args.discountAmount
+        discountAmount: args.discountAmount,
       })
       .where("id=:id", { id })
       .execute();
@@ -53,11 +53,15 @@ export class CouponResolver extends Base {
 
   @Query(() => PaginatedCouponResponse)
   public async getCoupons(@Args() { page, limit }: PaginatedResponseArgs) {
-    const result = await Coupon.findAndCount({ skip: (page - 1) * limit, take: limit, order: { id: "ASC" }});
+    const result = await Coupon.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { id: "ASC" },
+    });
     return {
       items: result[0],
       totalPages: ceil(result[1] / limit),
-      totalCount: result[1]
-    }
+      totalCount: result[1],
+    };
   }
 }

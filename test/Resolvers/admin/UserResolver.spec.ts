@@ -110,7 +110,7 @@ describe("Test Address Resolver",  () => {
         }
       }
     });
-  }, 15000);
+  }, 25000);
 
   it("Test Add User", async () => {
     const userGroup = await createUserGroupHelper();

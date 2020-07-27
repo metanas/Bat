@@ -1,7 +1,14 @@
-import {Field, ObjectType} from "type-graphql";
-import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn} from "typeorm";
-import {Costumer} from "./Costumer";
-import {Coupon} from "./Coupon";
+import { Field, ObjectType } from "type-graphql";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from "typeorm";
+import { Costumer } from "./Costumer";
+import { Coupon } from "./Coupon";
 
 @ObjectType()
 @Entity()
@@ -13,11 +20,13 @@ export class CostumerCoupon extends BaseEntity {
   public couponId: number;
 
   @Field(() => Costumer)
-  @ManyToOne(() => Costumer, { primary: true})
-  @JoinColumn({ name: "costumerId"})
+  @ManyToOne(() => Costumer, { primary: true })
+  @JoinColumn({ name: "costumerId" })
   public costumer: Costumer;
 
-  @ManyToOne(() => Coupon,(costumer: Costumer) => costumer.coupons, {primary: true})
+  @ManyToOne(() => Coupon, (costumer: Costumer) => costumer.coupons, {
+    primary: true,
+  })
   @JoinColumn({ name: "couponId" })
   public coupon: Coupon;
 

@@ -1,8 +1,14 @@
-import {Field, ObjectType} from "type-graphql";
-import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn} from "typeorm";
-import {Cart} from "./Cart";
-import {Product} from "./Product";
-
+import { Field, ObjectType } from "type-graphql";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from "typeorm";
+import { Cart } from "./Cart";
+import { Product } from "./Product";
 
 @ObjectType()
 @Entity()
@@ -14,11 +20,14 @@ export class CartProduct extends BaseEntity {
   public productId: number;
 
   @Field(() => Product)
-  @ManyToOne(() => Product, (cart: Cart) => cart.cartProducts, { primary: true, eager: true})
-  @JoinColumn({ name: "productId"})
+  @ManyToOne(() => Product, (cart: Cart) => cart.cartProducts, {
+    primary: true,
+    eager: true,
+  })
+  @JoinColumn({ name: "productId" })
   public product: Product;
 
-  @ManyToOne(() => Cart,{primary: true})
+  @ManyToOne(() => Cart, { primary: true })
   @JoinColumn({ name: "cartId" })
   public cart: Cart;
 
