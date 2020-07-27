@@ -1,9 +1,16 @@
-import {BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ID, ObjectType} from "type-graphql";
-import {Cart} from "./Cart";
-import {Order} from "./Order";
-import {CouponProduct} from "./CouponProduct";
-import {CostumerCoupon} from "./CostumerCoupon";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinTable,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Field, ID, ObjectType } from "type-graphql";
+import { Cart } from "./Cart";
+import { Order } from "./Order";
+import { CouponProduct } from "./CouponProduct";
+import { CostumerCoupon } from "./CostumerCoupon";
 
 @ObjectType()
 @Entity()
@@ -21,7 +28,7 @@ export class Coupon extends BaseEntity {
   public discountType: string;
 
   @Field()
-  @Column({type: "citext", unique: true })
+  @Column({ type: "citext", unique: true })
   public key: string;
 
   @Field()
@@ -41,14 +48,18 @@ export class Coupon extends BaseEntity {
   public dateEnd: string;
 
   @Field()
-  @Column({ name: "coupon_user"})
+  @Column({ name: "coupon_user" })
   public couponUse: number;
 
   @Field()
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @OneToMany(() => CouponProduct, (couponProduct: CouponProduct) => couponProduct.coupon, { eager: true })
+  @OneToMany(
+    () => CouponProduct,
+    (couponProduct: CouponProduct) => couponProduct.coupon,
+    { eager: true }
+  )
   @JoinTable()
   public couponProducts: CouponProduct[];
 
@@ -61,11 +72,14 @@ export class Coupon extends BaseEntity {
   public orders: Order[];
 
   @Field(() => [CostumerCoupon])
-  @OneToMany(() => CostumerCoupon, (costumerCoupon: CostumerCoupon) => costumerCoupon.coupon)
+  @OneToMany(
+    () => CostumerCoupon,
+    (costumerCoupon: CostumerCoupon) => costumerCoupon.coupon
+  )
   public costumerCoupon: CostumerCoupon[];
 
   @Field(() => Boolean)
   public isValid() {
-    return this.orders.length > this.couponUse
+    return this.orders.length > this.couponUse;
   }
 }

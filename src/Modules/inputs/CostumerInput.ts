@@ -8,6 +8,6 @@ export class CostumerInput {
   @Field()
   public telephone: string;
 
-  @Field({nullable: true })
+  @Field({ nullable: true })
   public birthday: string;
 }

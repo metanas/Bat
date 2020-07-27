@@ -1,6 +1,12 @@
-import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ID, ObjectType} from "type-graphql";
-import {UserGroup} from "./UserGroup";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Field, ID, ObjectType } from "type-graphql";
+import { UserGroup } from "./UserGroup";
 
 @Entity()
 @ObjectType()
@@ -14,7 +20,7 @@ export class User extends BaseEntity {
   public name: string;
 
   @Field()
-  @Column({ type: "citext" ,unique: true })
+  @Column({ type: "citext", unique: true })
   public email: string;
 
   @Column()

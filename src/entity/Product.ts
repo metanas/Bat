@@ -1,7 +1,14 @@
-import {BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ID, ObjectType} from "type-graphql";
-import {ProductPicture} from "./ProductPicture";
-import {ProductCategory} from "./ProductCategory";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinTable,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Field, ID, ObjectType } from "type-graphql";
+import { ProductPicture } from "./ProductPicture";
+import { ProductCategory } from "./ProductCategory";
 
 @ObjectType()
 @Entity()
@@ -39,13 +46,20 @@ export class Product extends BaseEntity {
   public create_at: string;
 
   @Field(() => [ProductPicture])
-  @OneToMany(() => ProductPicture, (productPicture: ProductPicture) => productPicture.product, { onDelete: "CASCADE" })
+  @OneToMany(
+    () => ProductPicture,
+    (productPicture: ProductPicture) => productPicture.product,
+    { onDelete: "CASCADE" }
+  )
   @JoinTable()
   public productPictures: ProductPicture[];
 
   @Field(() => [ProductCategory])
-  @OneToMany(() => ProductCategory, (productCategory: ProductCategory) => productCategory.product, { onDelete: "CASCADE" })
+  @OneToMany(
+    () => ProductCategory,
+    (productCategory: ProductCategory) => productCategory.product,
+    { onDelete: "CASCADE" }
+  )
   @JoinTable()
   public productCategory: ProductCategory[];
 }
-

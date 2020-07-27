@@ -1,5 +1,5 @@
-import {ArgsType, Field, Int} from "type-graphql";
-import {IsArray, IsInt, IsString} from "class-validator";
+import { ArgsType, Field, Int } from "type-graphql";
+import { IsArray, IsInt, IsString } from "class-validator";
 
 @ArgsType()
 export class ProductArgs {

@@ -1,6 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, BaseEntity } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Column,
+  BaseEntity,
+} from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
-import {Product} from "./Product";
+import { Product } from "./Product";
 
 @ObjectType()
 @Entity()
@@ -21,7 +27,6 @@ export class ProductPicture extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   public create_at: string;
 
-  @ManyToOne(() => Product, {onDelete: "CASCADE"})
+  @ManyToOne(() => Product, { onDelete: "CASCADE" })
   public product: Product;
-
 }
