@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/ban-ts-comment,prettier/prettier */
 import PaginatedResponse from "../Modules/interfaces/PaginatedResponse";
 import { Address } from "../entity/Address";
 import { Product } from "../entity/Product";
@@ -15,24 +15,24 @@ type PaginatedAddressResponse = InstanceType<typeof PaginatedAddressResponse>;
 
 export const PaginatedProductResponse = PaginatedResponse(Product);
 // @ts-ignore
-type PaginatedProductResponse = InstanceType<typeof PaginatedProductResponse>;
+export type PaginateProductType = InstanceType<typeof PaginatedProductResponse>;
 
 export const PaginatedCouponResponse = PaginatedResponse(Coupon);
 // @ts-ignore
-type PaginatedCouponResponse = InstanceType<typeof PaginatedCouponResponse>;
+export type PaginatedCouponType = InstanceType<typeof PaginatedCouponResponse>;
 
 export const PaginatedDriverResponse = PaginatedResponse(Driver);
 // @ts-ignore
-type PaginatedDriverResponse = InstanceType<typeof PaginatedDriverResponse>;
+export type PaginatedDriverType = InstanceType<typeof PaginatedDriverResponse>;
 
 export const PaginatedUserGpResponse = PaginatedResponse(UserGroup);
 
 // @ts-ignore
-type PaginatedUserGroupResponse = InstanceType<typeof PaginatedUserGpResponse>;
+export type PaginatedUserGpResponse = InstanceType<typeof PaginatedUserGpResponse>;
 
 export const PaginatedUserResponse = PaginatedResponse(User);
 // @ts-ignore
-type PaginatedUserResponse = InstanceType<typeof PaginatedUserResponse>;
+export type PaginatedUserResponse = InstanceType<typeof PaginatedUserResponse>;
 
 export const PaginatedCategoryResponse = PaginatedResponse(Category);
 // @ts-ignore
@@ -40,4 +40,4 @@ type PaginatedCategoryResponse = InstanceType<typeof PaginatedCategoryResponse>;
 
 export const PaginatedOrderResponse = PaginatedResponse(Order);
 // @ts-ignore
-type PaginatedOrderResponse = InstanceType<typeof PaginatedOrderResponse>;
+export type PaginatedOrderType = InstanceType<typeof PaginatedOrderResponse>;

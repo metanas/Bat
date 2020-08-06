@@ -1,40 +1,41 @@
-import {graphqlCall} from "../../test-utils/graphqlCall";
-import {connection} from "../../test-utils/connection";
-import {Connection} from "typeorm";
-import faker from "faker";
-import {createDriverHelper} from "../../helper/createDriverHelper";
-import {take} from "lodash";
-import {Driver} from "../../../src/entity/Driver";
-import {createCostumerHelper} from "../../helper/createCostumerHelper";
-import {Costumer} from "../../../src/entity/Costumer";
-import {truncate} from "../../helper/truncateTables";
-import {createOrderHelper} from "../../helper/createOrderHelper";
-import {createAddressHelper} from "../../helper/createAddressHelper";
-import {GraphQLError} from "graphql";
+import { graphqlCall } from "../../test-utils/graphqlCall";
+import { connection } from "../../test-utils/connection";
+import { Connection } from "typeorm";
+import * as faker from "faker";
+import { createDriverHelper } from "../../helper/createDriverHelper";
+import { take } from "lodash";
+import { Driver } from "../../../src/entity/Driver";
+import { createCostumerHelper } from "../../helper/createCostumerHelper";
+import { truncate } from "../../helper/truncateTables";
+import { createOrderHelper } from "../../helper/createOrderHelper";
+import { createAddressHelper } from "../../helper/createAddressHelper";
+import { GraphQLError } from "graphql";
+import { createUserGroupHelper } from "../../helper/createUserGroupHelper";
+import { createUserHelper } from "../../helper/createUserHelper";
+import { loginHelper } from "../../helper/loginHelper";
 
-describe("Test Driver Resolver",  () => {
+describe("Test Driver Resolver", () => {
   let conn: Connection;
-  let driver: Driver ;
-  let user: Costumer;
-
+  let driver: Driver;
 
   beforeAll(async () => {
     conn = await connection();
-    user = await createCostumerHelper();
-
   });
 
   afterAll(async () => {
     await conn.close();
   });
 
-
   it("Test Add Driver", async () => {
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
 
-    const newDriver = {name : faker.name.findName(),
-      telephone : faker.phone.phoneNumber(),
-      point : faker.random.number(5),
-      avatar : faker.random.word(),
+    const token = await loginHelper(user);
+    const newDriver = {
+      name: faker.name.findName(),
+      telephone: faker.phone.phoneNumber(),
+      point: faker.random.number(5),
+      avatar: faker.random.word(),
       latitude: faker.address.latitude(),
       longitude: faker.address.longitude(),
     };
@@ -53,25 +54,29 @@ describe("Test Driver Resolver",  () => {
     const response = await graphqlCall({
       source: addDriverQuery,
       user,
-      isAdmin: true
+      token,
+      isAdmin: true,
     });
     expect(response).toMatchObject({
       data: {
         addDriver: {
-          name: newDriver.name ,
-          telephone:newDriver.telephone,
-          point:newDriver.point,
-          avatar:newDriver.avatar,
-          isActive : false,
-          longitude:newDriver.longitude,
-          latitude:newDriver.latitude
-        }
-      }
+          name: newDriver.name,
+          telephone: newDriver.telephone,
+          point: newDriver.point,
+          avatar: newDriver.avatar,
+          isActive: false,
+          longitude: newDriver.longitude,
+          latitude: newDriver.latitude,
+        },
+      },
     });
-
   });
   it("Test Delete Driver", async () => {
     const driver = await createDriverHelper();
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
 
     const deleteDriverQuery = `mutation { 
       deleteDriver(id: ${driver.id}) 
@@ -79,22 +84,27 @@ describe("Test Driver Resolver",  () => {
 
     const response = await graphqlCall({
       source: deleteDriverQuery,
-      isAdmin: true
+      isAdmin: true,
+      token,
+      user,
     });
 
     expect(response).toMatchObject({
       data: {
-        deleteDriver: true
-      }
+        deleteDriver: true,
+      },
     });
   });
   it("Test Get Drivers", async () => {
     await truncate(conn, "driver");
-    const driverList: { id: string  }[] = [];
+    const driverList: { id: string }[] = [];
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
 
-    for(let i=0; i< 22; i++) {
+    const token = await loginHelper(user);
+    for (let i = 0; i < 22; i++) {
       const driver = await createDriverHelper();
-      driverList.push({ id : driver.id.toString() });
+      driverList.push({ id: driver.id.toString() });
     }
 
     const getDriversQuery = `{
@@ -109,22 +119,26 @@ describe("Test Driver Resolver",  () => {
 
     const response = await graphqlCall({
       source: getDriversQuery,
-      isAdmin : true ,
-      user : user
-
+      isAdmin: true,
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
       data: {
         getDrivers: {
           items: take(driverList, 10),
-          "total_pages": 3,
-          "total_count": 22
-        }
-      }
-    })
+          total_pages: 3,
+          total_count: 22,
+        },
+      },
+    });
   });
   it("Test Update Driver Status", async () => {
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
     driver = await createDriverHelper();
     const updateDriverStatusQuery = `mutation {
       updateDriverStatus(id: ${driver.id}, isActive: false) {
@@ -136,21 +150,25 @@ describe("Test Driver Resolver",  () => {
     const response = await graphqlCall({
       source: updateDriverStatusQuery,
       user: user,
-      isAdmin: true
+      isAdmin: true,
+      token,
     });
 
     expect(response).toMatchObject({
       data: {
         updateDriverStatus: {
           id: `${driver.id}`,
-          isActive: false
-        }
-      }
+          isActive: false,
+        },
+      },
     });
   });
   it("Test Update Driver", async () => {
     driver = await createDriverHelper();
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
 
+    const token = await loginHelper(user);
     const updateDriverQuery = `mutation {
       updateDriver(id: ${driver.id} ,name:"setfsd",telephone:"4567461", point:3, avatar:"srfg", longitude:"5243",latitude:"245") {
         name
@@ -165,24 +183,28 @@ describe("Test Driver Resolver",  () => {
     const response = await graphqlCall({
       source: updateDriverQuery,
       user,
-      isAdmin:true
-
+      token,
+      isAdmin: true,
     });
     expect(response).toMatchObject({
       data: {
         updateDriver: {
-          name:"setfsd",
-          telephone:"4567461",
-          point:3,
-          avatar:"srfg",
-          longitude:"5243",
-          latitude:"245"
-        }
-      }
+          name: "setfsd",
+          telephone: "4567461",
+          point: 3,
+          avatar: "srfg",
+          longitude: "5243",
+          latitude: "245",
+        },
+      },
     });
   });
   it("Test Getting Driver", async () => {
     driver = await createDriverHelper();
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
     const getDriverQuery = `{
       getDriver (id: ${driver.id}){
         id
@@ -198,32 +220,34 @@ describe("Test Driver Resolver",  () => {
     const response = await graphqlCall({
       source: getDriverQuery,
       user: user,
-      isAdmin:true
+      isAdmin: true,
+      token,
     });
 
-
     expect(response).toMatchObject({
-      data:{
-        getDriver : {
-          id : `${driver.id}`,
+      data: {
+        getDriver: {
+          id: `${driver.id}`,
           name: driver.name,
           telephone: driver.telephone,
           point: driver.point,
           isActive: driver.isActive,
           longitude: driver.longitude,
           latitude: driver.latitude,
-
-        }
-      }
+        },
+      },
     });
   });
 
-  it("Test set Driver To Order", async  () => {
+  it("Test set Driver To Order", async () => {
     const customer = await createCostumerHelper();
     const address = await createAddressHelper(customer);
     const order = await createOrderHelper(address, customer, 3);
     const driver = await createDriverHelper();
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
 
+    const token = await loginHelper(user);
     let setDriverToOrderQuery = `mutation {
        setDriverToOrder(id: ${driver.id}, orderId: "${order.id}") {
          id
@@ -234,16 +258,17 @@ describe("Test Driver Resolver",  () => {
     let response = await graphqlCall({
       source: setDriverToOrderQuery,
       isAdmin: true,
-      user
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
       data: {
         setDriverToOrder: {
           id: order.id,
-          driverName: driver.name
-        }
-      }
+          driverName: driver.name,
+        },
+      },
     });
 
     setDriverToOrderQuery = `mutation {
@@ -256,9 +281,9 @@ describe("Test Driver Resolver",  () => {
     response = await graphqlCall({
       source: setDriverToOrderQuery,
       isAdmin: true,
-      user
+      user,
     });
 
-    expect(response.errors).toEqual([new GraphQLError("Driver Not Found!")])
+    expect(response.errors).toEqual([new GraphQLError("Driver Not Found!")]);
   });
 });

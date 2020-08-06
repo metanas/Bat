@@ -1,6 +1,5 @@
 import { Resolver, Mutation, Arg } from "type-graphql";
-import { GraphQLUpload } from "graphql-upload";
-import { Upload } from "../../types/Upload";
+import { GraphQLUpload, FileUpload } from "graphql-upload";
 import { ProductPicture } from "../../entity/ProductPicture";
 import { Product } from "../../entity/Product";
 import { getConnection } from "typeorm";
@@ -10,8 +9,9 @@ import { uploadImage } from "../../utils/uploadImage";
 export class ProductPictureResolver {
   @Mutation(() => Boolean)
   public async addProductPicture(
-    @Arg("idProduct") id: number,
-    @Arg("picture", () => GraphQLUpload) { createReadStream, filename }: Upload
+    @Arg("idProduct", { nullable: true }) id: number,
+    @Arg("picture", () => GraphQLUpload)
+    { createReadStream, filename }: FileUpload
   ) {
     const product = await Product.findOne({ where: { id } });
     await uploadImage(

@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "dotenv/config";
 import { createConnection } from "typeorm";
 import { createApolloServer } from "./server";
 import { createApolloServerAdmin } from "./server/admin";

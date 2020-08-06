@@ -1,16 +1,27 @@
-import { Arg, Args, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Args,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from "type-graphql";
 import { CouponArgs } from "../../Modules/inputs/CouponArgs";
 import { Coupon } from "../../entity/Coupon";
 import { CouponResolver as Base } from "../shared/CouponResolver";
 import { PaginatedResponseArgs } from "../../Modules/inputs/PaginatedResponseArgs";
 import { ceil } from "lodash";
-import { PaginatedCouponResponse } from "../../types/PaginatedResponseTypes";
+import {
+  PaginatedCouponResponse,
+  PaginatedCouponType,
+} from "../../types/PaginatedResponseTypes";
+import { Admin } from "../../Middleware/Admin";
 
 @Resolver()
 export class CouponResolver extends Base {
-  // // TODO Admin PERMISSION
+  @UseMiddleware(Admin)
   @Mutation(() => Coupon)
-  public async addCoupon(@Args() args: CouponArgs) {
+  public async addCoupon(@Args() args: CouponArgs): Promise<Coupon> {
     return await Coupon.create({
       name: args.name,
       couponUse: args.couponUse,
@@ -23,8 +34,9 @@ export class CouponResolver extends Base {
     }).save();
   }
 
+  @UseMiddleware(Admin)
   @Mutation(() => Boolean)
-  public async removeCoupon(@Arg("id") id: number) {
+  public async removeCoupon(@Arg("id") id: number): Promise<boolean> {
     const result = await Coupon.createQueryBuilder()
       .delete()
       .where("id=:id", { id })
@@ -33,7 +45,10 @@ export class CouponResolver extends Base {
   }
 
   @Mutation(() => Coupon)
-  public async updateCoupon(@Arg("id") id: number, @Args() args: CouponArgs) {
+  public async updateCoupon(
+    @Arg("id") id: number,
+    @Args() args: CouponArgs
+  ): Promise<Coupon | undefined> {
     await Coupon.createQueryBuilder()
       .update()
       .set({
@@ -51,8 +66,11 @@ export class CouponResolver extends Base {
     return await Coupon.findOne(id);
   }
 
+  @UseMiddleware(Admin)
   @Query(() => PaginatedCouponResponse)
-  public async getCoupons(@Args() { page, limit }: PaginatedResponseArgs) {
+  public async getCoupons(
+    @Args() { page, limit }: PaginatedResponseArgs
+  ): Promise<PaginatedCouponType> {
     const result = await Coupon.findAndCount({
       skip: (page - 1) * limit,
       take: limit,

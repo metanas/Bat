@@ -1,18 +1,19 @@
-import {Connection} from "typeorm";
-import {Product} from "../../../src/entity/Product";
-import {connection} from "../../test-utils/connection";
-import faker from "faker";
-import {createProductHelper} from "../../helper/createProductHelper";
-import {toInteger, take} from "lodash";
-import {graphqlCall} from "../../test-utils/graphqlCall";
-import {createCategoryHelper} from "../../helper/createCategoryHelper";
-import {Category} from "../../../src/entity/Category";
-import {createUserHelper} from "../../helper/createUserHelper";
-import {createUserGroupHelper} from "../../helper/createUserGroupHelper";
-import {User} from "../../../src/entity/User";
-import {truncate} from "../../helper/truncateTables";
-import {associateProductAndCategory} from "../../helper/associateProductAndCategoryHelper";
-import {GraphQLError} from "graphql";
+import { Connection } from "typeorm";
+import { Product } from "../../../src/entity/Product";
+import { connection } from "../../test-utils/connection";
+import * as faker from "faker";
+import { createProductHelper } from "../../helper/createProductHelper";
+import { toInteger, take } from "lodash";
+import { graphqlCall } from "../../test-utils/graphqlCall";
+import { createCategoryHelper } from "../../helper/createCategoryHelper";
+import { Category } from "../../../src/entity/Category";
+import { createUserHelper } from "../../helper/createUserHelper";
+import { createUserGroupHelper } from "../../helper/createUserGroupHelper";
+import { User } from "../../../src/entity/User";
+import { truncate } from "../../helper/truncateTables";
+import { associateProductAndCategory } from "../../helper/associateProductAndCategoryHelper";
+import { GraphQLError } from "graphql";
+import { loginHelper } from "../../helper/loginHelper";
 
 describe("Product Resolver Test", () => {
   let conn: Connection;
@@ -30,6 +31,10 @@ describe("Product Resolver Test", () => {
   });
 
   it("Test Get Product", async () => {
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
     product = await createProductHelper(true);
     category = await createCategoryHelper(true);
 
@@ -50,7 +55,8 @@ describe("Product Resolver Test", () => {
     const response = await graphqlCall({
       source: getProductQuery,
       isAdmin: true,
-      user
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
@@ -61,21 +67,23 @@ describe("Product Resolver Test", () => {
           productCategory: [
             {
               category: {
-                id: category.id.toString()
-              }
-            }
-          ]
-        }
-      }
-    })
+                id: category.id.toString(),
+              },
+            },
+          ],
+        },
+      },
+    });
   });
 
   it("Test Update Product", async () => {
     const userGroup = await createUserGroupHelper();
-    user = await createUserHelper(userGroup);
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
     const categories: number[] = [];
 
-    for(let i=0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       category = await createCategoryHelper(true);
       categories.push(category.id);
     }
@@ -85,7 +93,7 @@ describe("Product Resolver Test", () => {
     const newProduct = {
       name: faker.commerce.productName(),
       priceCent: toInteger(faker.commerce.price()),
-      quantity: faker.random.number()
+      quantity: faker.random.number(),
     };
 
     const updateProductQuery = `mutation {
@@ -100,7 +108,8 @@ describe("Product Resolver Test", () => {
     const response = await graphqlCall({
       source: updateProductQuery,
       user: user,
-      isAdmin: true
+      isAdmin: true,
+      token,
     });
 
     expect(response).toMatchObject({
@@ -109,30 +118,31 @@ describe("Product Resolver Test", () => {
           id: `${product.id}`,
           name: newProduct.name,
           priceCent: newProduct.priceCent,
-          quantity: newProduct.quantity
-        }
-      }
+          quantity: newProduct.quantity,
+        },
+      },
     });
   });
 
   it("Test Add New Product", async () => {
     const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
     const categories: number[] = [];
 
-    for(let i=0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       category = await createCategoryHelper(true);
       categories.push(category.id);
     }
 
-    user = await createUserHelper(userGroup);
-
     const newProduct = {
       name: faker.commerce.productName(),
       priceCent: toInteger(faker.commerce.price()),
-      quantity: faker.random.number()
+      quantity: faker.random.number(),
     };
 
-    const addProductQuery =  `mutation {
+    const addProductQuery = `mutation {
       addProduct(name: "${newProduct.name}", priceCent: ${newProduct.priceCent}, unit: "kg", weight: 1 ,quantity: ${newProduct.quantity}, categoryIds: [${categories}]) {
         name
         priceCent
@@ -143,7 +153,8 @@ describe("Product Resolver Test", () => {
     const response = await graphqlCall({
       source: addProductQuery,
       user: user,
-      isAdmin: true
+      isAdmin: true,
+      token,
     });
 
     expect(response).toMatchObject({
@@ -151,15 +162,17 @@ describe("Product Resolver Test", () => {
         addProduct: {
           name: newProduct.name,
           priceCent: newProduct.priceCent,
-          quantity: newProduct.quantity
-        }
-      }
+          quantity: newProduct.quantity,
+        },
+      },
     });
   });
 
   it("Test Delete Product", async () => {
     const userGroup = await createUserGroupHelper();
     user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
 
     product = await createProductHelper();
 
@@ -170,16 +183,21 @@ describe("Product Resolver Test", () => {
     const response = await graphqlCall({
       source: deleteProductQuery,
       user,
-      isAdmin: true
+      isAdmin: true,
+      token,
     });
 
     expect(response.data).toMatchObject({
-      deleteProduct: true
+      deleteProduct: true,
     });
   });
 
   it("Test Toggle State Product", async () => {
     const product = await createProductHelper();
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
 
     let toggleProductQuery = `mutation {
       toggleProduct(id: ${product.id}) {
@@ -190,15 +208,16 @@ describe("Product Resolver Test", () => {
     let response = await graphqlCall({
       source: toggleProductQuery,
       user,
-      isAdmin: true
+      isAdmin: true,
+      token,
     });
 
     expect(response).toMatchObject({
       data: {
         toggleProduct: {
-          enabled: true
-        }
-      }
+          enabled: true,
+        },
+      },
     });
 
     toggleProductQuery = `mutation {
@@ -210,22 +229,29 @@ describe("Product Resolver Test", () => {
     response = await graphqlCall({
       source: toggleProductQuery,
       user,
-      isAdmin: true
+      isAdmin: true,
+      token,
     });
 
-    expect(response).toMatchObject({ errors: [new GraphQLError("No Product Found")] });
+    expect(response).toMatchObject({
+      errors: [new GraphQLError("No Product Found")],
+    });
   });
 
   it("Test Get Products", async () => {
     await truncate(conn, "product");
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
     const category1 = await createCategoryHelper();
     const category2 = await createCategoryHelper();
 
     const productList: { id: string; name: string }[] = [];
-    for(let i=0; i < 14; i++) {
+    for (let i = 0; i < 14; i++) {
       const product = await createProductHelper(i % 2 == 0);
-      if(i % 2 == 0) {
-        await associateProductAndCategory(product, category1)
+      if (i % 2 == 0) {
+        await associateProductAndCategory(product, category1);
       } else {
         await associateProductAndCategory(product, category2);
       }
@@ -246,21 +272,21 @@ describe("Product Resolver Test", () => {
     let response = await graphqlCall({
       source: getProductQuery,
       isAdmin: true,
-      user
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
       data: {
         getProducts: {
           items: take(productList, 5),
-          "total_count": 14,
-          "total_pages": 3
-        }
-      }
+          total_count: 14,
+          total_pages: 3,
+        },
+      },
     });
 
     const productExpected = productList.shift();
-
 
     getProductQuery = `{ 
       getProducts(name: "${productExpected!.name}" ) {
@@ -271,11 +297,11 @@ describe("Product Resolver Test", () => {
       } 
     }`;
 
-
     response = await graphqlCall({
       source: getProductQuery,
       isAdmin: true,
-      user
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
@@ -284,11 +310,11 @@ describe("Product Resolver Test", () => {
           items: [
             {
               id: productExpected!.id.toString(),
-              name: productExpected!.name
-            }
-          ]
-        }
-      }
+              name: productExpected!.name,
+            },
+          ],
+        },
+      },
     });
 
     getProductQuery = `{ 
@@ -301,11 +327,11 @@ describe("Product Resolver Test", () => {
       } 
     }`;
 
-
     response = await graphqlCall({
       source: getProductQuery,
       isAdmin: true,
-      user
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
@@ -314,13 +340,12 @@ describe("Product Resolver Test", () => {
           items: [
             {
               id: productExpected!.id.toString(),
-              name: productExpected!.name
-            }
+              name: productExpected!.name,
+            },
           ],
-          "total_count": 7
-        }
-      }
+          total_count: 7,
+        },
+      },
     });
-
   });
 });

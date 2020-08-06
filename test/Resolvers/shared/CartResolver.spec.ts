@@ -1,21 +1,20 @@
-import {Costumer} from "../../../src/entity/Costumer";
-import {createCostumerHelper} from "../../helper/createCostumerHelper";
-import {connection} from "../../test-utils/connection";
-import {Connection} from "typeorm";
-import {graphqlCall} from "../../test-utils/graphqlCall";
-import {createCartHelper} from "../../helper/createCartHelper";
-import {createCartProductHelper} from "../../helper/createCartProductHelper";
-import {createProductHelper} from "../../helper/createProductHelper";
-import {Product} from "../../../src/entity/Product";
-import {CartProduct} from "../../../src/entity/CartProduct";
+import { Costumer } from "../../../src/entity/Costumer";
+import { createCostumerHelper } from "../../helper/createCostumerHelper";
+import { connection } from "../../test-utils/connection";
+import { Connection } from "typeorm";
+import { graphqlCall } from "../../test-utils/graphqlCall";
+import { createCartHelper } from "../../helper/createCartHelper";
+import { createCartProductHelper } from "../../helper/createCartProductHelper";
+import { createProductHelper } from "../../helper/createProductHelper";
+import { Product } from "../../../src/entity/Product";
+import { CartProduct } from "../../../src/entity/CartProduct";
 import { GraphQLError } from "graphql";
 
-describe("Test Cart Resolver",  () => {
-
+describe("Test Cart Resolver", () => {
   let conn: Connection;
   let costumer: Costumer;
   let product: Product;
-  let cartProduct: CartProduct ;
+  let cartProduct: CartProduct;
   beforeAll(async () => {
     conn = await connection();
   });
@@ -30,10 +29,13 @@ describe("Test Cart Resolver",  () => {
 
     let cartExpect = [];
 
-    for (let i=0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       product = await createProductHelper();
-      cartProduct = await createCartProductHelper(product,cart);
-      cartExpect.push({ product: { id: product.id.toString() }, quantity: cartProduct.quantity})
+      cartProduct = await createCartProductHelper(product, cart);
+      cartExpect.push({
+        product: { id: product.id.toString() },
+        quantity: cartProduct.quantity,
+      });
     }
 
     cartExpect = cartExpect.reverse();
@@ -52,16 +54,16 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: getCartQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
-      data:{
-        getCart : {
+      data: {
+        getCart: {
           cartProducts: cartExpect,
-          count: 5
-        }
-      }
+          count: 5,
+        },
+      },
     });
   });
 
@@ -69,9 +71,9 @@ describe("Test Cart Resolver",  () => {
     costumer = await createCostumerHelper();
     const cart = await createCartHelper(costumer);
 
-    for(let i=0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       product = await createProductHelper();
-      cartProduct = await createCartProductHelper(product,cart);
+      cartProduct = await createCartProductHelper(product, cart);
     }
 
     const deleteAllFromCartQuery = `mutation { 
@@ -82,42 +84,40 @@ describe("Test Cart Resolver",  () => {
       join: {
         alias: "cartProduct",
         leftJoinAndSelect: {
-          product: "cartProduct.product"
-        }
+          product: "cartProduct.product",
+        },
       },
       where: {
-        cartId: cart.id
-      }
+        cartId: cart.id,
+      },
     });
 
     expect(newCart.length).toEqual(5);
 
     const response = await graphqlCall({
       source: deleteAllFromCartQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
       data: {
-        deleteAllFromCart: true
-      }
+        deleteAllFromCart: true,
+      },
     });
 
     newCart = await CartProduct.find({
       join: {
         alias: "cartProduct",
         leftJoinAndSelect: {
-          product: "cartProduct.product"
-        }
+          product: "cartProduct.product",
+        },
       },
       where: {
-        cartId: cart.id
-      }
+        cartId: cart.id,
+      },
     });
 
     expect(newCart.length).toEqual(0);
-
-
   });
 
   it("Test Update Quantity Product", async () => {
@@ -144,15 +144,17 @@ describe("Test Cart Resolver",  () => {
         updateProductQuantity: {
           cartProducts: [
             {
-              quantity: 6
-            }
-          ]
-        }
-      }
+              quantity: 6,
+            },
+          ],
+        },
+      },
     });
 
     updateProductQuantityQuery = `mutation {
-      updateProductQuantity( productId: ${cartProduct.productId} , quantity: ${product.quantity + 1}) {
+      updateProductQuantity( productId: ${cartProduct.productId} , quantity: ${
+      product.quantity + 1
+    }) {
           cartProducts {
             quantity
           }
@@ -164,15 +166,15 @@ describe("Test Cart Resolver",  () => {
       user: costumer,
     });
 
-    expect(response.errors).toContainEqual(new GraphQLError("Quantity Selected is Not Available"));
-
+    expect(response.errors).toContainEqual(
+      new GraphQLError("Quantity Selected is Not Available")
+    );
   });
 
   it("Test Add product To Cart", async () => {
     costumer = await createCostumerHelper();
     const cart = await createCartHelper(costumer);
     product = await createProductHelper();
-
 
     const addProductToCartQuery = `mutation {
       addProductToCart(productId: ${product.id} ,quantity: 33 ) {
@@ -187,7 +189,7 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: addProductToCartQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
@@ -197,12 +199,12 @@ describe("Test Cart Resolver",  () => {
           cartProducts: [
             {
               product: {
-                id: product.id.toString()
-              }
-            }
-          ]
-        }
-      }
+                id: product.id.toString(),
+              },
+            },
+          ],
+        },
+      },
     });
   });
 
@@ -211,9 +213,10 @@ describe("Test Cart Resolver",  () => {
     await createCartHelper(costumer);
     product = await createProductHelper();
 
-
     const addProductToCartQuery = `mutation {
-      addProductToCart(productId: ${product.id} ,quantity: ${product.quantity + 1} ) {
+      addProductToCart(productId: ${product.id} ,quantity: ${
+      product.quantity + 1
+    } ) {
         id
         cartProducts {
           product {
@@ -225,11 +228,11 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: addProductToCartQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
-      errors: [new GraphQLError("Quantity Selected is Not Available")]
+      errors: [new GraphQLError("Quantity Selected is Not Available")],
     });
   });
 
@@ -237,9 +240,9 @@ describe("Test Cart Resolver",  () => {
     costumer = await createCostumerHelper();
     const cart = await createCartHelper(costumer);
 
-    for( let i=0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       product = await createProductHelper();
-      cartProduct = await createCartProductHelper(product,cart);
+      cartProduct = await createCartProductHelper(product, cart);
     }
 
     const removeProductFromCartQuery = `mutation { 
@@ -248,25 +251,25 @@ describe("Test Cart Resolver",  () => {
 
     const response = await graphqlCall({
       source: removeProductFromCartQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
       data: {
-        removeProductFromCart: true
-      }
+        removeProductFromCart: true,
+      },
     });
 
     const newCart = await CartProduct.find({
       join: {
         alias: "cartProduct",
         leftJoinAndSelect: {
-          product: "cartProduct.product"
-        }
+          product: "cartProduct.product",
+        },
       },
       where: {
-        cartId: cart.id
-      }
+        cartId: cart.id,
+      },
     });
 
     expect(newCart.length).toEqual(2);

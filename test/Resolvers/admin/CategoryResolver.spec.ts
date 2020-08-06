@@ -1,10 +1,12 @@
-import {connection} from "../../test-utils/connection";
-import {Connection} from "typeorm";
-import {Category} from "../../../src/entity/Category";
-import {graphqlCall} from "../../test-utils/graphqlCall";
+import { connection } from "../../test-utils/connection";
+import { Connection } from "typeorm";
+import { Category } from "../../../src/entity/Category";
+import { graphqlCall } from "../../test-utils/graphqlCall";
 import faker = require("faker");
 import { get } from "lodash";
-
+import { createUserHelper } from "../../helper/createUserHelper";
+import { createUserGroupHelper } from "../../helper/createUserGroupHelper";
+import { loginHelper } from "../../helper/loginHelper";
 
 let conn: Connection;
 
@@ -16,9 +18,12 @@ afterAll(async () => {
   await conn.close();
 });
 
-
-describe("Test Category Resolver",  () => {
+describe("Test Category Resolver", () => {
   it("test Add Category", async () => {
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
 
     const addCategoryQuery = `
     mutation {
@@ -29,19 +34,25 @@ describe("Test Category Resolver",  () => {
 
     const response = await graphqlCall({
       source: addCategoryQuery,
-      isAdmin: true
+      isAdmin: true,
+      token,
+      user,
     });
 
     expect(response).toMatchObject({
-      data:{
-        addCategory:{
-          name:"snacks"
-        }
-      }
-    })
+      data: {
+        addCategory: {
+          name: "snacks",
+        },
+      },
+    });
   });
 
   it("Test Delete Category", async () => {
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
     const category = await Category.create({
       name: faker.name.findName(),
     }).save();
@@ -51,20 +62,20 @@ describe("Test Category Resolver",  () => {
     }`;
     const response = await graphqlCall({
       source: deleteCategoryQuery,
-      isAdmin:true
+      isAdmin: true,
+      user,
+      token,
     });
     expect(response).toMatchObject({
       data: {
-        deleteCategory: true
-      }
+        deleteCategory: true,
+      },
     });
   });
-  it("Test Update Category", async() => {
-
+  it("Test Update Category", async () => {
     const category = await Category.create({
       name: faker.name.findName(),
     }).save();
-
 
     const updateCategoryQuery = `mutation {
     updateCategory(id: ${category.id}, name: "${faker.name.findName()}"){
@@ -75,11 +86,12 @@ describe("Test Category Resolver",  () => {
 
     const response = await graphqlCall({
       source: updateCategoryQuery,
-      isAdmin: true
+      isAdmin: true,
     });
 
-    expect(get(response.data,"updateCategory.id")).toEqual(`${category.id}`);
-    expect(get(response.data,"updateCategory.name")).not.toEqual(category.name);
-
+    expect(get(response.data, "updateCategory.id")).toEqual(`${category.id}`);
+    expect(get(response.data, "updateCategory.name")).not.toEqual(
+      category.name
+    );
   });
 });

@@ -25,9 +25,9 @@ export class FavouriteResolver {
     @Ctx() ctx: ApiContext,
     @Arg("productId") productId: number
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const product = await Product.findOne(productId);
-    const costumerId = ctx.req.session!.token;
+    const costumerId = ctx.user?.id;
     const favourite = await Favourite.findOne({
       where: { costumerId, productId },
     });
@@ -35,7 +35,7 @@ export class FavouriteResolver {
     if (favourite) {
       const result = await Favourite.createQueryBuilder()
         .delete()
-        .where("costumerId=:costumerId", { costumerId: ctx.req.session!.token })
+        .where("costumerId=:costumerId", { costumerId: ctx.user?.id })
         .andWhere("productId=:productId", { productId })
         .execute();
       return !!result.affected;
@@ -52,7 +52,7 @@ export class FavouriteResolver {
     @Ctx() ctx: ApiContext,
     @Args() { page, limit }: PaginatedResponseArgs
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const result = await Favourite.findAndCount({
       where: { costumer },
       skip: (page - 1) * limit,

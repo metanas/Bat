@@ -1,8 +1,8 @@
-import {graphqlCall} from "../../test-utils/graphqlCall";
-import {createCostumerHelper} from "../../helper/createCostumerHelper";
-import {connection} from "../../test-utils/connection";
-import {Connection} from "typeorm";
-import {Costumer} from "../../../src/entity/Costumer";
+import { graphqlCall } from "../../test-utils/graphqlCall";
+import { createCostumerHelper } from "../../helper/createCostumerHelper";
+import { connection } from "../../test-utils/connection";
+import { Connection } from "typeorm";
+import { Costumer } from "../../../src/entity/Costumer";
 
 let costumer: Costumer;
 let conn: Connection;
@@ -31,7 +31,7 @@ describe("Me", () => {
 
     const response = await graphqlCall({
       source: meQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
@@ -42,9 +42,9 @@ describe("Me", () => {
           telephone: costumer.telephone,
           status: false,
           birthday: costumer.birthday,
-          avatar: null
-        }
-      }
+          avatar: null,
+        },
+      },
     });
   }, 30000);
 
@@ -57,7 +57,6 @@ describe("Me", () => {
       }
     }`;
 
-
     const response = await graphqlCall({
       source: registerQuery,
     });
@@ -68,8 +67,8 @@ describe("Me", () => {
           name: "test",
           telephone: "012-141-412",
           birthday: "01/02/1900",
-        }
-      }
+        },
+      },
     });
   });
 
@@ -83,7 +82,6 @@ describe("Me", () => {
       }
     }`;
 
-
     const response = await graphqlCall({
       source: registerQuery,
     });
@@ -95,8 +93,8 @@ describe("Me", () => {
           name: costumer.name,
           telephone: costumer.telephone,
           birthday: costumer.birthday,
-        }
-      }
+        },
+      },
     });
   }, 30000);
 
@@ -110,9 +108,8 @@ describe("Me", () => {
       }
     }`;
 
-
     const response = await graphqlCall({
-      source: registerQuery
+      source: registerQuery,
     });
 
     expect(response.data).toBeNull();

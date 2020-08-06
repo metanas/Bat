@@ -31,8 +31,8 @@ export class AddressResolver {
     @Arg("address") address: string,
     @Arg("longitude") longitude: string,
     @Arg("latitude") latitude: string
-  ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+  ): Promise<Address> {
+    const costumer = await Costumer.findOne(ctx.user?.id);
     return await Address.create({
       address,
       longitude,
@@ -79,7 +79,7 @@ export class AddressResolver {
     @Args() { page, limit }: PaginatedResponseArgs
   ) {
     const costumer = await Costumer.findOne({
-      where: { id: ctx.req.session!.token },
+      where: { id: ctx.user?.id },
     });
     const result = await Address.findAndCount({
       where: { costumer },

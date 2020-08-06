@@ -6,7 +6,7 @@
    "author": "metanas",
    "license": "MIT",
    "dependencies": {
-      "apollo-server-express": "^2.16.0",
+      "apollo-server-express": "^2.16.1",
       "bcryptjs": "^2.4.3",
       "class-validator": "^0.12.2",
       "connect-redis": "^5.0.0",
@@ -19,6 +19,7 @@
       "express-session": "^1.17.0",
       "graphql": "^15.1.0",
       "graphql-query-complexity": "^0.6.0",
+      "graphql-upload": "^11.0.0",
       "ioredis": "^4.17.3",
       "jsonwebtoken": "^8.5.1",
       "lodash": "^4.17.19",
@@ -57,7 +58,7 @@
       "typescript": "3.9.7"
    },
    "scripts": {
-      "lint": "eslint src/*.ts",
+      "lint": "eslint src/**/*.ts",
       "start": "ts-node-dev src/index.ts",
       "db:setup": "ts-node ./test/test-utils/setup.ts",
       "test": "yarn db:setup && jest --runInBand",

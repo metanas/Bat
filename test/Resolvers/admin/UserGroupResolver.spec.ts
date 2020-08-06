@@ -1,11 +1,12 @@
-import {Connection} from "typeorm";
-import {connection} from "../../test-utils/connection";
-import {createUserGroupHelper} from "../../helper/createUserGroupHelper";
-import {graphqlCall} from "../../test-utils/graphqlCall";
-import {UserGroup} from "../../../src/entity/UserGroup";
-import {truncate} from "../../helper/truncateTables";
-import {createUserHelper} from "../../helper/createUserHelper";
+import { Connection } from "typeorm";
+import { connection } from "../../test-utils/connection";
+import { createUserGroupHelper } from "../../helper/createUserGroupHelper";
+import { graphqlCall } from "../../test-utils/graphqlCall";
+import { UserGroup } from "../../../src/entity/UserGroup";
+import { truncate } from "../../helper/truncateTables";
+import { createUserHelper } from "../../helper/createUserHelper";
 import { GraphQLError } from "graphql";
+import { loginHelper } from "../../helper/loginHelper";
 
 describe("Product Resolver Test", () => {
   let conn: Connection;
@@ -20,10 +21,14 @@ describe("Product Resolver Test", () => {
 
   it("Test Get User Groups", async () => {
     await truncate(conn, "user_group");
-    const userGroupsList: {id: number}[] = [];
-    for(let i=0; i < 7; i++) {
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
+    const userGroupsList: { id: number }[] = [{ id: userGroup.id }];
+    for (let i = 0; i < 7; i++) {
       const userGroup = await createUserGroupHelper();
-      userGroupsList.push({id: userGroup.id});
+      userGroupsList.push({ id: userGroup.id });
     }
 
     const getUserGroupQuery = `{
@@ -38,21 +43,27 @@ describe("Product Resolver Test", () => {
 
     const response = await graphqlCall({
       source: getUserGroupQuery,
-      isAdmin: true
+      isAdmin: true,
+      token,
+      user,
     });
 
     expect(response).toMatchObject({
       data: {
         getUserGroups: {
           items: userGroupsList,
-          "total_pages": 1,
-          "total_count": 7
-        }
-      }
-    })
+          total_pages: 1,
+          total_count: 8,
+        },
+      },
+    });
   });
 
   it("Test Add User Group", async () => {
+    const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
     const addUserGroupQuery = `mutation {
       addUserGroup(name: "Test", permissions: "{\\"access\\" :[\\"control\\",\\"dashboard\\"],\\"modify\\":[]}")
       {
@@ -62,20 +73,25 @@ describe("Product Resolver Test", () => {
 
     const response = await graphqlCall({
       source: addUserGroupQuery,
-      isAdmin: true
+      isAdmin: true,
+      token,
+      user,
     });
 
     expect(response).toMatchObject({
       data: {
         addUserGroup: {
-          name: "Test"
-        }
-      }
+          name: "Test",
+        },
+      },
     });
   });
 
   it("Test Update User Group", async () => {
     const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
 
     const updateUserGroupQuery = `mutation {
       updateUserGroup(id: ${userGroup.id}, name: "new Name", permissions: "{ \\"access\\":[\\"New Value\\", \\"Test Value\\"], \\"modify\\": [\\"New Permission\\", \\"Permission\\"]}") {
@@ -89,7 +105,9 @@ describe("Product Resolver Test", () => {
 
     const response = await graphqlCall({
       source: updateUserGroupQuery,
-      isAdmin: true
+      isAdmin: true,
+      token,
+      user,
     });
 
     expect(response).toMatchObject({
@@ -97,19 +115,20 @@ describe("Product Resolver Test", () => {
         updateUserGroup: {
           name: "new Name",
           permissions: {
-            "access" :
-              ["New Value", "Test Value"],
-            "modify":
-              ["New Permission", "Permission"]
-          }
-        }
-      }
+            access: ["New Value", "Test Value"],
+            modify: ["New Permission", "Permission"],
+          },
+        },
+      },
     });
   });
 
   it("Test Delete User Group", async () => {
     let userGroup = await createUserGroupHelper();
-    for(let i=0; i < 3; i++) {
+    const user = await createUserHelper(userGroup);
+
+    const token = await loginHelper(user);
+    for (let i = 0; i < 3; i++) {
       userGroup = await createUserGroupHelper();
     }
 
@@ -119,13 +138,15 @@ describe("Product Resolver Test", () => {
 
     let response = await graphqlCall({
       source: deleteUserGroupQuery,
-      isAdmin: true
+      isAdmin: true,
+      token,
+      user,
     });
 
     expect(response).toMatchObject({
       data: {
-        deleteUserGroup: true
-      }
+        deleteUserGroup: true,
+      },
     });
 
     const resultExpect = await UserGroup.findOne(userGroup.id);
@@ -141,11 +162,13 @@ describe("Product Resolver Test", () => {
 
     response = await graphqlCall({
       source: deleteUserGroupQuery,
-      isAdmin: true
+      isAdmin: true,
+      token,
+      user,
     });
 
     expect(response).toMatchObject({
-      errors: [new GraphQLError("This Group is already used!!")]
-    })
+      errors: [new GraphQLError("This Group is already used!!")],
+    });
   });
 });

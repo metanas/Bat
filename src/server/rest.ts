@@ -5,7 +5,9 @@ import { verify } from "jsonwebtoken";
 import { User } from "../entity/User";
 import { sendRefreshToken } from "../utils/sendRefreshToken";
 import { createAccessToken, createRefreshToken } from "../utils/tokenGen";
+import { graphqlUploadExpress } from "graphql-upload";
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function InitServer() {
   const app = Express();
 
@@ -17,6 +19,8 @@ export function InitServer() {
   );
 
   app.use(cookieParser());
+
+  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 
   app.post(
     "/refresh_token",

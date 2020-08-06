@@ -24,7 +24,7 @@ export class CartResolver {
     @Ctx() ctx: ApiContext,
     @Args() { page, limit }: PaginatedResponseArgs
   ): Promise<Cart | undefined> {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const cart = await Cart.findOne({ where: { costumer } });
 
     if (cart) {
@@ -45,7 +45,7 @@ export class CartResolver {
     @Ctx() ctx: ApiContext,
     @Arg("key") key: string
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const coupon = await Coupon.findOne({ where: { key } });
     if (!coupon) {
       throw new Error("Invalid Coupon !!");
@@ -65,7 +65,7 @@ export class CartResolver {
     @Arg("productId") productId: number,
     @Arg("quantity") quantity: number
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const cart = await Cart.findOne({ where: { costumer } });
     const product = await Product.findOne(productId);
     if (product) {
@@ -88,7 +88,7 @@ export class CartResolver {
   @UseMiddleware(Auth)
   @Mutation(() => Boolean)
   public async deleteAllFromCart(@Ctx() ctx: ApiContext) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const cart = await Cart.findOne({ where: { costumer } });
     const result = await CartProduct.createQueryBuilder()
       .delete()
@@ -104,7 +104,7 @@ export class CartResolver {
     @Arg("productId") productId: number,
     @Arg("quantity") quantity: number
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const cart = await Cart.findOne({ where: { costumer } });
     const product = await Product.findOne(productId);
 
@@ -132,7 +132,7 @@ export class CartResolver {
     @Ctx() ctx: ApiContext,
     @Arg("productId") productId: number
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const cart = await Cart.findOne({ where: { costumer } });
     if (cart) {
       const result = await CartProduct.createQueryBuilder()
