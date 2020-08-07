@@ -6,7 +6,7 @@ import { User } from "../entity/User";
 export const Roles: AuthChecker<ApiContext> = async (
   { context },
   roles
-): Promise<any> => {
+): Promise<boolean> => {
   if (context.req.session!.user) {
     const isAccess = (context.req.session!
       .user as User).userGroup.permissions.access.includes(roles[0]);

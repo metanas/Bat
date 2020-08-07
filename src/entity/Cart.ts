@@ -35,7 +35,7 @@ export class Cart extends BaseEntity {
   public costumer: Costumer;
 
   @Field(() => Int, { name: "count" })
-  public async count() {
+  public async count(): Promise<number> {
     return await CartProduct.count({ where: { cartId: this.id } });
   }
 

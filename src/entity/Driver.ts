@@ -48,7 +48,7 @@ export class Driver extends BaseEntity {
   public orders: Order[];
 
   @Field(() => Int)
-  public count() {
+  public async count(): Promise<number> {
     return Order.count({ where: { driverId: this.id } });
   }
 }

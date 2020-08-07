@@ -4,7 +4,7 @@ import { join } from "path";
 import { complexity } from "../utils/complexity";
 import { last, set } from "lodash";
 
-export const createApolloServer = async () => {
+export const createApolloServer = async (): Promise<ApolloServer> => {
   const schema = await buildSchema({
     resolvers: [join(__dirname + "/../Resolvers/shared/*.ts")],
   });

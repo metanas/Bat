@@ -6,7 +6,7 @@ import {
 } from "graphql-query-complexity";
 import { separateOperations, GraphQLSchema } from "graphql";
 
-export function complexity(schema: GraphQLSchema) {
+export function complexity(schema: GraphQLSchema): Record<string, unknown>[] {
   return [
     {
       requestDidStart: () => ({

@@ -69,7 +69,7 @@ export class Costumer extends BaseEntity {
   favourite: Favourite;
 
   @Field(() => Int)
-  public async count() {
+  public async count(): Promise<number> {
     return await Favourite.count({ where: { costumerId: this.id } });
   }
 }

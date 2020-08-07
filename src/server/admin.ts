@@ -5,7 +5,7 @@ import { Roles } from "../Middleware/Roles";
 import { complexity } from "../utils/complexity";
 import { last, set } from "lodash";
 
-export const createApolloServerAdmin = async () => {
+export const createApolloServerAdmin = async (): Promise<ApolloServer> => {
   const schemaAdmin = await buildSchema({
     resolvers: [join(__dirname + "/../Resolvers/admin/*.ts")],
     authChecker: Roles,
@@ -14,7 +14,7 @@ export const createApolloServerAdmin = async () => {
   return new ApolloServer({
     schema: schemaAdmin,
     uploads: false,
-    context: async ({ req, res }) => {
+    context: async ({ req, res }): Promise<Record<string, unknown>> => {
       const ctx = { req, res };
       const token = last(req.headers?.authorization?.split(" "));
 
