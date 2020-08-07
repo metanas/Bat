@@ -1,14 +1,15 @@
-import {Connection} from "typeorm";
-import {connection} from "../../test-utils/connection";
-import {User} from "../../../src/entity/User";
-import {createUserHelper} from "../../helper/createUserHelper";
-import {createUserGroupHelper} from "../../helper/createUserGroupHelper";
-import {graphqlCall} from "../../test-utils/graphqlCall";
-import {truncate} from "../../helper/truncateTables";
+import { Connection } from "typeorm";
+import { connection } from "../../test-utils/connection";
+import { User } from "../../../src/entity/User";
+import { createUserHelper } from "../../helper/createUserHelper";
+import { createUserGroupHelper } from "../../helper/createUserGroupHelper";
+import { graphqlCall } from "../../test-utils/graphqlCall";
+import { truncate } from "../../helper/truncateTables";
 import { take, slice } from "lodash";
 import { GraphQLError } from "graphql";
+import { loginHelper } from "../../helper/loginHelper";
 
-describe("Test Address Resolver",  () => {
+describe("Test Address Resolver", () => {
   let conn: Connection;
   let user: User;
 
@@ -24,6 +25,8 @@ describe("Test Address Resolver",  () => {
     const userGroup = await createUserGroupHelper();
     user = await createUserHelper(userGroup);
 
+    const token = await loginHelper(user);
+
     const getUserQuery = `{
       getUser(id: "${user.id}" ){
         name
@@ -31,11 +34,13 @@ describe("Test Address Resolver",  () => {
           name
         }
       }
-    }` ;
+    }`;
 
     const response = await graphqlCall({
       source: getUserQuery,
-      isAdmin: true
+      isAdmin: true,
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
@@ -43,22 +48,25 @@ describe("Test Address Resolver",  () => {
         getUser: {
           name: user.name,
           userGroup: {
-            name: userGroup.name
-          }
-        }
-      }
-    })
+            name: userGroup.name,
+          },
+        },
+      },
+    });
   });
 
   it("Test get User", async () => {
     await truncate(conn, "user");
 
     const userGroup = await createUserGroupHelper();
-    const userList: {name: string}[] = [];
+    user = await createUserHelper(userGroup);
 
-    for(let i=0; i < 30; i++) {
+    const token = await loginHelper(user);
+    const userList: { name: string }[] = [{ name: user.name }];
+
+    for (let i = 0; i < 29; i++) {
       user = await createUserHelper(userGroup);
-      userList.push({name: user.name});
+      userList.push({ name: user.name });
     }
 
     let getUsersQuery = `{
@@ -73,17 +81,19 @@ describe("Test Address Resolver",  () => {
 
     let response = await graphqlCall({
       source: getUsersQuery,
-      isAdmin: true
+      isAdmin: true,
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
       data: {
         getUsers: {
           items: take(userList, 12),
-          "total_pages": 3,
-          "total_count": 30
-        }
-      }
+          total_pages: 3,
+          total_count: 30,
+        },
+      },
     });
 
     getUsersQuery = `{
@@ -98,23 +108,27 @@ describe("Test Address Resolver",  () => {
 
     response = await graphqlCall({
       source: getUsersQuery,
-      isAdmin: true
+      isAdmin: true,
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
       data: {
         getUsers: {
           items: slice(userList, 12, 24),
-          "total_pages": 3,
-          "total_count": 30
-        }
-      }
+          total_pages: 3,
+          total_count: 30,
+        },
+      },
     });
   }, 25000);
 
   it("Test Add User", async () => {
     const userGroup = await createUserGroupHelper();
+    const user = await createUserHelper(userGroup);
 
+    const token = await loginHelper(user);
     const addUserQuery = `mutation {
       addUser(name: "user", email: "your@email.com", password: "password", userGroupId: ${userGroup.id}){
         name
@@ -126,7 +140,9 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: addUserQuery,
-      isAdmin: true
+      isAdmin: true,
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
@@ -134,10 +150,10 @@ describe("Test Address Resolver",  () => {
         addUser: {
           name: "user",
           userGroup: {
-            name: userGroup.name
-          }
-        }
-      }
+            name: userGroup.name,
+          },
+        },
+      },
     });
   });
 
@@ -147,27 +163,23 @@ describe("Test Address Resolver",  () => {
     const user = await createUserHelper(userGroup, "TestPassword");
     const loginQuery = `mutation {
       login(email: "${user.email}", password: "TestPassword") {
-        user {
-          id 
-          name
-        }
+        id 
+        name
       }
     }`;
 
     const response = await graphqlCall({
       source: loginQuery,
-      isAdmin: true
+      isAdmin: true,
     });
 
     expect(response).toMatchObject({
       data: {
         login: {
-          user: {
-            id: user.id,
-            name: user.name
-          }
-        }
-      }
+          id: user.id,
+          name: user.name,
+        },
+      },
     });
   });
 
@@ -177,37 +189,35 @@ describe("Test Address Resolver",  () => {
     await createUserHelper(userGroup, "TestPassword");
     let loginQuery = `mutation {
       login(email: "email@test.com", password: "TestPassword") {
-        user {
-          id 
-          name
-        }
+        id 
+        name
       }
     }`;
 
     let response = await graphqlCall({
       source: loginQuery,
-      isAdmin: true
+      isAdmin: true,
     });
 
-    expect(response).toMatchObject({ errors: [new GraphQLError("User and Password not register!")] });
+    expect(response).toMatchObject({
+      errors: [new GraphQLError("User and Password not register!")],
+    });
 
     loginQuery = `mutation {
       login(email: "user@user.com", password: "pppppppp") {
-        user {
-          id 
-          name
-        }
+        id 
+        name
       }
     }`;
 
     response = await graphqlCall({
       source: loginQuery,
-      isAdmin: true
+      isAdmin: true,
     });
 
     expect(response).toMatchObject({
-      errors: [new GraphQLError("User and Password not register!")]
-    })
+      errors: [new GraphQLError("User and Password not register!")],
+    });
   });
 
   it("Test delete User", async () => {
@@ -215,23 +225,27 @@ describe("Test Address Resolver",  () => {
 
     user = await createUserHelper(userGroup);
 
+    const token = await loginHelper(user);
+
     const deleteUser = `mutation { 
       deleteUser(id: "${user.id}") 
     }`;
 
     const response = await graphqlCall({
       source: deleteUser,
-      isAdmin: true
+      isAdmin: true,
+      user,
+      token,
     });
 
     expect(response).toMatchObject({
       data: {
-        deleteUser: true
-      }
+        deleteUser: true,
+      },
     });
 
     const userExpect = await User.findOne(user.id);
 
-    expect(userExpect).toBeUndefined()
+    expect(userExpect).toBeUndefined();
   });
 });

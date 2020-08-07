@@ -14,7 +14,8 @@ jobs:
           POSTGRES_USER: project
           POSTGRES_DB: project-api
           POSTGRES_PASSWORD: root
-
+          ACCESS_TOKEN_SECRET: bWV0YW5hOmtpbmdjb2Rlcg==
+          REFRESH_TOKEN_SECRET: vasDJKLwqejiJDSoejaodg==
     steps:
       - checkout
       - restore_cache:

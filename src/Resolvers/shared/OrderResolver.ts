@@ -27,7 +27,7 @@ export class OrderResolver {
     @Ctx() ctx: ApiContext,
     @Arg("addressId") addressId: number
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const cart = await Cart.findOne({ where: { costumer } });
 
     if (!cart || (await cart.count()) === 0) {
@@ -67,7 +67,7 @@ export class OrderResolver {
     @Ctx() ctx: ApiContext,
     @Args() { page, limit }: PaginatedResponseArgs
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const result = await Order.findAndCount({
       where: { costumer },
       order: { create_at: "DESC" },
@@ -87,7 +87,7 @@ export class OrderResolver {
     @Ctx() ctx: ApiContext,
     @Arg("id") id: string
   ): Promise<Order | undefined> {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     return await Order.findOne({ where: { id, costumer } });
   }
 }

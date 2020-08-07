@@ -79,7 +79,7 @@ export class Coupon extends BaseEntity {
   public costumerCoupon: CostumerCoupon[];
 
   @Field(() => Boolean)
-  public isValid() {
+  public isValid(): boolean {
     return this.orders.length > this.couponUse;
   }
 }

@@ -39,7 +39,7 @@ export class Category extends BaseEntity {
   productCategory: ProductCategory;
 
   @Field(() => Int)
-  public async count() {
+  public async count(): Promise<number> {
     return await ProductCategory.count({ where: { categoryId: this.id } });
   }
 }

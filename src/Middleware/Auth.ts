@@ -5,8 +5,8 @@ import { AuthenticationError } from "apollo-server-express";
 export const Auth: MiddlewareFn<ApiContext> = async (
   { context },
   next
-): Promise<any> => {
-  if (!context.req.session!.token) {
+): Promise<unknown> => {
+  if (!context.req.headers?.authorization) {
     throw new AuthenticationError("Not Authenticated");
   }
   return next();

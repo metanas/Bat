@@ -5,8 +5,10 @@ import { verify } from "jsonwebtoken";
 import { User } from "../entity/User";
 import { sendRefreshToken } from "../utils/sendRefreshToken";
 import { createAccessToken, createRefreshToken } from "../utils/tokenGen";
+import { graphqlUploadExpress } from "graphql-upload";
 
-export function InitServer() {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function InitServer(): unknown {
   const app = Express();
 
   app.use(
@@ -18,6 +20,8 @@ export function InitServer() {
 
   app.use(cookieParser());
 
+  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+
   app.post(
     "/refresh_token",
     async (req: Request, res: Response): Promise<Response> => {
@@ -27,10 +31,13 @@ export function InitServer() {
         return res.send({ success: false, accessToken: "" });
       }
 
-      let payload: any = null;
+      let payload: { user_id?: string; tokenVersion?: number } = {};
 
       try {
-        payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
+        payload = verify(token, process.env.REFRESH_TOKEN_SECRET!) as Record<
+          string,
+          unknown
+        >;
       } catch (err) {
         return res.send({ success: false, accessToken: "" });
       }

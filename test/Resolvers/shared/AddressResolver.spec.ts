@@ -1,14 +1,14 @@
-import {Connection} from "typeorm";
-import {connection} from "../../test-utils/connection";
-import {Costumer} from "../../../src/entity/Costumer";
-import faker from "faker";
-import {graphqlCall} from "../../test-utils/graphqlCall";
-import {Address} from "../../../src/entity/Address";
-import {get, slice, take} from "lodash";
-import {createCostumerHelper} from "../../helper/createCostumerHelper";
-import {createAddressHelper} from "../../helper/createAddressHelper";
+import { Connection } from "typeorm";
+import { connection } from "../../test-utils/connection";
+import { Costumer } from "../../../src/entity/Costumer";
+import * as faker from "faker";
+import { graphqlCall } from "../../test-utils/graphqlCall";
+import { Address } from "../../../src/entity/Address";
+import { get, slice, take } from "lodash";
+import { createCostumerHelper } from "../../helper/createCostumerHelper";
+import { createAddressHelper } from "../../helper/createAddressHelper";
 
-describe("Test Address Resolver",  () => {
+describe("Test Address Resolver", () => {
   let conn: Connection;
   let costumer: Costumer;
 
@@ -35,7 +35,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: getAddressQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
@@ -45,13 +45,12 @@ describe("Test Address Resolver",  () => {
           address: address.address,
           longitude: address.longitude,
           latitude: address.latitude,
-        }
-      }
+        },
+      },
     });
   });
 
   it("Test Add Address", async () => {
-
     const addAddressQuery = `mutation {
       addAddress(address: "test address", longitude: "1.23423423", latitude: "3.12319221") {
         address
@@ -62,7 +61,7 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: addAddressQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
@@ -70,9 +69,9 @@ describe("Test Address Resolver",  () => {
         addAddress: {
           address: "test address",
           longitude: "1.23423423",
-          latitude: "3.12319221"
-        }
-      }
+          latitude: "3.12319221",
+        },
+      },
     });
   });
 
@@ -90,17 +89,19 @@ describe("Test Address Resolver",  () => {
     }`;
 
     const listAddress: { address: string }[] = [];
-    for(let i=0; i < 12; i++) {
+    for (let i = 0; i < 12; i++) {
       const address = await createAddressHelper(costumer);
       listAddress.push({ address: address.address });
     }
 
     let response = await graphqlCall({
       source: getAddressesQuery,
-      user: costumer
+      user: costumer,
     });
 
-    expect(get(response.data, "getAddresses.items")).toEqual(take(listAddress, 5));
+    expect(get(response.data, "getAddresses.items")).toEqual(
+      take(listAddress, 5)
+    );
     expect(get(response.data, "getAddresses.total_pages")).toEqual(3);
     expect(get(response.data, "getAddresses.total_count")).toEqual(12);
 
@@ -116,10 +117,12 @@ describe("Test Address Resolver",  () => {
 
     response = await graphqlCall({
       source: getAddressesQuery,
-      user: costumer
+      user: costumer,
     });
 
-    expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 5, 10));
+    expect(get(response.data, "getAddresses.items")).toEqual(
+      slice(listAddress, 5, 10)
+    );
     expect(get(response.data, "getAddresses.total_pages")).toEqual(3);
     expect(get(response.data, "getAddresses.total_count")).toEqual(12);
 
@@ -135,10 +138,12 @@ describe("Test Address Resolver",  () => {
 
     response = await graphqlCall({
       source: getAddressesQuery,
-      user: costumer
+      user: costumer,
     });
 
-    expect(get(response.data, "getAddresses.items")).toEqual(slice(listAddress, 10, 12));
+    expect(get(response.data, "getAddresses.items")).toEqual(
+      slice(listAddress, 10, 12)
+    );
   });
 
   it("Test Delete Address", async () => {
@@ -150,27 +155,28 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: deleteAddressQuery,
-      user: costumer
+      user: costumer,
     });
 
     expect(response).toMatchObject({
       data: {
-        deleteAddress: true
-      }
+        deleteAddress: true,
+      },
     });
   });
 
   it("Test Update Address", async () => {
-
     const address = await Address.create({
       address: faker.address.streetName(),
       latitude: faker.address.latitude(),
       longitude: faker.address.longitude(),
-      costumer: costumer
+      costumer: costumer,
     }).save();
 
     const updateAddressQuery = `mutation {
-      updateAddress(id: ${address.id}, address: "${faker.address.streetName()}", longitude: "${faker.address.longitude()}", latitude: "${faker.address.latitude()}") {
+      updateAddress(id: ${
+        address.id
+      }, address: "${faker.address.streetName()}", longitude: "${faker.address.longitude()}", latitude: "${faker.address.latitude()}") {
         id
         address
         longitude
@@ -180,12 +186,18 @@ describe("Test Address Resolver",  () => {
 
     const response = await graphqlCall({
       source: updateAddressQuery,
-      user: costumer
+      user: costumer,
     });
 
-    expect(get(response.data,"updateAddress.id")).toEqual(`${address.id}`);
-    expect(get(response.data,"updateAddress.address")).not.toEqual(address.address);
-    expect(get(response.data,"updateAddress.longitude")).not.toEqual(address.longitude);
-    expect(get(response.data,"updateAddress.latitude")).not.toEqual(address.latitude);
+    expect(get(response.data, "updateAddress.id")).toEqual(`${address.id}`);
+    expect(get(response.data, "updateAddress.address")).not.toEqual(
+      address.address
+    );
+    expect(get(response.data, "updateAddress.longitude")).not.toEqual(
+      address.longitude
+    );
+    expect(get(response.data, "updateAddress.latitude")).not.toEqual(
+      address.latitude
+    );
   });
 });

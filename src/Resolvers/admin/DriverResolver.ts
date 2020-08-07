@@ -6,22 +6,25 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
-import { Auth } from "../../Middleware/Auth";
 import { Driver } from "../../entity/Driver";
 import { ceil } from "lodash";
 import { PaginatedResponseArgs } from "../../Modules/inputs/PaginatedResponseArgs";
 import { Order } from "../../entity/Order";
-import { PaginatedDriverResponse } from "../../types/PaginatedResponseTypes";
+import {
+  PaginatedDriverResponse,
+  PaginatedDriverType,
+} from "../../types/PaginatedResponseTypes";
+import { Admin } from "../../Middleware/Admin";
 
 @Resolver()
 export class DriverResolver {
-  @UseMiddleware(Auth)
+  @UseMiddleware(Admin)
   @Query(() => Driver, { nullable: true })
   public async getDriver(@Arg("id") id: number): Promise<Driver | undefined> {
     return await Driver.findOne(id);
   }
 
-  @UseMiddleware(Auth)
+  @UseMiddleware(Admin)
   @Mutation(() => Driver)
   public async addDriver(
     @Arg("name") name: string,
@@ -31,7 +34,7 @@ export class DriverResolver {
     @Arg("isActive") isActive: boolean,
     @Arg("longitude") longitude: string,
     @Arg("latitude") latitude: string
-  ) {
+  ): Promise<Driver> {
     return await Driver.create({
       name,
       telephone,
@@ -43,12 +46,12 @@ export class DriverResolver {
     }).save();
   }
 
-  @UseMiddleware(Auth)
+  @UseMiddleware(Admin)
   @Mutation(() => Driver)
   public async updateDriverStatus(
     @Arg("id") id: number,
     @Arg("isActive") isActive: boolean
-  ) {
+  ): Promise<Driver | undefined> {
     await Driver.createQueryBuilder()
       .update()
       .set({ isActive })
@@ -57,8 +60,9 @@ export class DriverResolver {
     return await Driver.findOne(id);
   }
 
+  @UseMiddleware(Admin)
   @Mutation(() => Boolean)
-  public async deleteDriver(@Arg("id") id: number) {
+  public async deleteDriver(@Arg("id") id: number): Promise<boolean> {
     const result = await Driver.createQueryBuilder()
       .delete()
       .where("id=:id", { id })
@@ -67,7 +71,7 @@ export class DriverResolver {
     return !!result.affected;
   }
 
-  @UseMiddleware(Auth)
+  @UseMiddleware(Admin)
   @Mutation(() => Driver)
   public async updateDriver(
     @Arg("id") id: number,
@@ -77,7 +81,7 @@ export class DriverResolver {
     @Arg("avatar") avatar: string,
     @Arg("longitude") longitude: string,
     @Arg("latitude") latitude: string
-  ) {
+  ): Promise<Driver | undefined> {
     await Driver.createQueryBuilder()
       .update()
       .set({ name, telephone, point, avatar, longitude, latitude })
@@ -86,15 +90,15 @@ export class DriverResolver {
     return await Driver.findOne(id);
   }
 
-  @UseMiddleware(Auth)
+  @UseMiddleware(Admin)
   @Mutation(() => Order)
   public async setDriverToOrder(
     @Arg("id") id: number,
     @Arg("orderId") orderId: string
-  ) {
+  ): Promise<Order | undefined> {
     const driver = await Driver.findOne(id);
     if (!driver) {
-      return Error("Driver Not Found!");
+      throw new Error("Driver Not Found!");
     }
     await Order.createQueryBuilder()
       .update()
@@ -105,9 +109,11 @@ export class DriverResolver {
     return await Order.findOne(orderId);
   }
 
-  @UseMiddleware(Auth)
+  @UseMiddleware(Admin)
   @Query(() => PaginatedDriverResponse)
-  public async getDrivers(@Args() { page, limit }: PaginatedResponseArgs) {
+  public async getDrivers(
+    @Args() { page, limit }: PaginatedResponseArgs
+  ): Promise<PaginatedDriverType> {
     const result = await Driver.findAndCount({
       skip: (page - 1) * limit,
       take: limit,

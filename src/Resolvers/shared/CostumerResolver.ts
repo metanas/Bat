@@ -17,7 +17,7 @@ export class CostumerResolver {
   @UseMiddleware(Auth)
   @Query(() => Costumer, { nullable: true })
   public async me(@Ctx() ctx: ApiContext): Promise<Costumer | undefined> {
-    return await Costumer.findOne({ where: { id: ctx.req.session!.token } });
+    return await Costumer.findOne({ where: { id: ctx.user?.id } });
   }
 
   @Mutation(() => Costumer)
@@ -46,7 +46,7 @@ export class CostumerResolver {
       throw new Error("This telephone number isn't register!");
     }
 
-    ctx.req.session!.token = costumer.id;
+    ctx.res.setHeader("x-token", costumer.id);
 
     return costumer;
   }

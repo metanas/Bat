@@ -6,26 +6,31 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
-import { Auth } from "../../Middleware/Auth";
 import { Product } from "../../entity/Product";
 import { Category } from "../../entity/Category";
 import { ProductArgs } from "../../Modules/inputs/ProductArgs";
 import { In } from "typeorm";
 import { ProductCategory } from "../../entity/ProductCategory";
-import { PaginatedProductResponse } from "../../types/PaginatedResponseTypes";
+import {
+  PaginatedProductResponse,
+  PaginateProductType,
+} from "../../types/PaginatedResponseTypes";
 import { PaginatedResponseArgs } from "../../Modules/inputs/PaginatedResponseArgs";
 import { ceil } from "lodash";
+import { Admin } from "../../Middleware/Admin";
 
 @Resolver()
 export class ProductResolver {
+  @UseMiddleware(Admin)
   @Query(() => Product, { nullable: true })
-  public async getProduct(@Arg("id") id: number) {
+  public async getProduct(@Arg("id") id: number): Promise<Product | undefined> {
     return await Product.findOne({
       where: { id },
       relations: ["productPictures", "productCategory"],
     });
   }
 
+  @UseMiddleware(Admin)
   @Mutation(() => Product)
   public async addProduct(@Args() args: ProductArgs): Promise<Product> {
     const categories = await Category.find({
@@ -50,9 +55,12 @@ export class ProductResolver {
     return product;
   }
 
-  @UseMiddleware(Auth)
+  @UseMiddleware(Admin)
   @Mutation(() => Product)
-  public async updateProduct(@Arg("id") id: number, @Args() args: ProductArgs) {
+  public async updateProduct(
+    @Arg("id") id: number,
+    @Args() args: ProductArgs
+  ): Promise<Product | undefined> {
     const categories = await Category.find({
       where: { id: In(args.categoryIds) },
     });
@@ -83,9 +91,9 @@ export class ProductResolver {
     return await Product.findOne(id);
   }
 
-  @UseMiddleware(Auth)
+  @UseMiddleware(Admin)
   @Mutation(() => Boolean)
-  public async deleteProduct(@Arg("id") id: number) {
+  public async deleteProduct(@Arg("id") id: number): Promise<boolean> {
     const result = await Product.createQueryBuilder()
       .delete()
       .where("id=:id", { id })
@@ -94,8 +102,9 @@ export class ProductResolver {
     return !!result.affected;
   }
 
+  @UseMiddleware(Admin)
   @Mutation(() => Product)
-  public async toggleProduct(@Arg("id") id: number) {
+  public async toggleProduct(@Arg("id") id: number): Promise<Product> {
     const product = await Product.findOne(id);
 
     if (!product) {
@@ -113,11 +122,12 @@ export class ProductResolver {
     return product;
   }
 
+  @UseMiddleware(Admin)
   @Query(() => PaginatedProductResponse, { complexity: 10 })
   public async getProducts(
     @Arg("categoryId", { nullable: true }) categoryId: number,
     @Args() { page, limit, name }: PaginatedResponseArgs
-  ) {
+  ): Promise<PaginateProductType> {
     let query = Product.createQueryBuilder("product").select();
 
     if (categoryId) {

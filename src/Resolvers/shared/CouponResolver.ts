@@ -31,7 +31,7 @@ export class CouponResolver {
     @Ctx() ctx: ApiContext,
     @Arg("couponKey") key: string
   ) {
-    const costumer = await Costumer.findOne(ctx.req.session!.token);
+    const costumer = await Costumer.findOne(ctx.user?.id);
     const coupon = await Coupon.findOne({ where: { key } });
 
     if (!coupon || !coupon.isValid()) {
