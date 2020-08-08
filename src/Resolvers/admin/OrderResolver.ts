@@ -22,7 +22,7 @@ export class OrderResolver {
   @UseMiddleware(Admin)
   @Query(() => PaginatedOrderResponse)
   public async getOrders(
-    @Arg("driverId") driverId: number,
+    @Arg("driverId", { nullable: true }) driverId: number,
     @Args() { page, limit }: PaginatedResponseArgs
   ): Promise<PaginatedOrderType> {
     const options: FindManyOptions = {
@@ -51,15 +51,17 @@ export class OrderResolver {
     @Arg("status") status: string
   ): Promise<Order | undefined> {
     const order = await Order.findOne(id);
-    if (order) {
-      await Order.createQueryBuilder()
-        .update()
-        .set({ status })
-        .where("id=:id", { id: order.id })
-        .execute();
-
-      await order.reload();
+    if (!order) {
+      throw new Error("Order not found");
     }
+    await Order.createQueryBuilder()
+      .update()
+      .set({ status })
+      .where("id=:id", { id: order.id })
+      .execute();
+
+    await order.reload();
+
     return order;
   }
 
