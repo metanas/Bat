@@ -8,7 +8,7 @@ import { createAccessToken, createRefreshToken } from "../utils/tokenGen";
 import { graphqlUploadExpress } from "graphql-upload";
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function InitServer(): unknown {
+export function InitServer() {
   const app = Express();
 
   app.use(
